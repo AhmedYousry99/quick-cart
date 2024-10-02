@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    //primary
+    <color name="primary">#feba00</color>
+    //primary dark
+    <color name="yellow_200">#ffdd7f</color>
+    //primary variant
+    <color name="primary_variant">#cb9500</color>
+    //color secondary
+    <color name="green_200">#cee993</color>
+    //color on secondary
+    <color name="secondary">#a3d139</color>
+    <color name="secondary_variant">#a3d139</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+
+
+
+    <color name="toolbar">#00AF87</color>
+    <color name="secondary_text_greyed">#757575</color>
+    <color name="secondary_items">#2d2d2d</color>
+    <color name="icon">#00AF87</color>
+</resources>
