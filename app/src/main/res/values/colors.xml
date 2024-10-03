@@ -6,6 +6,7 @@
     <color name="primary">#feba00</color>
     //primary dark
     <color name="yellow_200">#ffdd7f</color>
+    <color name="primary_color">#ffdd7f</color>
     //primary variant
     <color name="primary_variant">#cb9500</color>
     //color secondary
