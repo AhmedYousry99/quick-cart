@@ -12,6 +12,7 @@ import java.util.Locale
 object LanguageUtils {
 
 
+    @Suppress("DEPRECATION")
     fun changeLanguage(code: String, activity:Activity) {
         val locale = Locale(code)
         Locale.setDefault(locale)
