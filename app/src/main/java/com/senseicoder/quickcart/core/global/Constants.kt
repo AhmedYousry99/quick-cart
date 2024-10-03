@@ -9,8 +9,7 @@ object Constants {
        }
     }
 
-    sealed class API{
-
+    object API{
+        const val ADMIN = "https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json"
     }
-
 }

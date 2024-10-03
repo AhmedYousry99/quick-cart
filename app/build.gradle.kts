@@ -4,8 +4,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id ("kotlin-kapt")
+    id("com.apollographql.apollo") version "4.0.1"
     alias(libs.plugins.google.gms.google.services)
 }
+
+val properties= Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.senseicoder.quickcart"
@@ -20,11 +24,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val properties= Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField ("String","shopify_admin_api_access_token","\"${properties.getProperty("shopify_admin_api_access_token")}\"")
         buildConfigField ("String","shopify_api_key","\"${properties.getProperty("shopify_api_key")}\"")
         buildConfigField ("String","shopify_secret_key","\"${properties.getProperty("shopify_secret_key")}\"")
+        buildConfigField ("String","shopify_store_front_api_access_token","\"${properties.getProperty("shopify_store_front_api_access_token")}\"")
     }
 
     buildTypes {
@@ -46,6 +49,32 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+}
+
+apollo {
+    service("Admin") {
+        // Adds the given directory as a GraphQL source root
+        srcDir("src/main/graphql")
+        // The package name for the generated models
+        packageName.set("com.admin")
+        // Warn if using a deprecated field
+        warnOnDeprecatedUsages.set(true)
+        // Whether to generate Kotlin or Java models
+        generateKotlinModels.set(true)
+        // wire the generated models to the "test" source set
+//        outputDirConnection {
+//            connectToKotlinSourceSet("test")
+//        }
+        // This creates a downloadAdminApolloSchemaFromIntrospection task
+        introspection {
+            headers.put("X-Shopify-Access-Token", properties["shopify_admin_api_access_token"].toString())
+            endpointUrl.set("https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json")
+            // The path is interpreted relative to the current project
+            schemaFile.set(file("src/main/graphql/com/admin/schema.graphqls"))
+        }
+        //Make IDEA aware of codegen and will run it during your Gradle Sync, default: false
+        generateSourcesDuringGradleSync.set(true)
     }
 }
 
