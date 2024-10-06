@@ -74,7 +74,7 @@ apollo {
             schemaFile.set(file("src/main/graphql/com/admin/schema.graphqls"))
         }
         //Make IDEA aware of codegen and will run it during your Gradle Sync, default: false
-        generateSourcesDuringGradleSync.set(true)
+        generateSourcesDuringGradleSync.set(false)
     }
 }
 

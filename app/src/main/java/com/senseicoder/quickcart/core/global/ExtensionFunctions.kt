@@ -7,13 +7,17 @@ package com.senseicoder.quickcart.core.global
 
 import android.content.BroadcastReceiver
 import android.os.Build
+import android.util.Patterns
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.models.CustomerDTO
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -39,10 +43,39 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
     }
 }
 
+/**
+ * Transforms static java function Snackbar.make() to an extension function on Fragment.
+ */
+fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
+    Snackbar.make(requireView(), snackbarText, timeLength).run {
+        view.setBackgroundColor(this.context.getColor(R.color.secondary))
+        show()
+    }
+}
+
+fun Fragment.showErrorSnackbar(snackbarText: String, timeLength: Int = 4000) {
+    Snackbar.make(requireView(), snackbarText, timeLength).run {
+        view.setBackgroundColor(ContextCompat.getColor(this.context, R.color.red))
+        show()
+    }
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toDateTime(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
     return  formatter.format(this)
+}
+
+fun String?.isValidEmail(): Boolean{
+    return !this.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(this.trim()).matches()
+}
+
+fun String?.isValidPassword(): Boolean{
+    return !this.isNullOrBlank() && PasswordRegex.matches(this.trim())
+}
+
+fun String?.matchesPassword(password: String): Boolean{
+    return !this.isNullOrBlank() && this.trim() == password
 }
 
 

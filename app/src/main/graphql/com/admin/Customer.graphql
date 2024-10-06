@@ -1,0 +1,90 @@
+mutation CreateCustomer($input:CustomerInput!) {
+    customerCreate(input: $input) {
+        customer {
+            id
+            email
+            displayName
+            phone
+            addressesV2(first: 4) {
+                edges {
+                    cursor
+                    node {
+                        address1
+                        address2
+                        city
+                        company
+                        coordinatesValidated
+                        country
+                        countryCodeV2
+                        firstName
+                        id
+                    }
+                }
+            }
+        }
+    }
+}
+
+query GetCustomer($id: ID!) {
+    customer(id: $id) {
+        canDelete
+        createdAt
+        dataSaleOptOut
+        displayName
+        email
+        firstName
+        id
+        lastName
+        legacyResourceId
+        lifetimeDuration
+        locale
+        multipassIdentifier
+        note
+        numberOfOrders
+        phone
+        productSubscriberStatus
+        state
+        tags
+        taxExempt
+        taxExemptions
+        unsubscribeUrl
+        updatedAt
+        validEmailAddress
+        verifiedEmail
+    }
+}
+
+mutation UpdateCustomer(
+    $input:CustomerInput!
+) {
+    customerUpdate(
+        input: $input
+    ) {
+        customer {
+            canDelete
+            createdAt
+            dataSaleOptOut
+            displayName
+            email
+            firstName
+            id
+            lastName
+            legacyResourceId
+            lifetimeDuration
+            locale
+            multipassIdentifier
+            note
+            numberOfOrders
+            phone
+            productSubscriberStatus
+            state
+            tags
+            taxExempt
+            taxExemptions
+            unsubscribeUrl
+            updatedAt
+            validEmailAddress
+            verifiedEmail
+        }
+    }
+}
