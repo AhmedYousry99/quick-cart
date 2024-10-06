@@ -2,6 +2,7 @@ package com.senseicoder.quickcart.features.main.ui.category.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.DisplayProduct
 import com.senseicoder.quickcart.core.repo.product.ProductsRepo
 import com.senseicoder.quickcart.core.repo.product.ProductsRepoInterface
@@ -28,12 +29,12 @@ class CategoryViewModel(private val repoInterface: ProductsRepoInterface = Produ
         viewModelScope.launch {
             try {
                 repoInterface.getAllProduct().catch { e ->
-                    products.value = ApiState.Failure(e)
+                    products.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
                 }.collect { data ->
                     products.value = ApiState.Success(data)
                 }
             } catch (e: Exception) {
-                products.value = ApiState.Failure(e)
+                products.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }
         }
     }

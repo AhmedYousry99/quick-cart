@@ -18,6 +18,7 @@ import com.senseicoder.quickcart.core.wrappers.MyDialog
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
+import com.senseicoder.quickcart.features.main.MainActivity
 import com.senseicoder.quickcart.features.main.ui.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
@@ -49,7 +50,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (requireActivity() as MainActivity).showBottomNavBar()
         brandAdapter = HomeBrandAdapter(requireContext(), this)
 
         // Set up RecyclerView

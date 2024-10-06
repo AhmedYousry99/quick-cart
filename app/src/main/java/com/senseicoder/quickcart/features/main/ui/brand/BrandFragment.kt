@@ -56,7 +56,7 @@ class BrandFragment : Fragment(), OnItemProductClicked {
 
         binding.filterValue.visibility = View.GONE
 
-        binding.swipeRefresher.setColorSchemeResources(R.color.primary_color)
+        binding.swipeRefresher.setColorSchemeResources(R.color.primary_faint)
 
         seekBarConfigration()
 
@@ -79,10 +79,10 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 categoryClicked = false
                 brandViewModel.filter = true
                 brandViewModel.dataFiltered = brandViewModel.allData
-                binding.priceFilter.setBackgroundResource(R.color.primary_color)
+                binding.priceFilter.setBackgroundResource(R.color.primary_faint)
                 binding.categoryFilter.setBackgroundResource(R.color.white)
                 binding.priceFilter.setTextColor(resources.getColor(R.color.white))
-                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_color))
+                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_faint))
                 binding.filterValue.visibility = View.VISIBLE
                 binding.seekBar.visibility = View.VISIBLE
                 binding.categoryGroup.visibility = View.GONE
@@ -101,8 +101,8 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 brandViewModel.filter = false
                 binding.priceFilter.setBackgroundResource(R.color.white)
                 binding.categoryFilter.setBackgroundResource(R.color.white)
-                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_color))
-                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_color))
+                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_faint))
+                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_faint))
                 binding.seekBar.visibility = View.GONE
                 binding.priceDisplay.visibility = View.GONE
                 brandViewModel.displayAllProducts()
@@ -141,8 +141,8 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 brandViewModel.filter = true
                 brandViewModel.dataFiltered = brandViewModel.allData
                 binding.priceFilter.setBackgroundResource(R.color.white)
-                binding.categoryFilter.setBackgroundResource(R.color.primary_color)
-                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_color))
+                binding.categoryFilter.setBackgroundResource(R.color.primary_faint)
+                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_faint))
                 binding.categoryFilter.setTextColor(resources.getColor(R.color.white))
                 binding.shoes.isChecked = true
                 brandViewModel.filterByCategory(binding.shoes.text.toString())
@@ -158,8 +158,8 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 brandViewModel.dataFiltered = brandViewModel.allData
                 binding.priceFilter.setBackgroundResource(R.color.white)
                 binding.categoryFilter.setBackgroundResource(R.color.white)
-                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_color))
-                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_color))
+                binding.priceFilter.setTextColor(resources.getColor(R.color.primary_faint))
+                binding.categoryFilter.setTextColor(resources.getColor(R.color.primary_faint))
                 binding.categoryGroup.visibility = View.GONE
                 brandViewModel.displayAllProducts()
             }
@@ -240,10 +240,10 @@ class BrandFragment : Fragment(), OnItemProductClicked {
         binding.seekBar.visibility = View.GONE
 
         binding.seekBar.progressDrawable
-            .setColorFilter(resources.getColor(R.color.primary_color), PorterDuff.Mode.SRC_ATOP)
+            .setColorFilter(resources.getColor(R.color.primary_faint), PorterDuff.Mode.SRC_ATOP)
 
         binding.seekBar.thumb.setColorFilter(
-            resources.getColor(R.color.primary_color),
+            resources.getColor(R.color.primary_faint),
             PorterDuff.Mode.SRC_ATOP
         )
 

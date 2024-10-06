@@ -20,6 +20,7 @@
     <string name="women">Women</string>
     <string name="sale">Sale</string>
     <string name="ordershistory">Orders History</string>
+    <string name="title_profile">Profile</string>
 
     <string name="password_login">Password</string>
     <string name="login_button">Login</string>

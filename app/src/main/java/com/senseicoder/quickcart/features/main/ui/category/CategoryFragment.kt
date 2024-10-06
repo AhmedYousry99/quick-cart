@@ -47,7 +47,7 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.swipeRefresher.setColorSchemeResources(R.color.primary_color)
+        binding.swipeRefresher.setColorSchemeResources(R.color.primary_faint)
 
         if (networkConnectivity.isOnline()) {
             binding.connectivity.visibility = View.VISIBLE
@@ -61,29 +61,29 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             refresh()
         }
 
-        binding.shoesCategory.setBackgroundResource(R.color.primary_color)
+        binding.shoesCategory.setBackgroundResource(R.color.primary_faint)
         binding.accessoriesCategory.setBackgroundResource(R.color.white)
         binding.shirtCategory.setBackgroundResource(R.color.white)
         binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.white))
-        binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
-        binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+        binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
+        binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
 
-        binding.kid.setBackgroundResource(R.color.primary_color)
+        binding.kid.setBackgroundResource(R.color.primary_faint)
         binding.men.setBackgroundResource(R.color.white)
         binding.women.setBackgroundResource(R.color.white)
         binding.sale.setBackgroundResource(R.color.white)
         binding.kid.setTextColor(resources.getColor(R.color.white))
-        binding.men.setTextColor(resources.getColor(R.color.primary_color))
-        binding.women.setTextColor(resources.getColor(R.color.primary_color))
-        binding.sale.setTextColor(resources.getColor(R.color.primary_color))
+        binding.men.setTextColor(resources.getColor(R.color.primary_faint))
+        binding.women.setTextColor(resources.getColor(R.color.primary_faint))
+        binding.sale.setTextColor(resources.getColor(R.color.primary_faint))
 
         binding.shoesCategory.setOnClickListener {
-            binding.shoesCategory.setBackgroundResource(R.color.primary_color)
+            binding.shoesCategory.setBackgroundResource(R.color.primary_faint)
             binding.accessoriesCategory.setBackgroundResource(R.color.white)
             binding.shirtCategory.setBackgroundResource(R.color.white)
             binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.white))
-            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
-            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
             categoryViewModel.filterMainCategory = true
             categoryViewModel.filterByMainCategory("SHOES")
             categoryViewModel.filterBySubCategory(subCategory)
@@ -91,11 +91,11 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
 
         binding.accessoriesCategory.setOnClickListener {
             binding.shoesCategory.setBackgroundResource(R.color.white)
-            binding.accessoriesCategory.setBackgroundResource(R.color.primary_color)
+            binding.accessoriesCategory.setBackgroundResource(R.color.primary_faint)
             binding.shirtCategory.setBackgroundResource(R.color.white)
-            binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+            binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
             binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.white))
-            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
             categoryViewModel.filterMainCategory = true
             categoryViewModel.filterByMainCategory("ACCESSORIES")
             categoryViewModel.filterBySubCategory(subCategory)
@@ -104,9 +104,9 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
         binding.shirtCategory.setOnClickListener {
             binding.shoesCategory.setBackgroundResource(R.color.white)
             binding.accessoriesCategory.setBackgroundResource(R.color.white)
-            binding.shirtCategory.setBackgroundResource(R.color.primary_color)
-            binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
-            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+            binding.shirtCategory.setBackgroundResource(R.color.primary_faint)
+            binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
             binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.white))
             categoryViewModel.filterMainCategory = true
             categoryViewModel.filterByMainCategory("T-SHIRTS")
@@ -114,14 +114,14 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
         }
 
         binding.kid.setOnClickListener {
-            binding.kid.setBackgroundResource(R.color.primary_color)
+            binding.kid.setBackgroundResource(R.color.primary_faint)
             binding.men.setBackgroundResource(R.color.white)
             binding.women.setBackgroundResource(R.color.white)
             binding.sale.setBackgroundResource(R.color.white)
             binding.kid.setTextColor(resources.getColor(R.color.white))
-            binding.men.setTextColor(resources.getColor(R.color.primary_color))
-            binding.women.setTextColor(resources.getColor(R.color.primary_color))
-            binding.sale.setTextColor(resources.getColor(R.color.primary_color))
+            binding.men.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.women.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.sale.setTextColor(resources.getColor(R.color.primary_faint))
             categoryViewModel.filterSubCategory = true
             subCategory = "kid"
             categoryViewModel.filterBySubCategory("kid")
@@ -130,13 +130,13 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
 
         binding.men.setOnClickListener {
             binding.kid.setBackgroundResource(R.color.white)
-            binding.men.setBackgroundResource(R.color.primary_color)
+            binding.men.setBackgroundResource(R.color.primary_faint)
             binding.women.setBackgroundResource(R.color.white)
             binding.sale.setBackgroundResource(R.color.white)
-            binding.kid.setTextColor(resources.getColor(R.color.primary_color))
+            binding.kid.setTextColor(resources.getColor(R.color.primary_faint))
             binding.men.setTextColor(resources.getColor(R.color.white))
-            binding.women.setTextColor(resources.getColor(R.color.primary_color))
-            binding.sale.setTextColor(resources.getColor(R.color.primary_color))
+            binding.women.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.sale.setTextColor(resources.getColor(R.color.primary_faint))
             categoryViewModel.filterSubCategory = true
             subCategory = "men"
             categoryViewModel.filterBySubCategory("men")
@@ -145,12 +145,12 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
         binding.women.setOnClickListener {
             binding.kid.setBackgroundResource(R.color.white)
             binding.men.setBackgroundResource(R.color.white)
-            binding.women.setBackgroundResource(R.color.primary_color)
+            binding.women.setBackgroundResource(R.color.primary_faint)
             binding.sale.setBackgroundResource(R.color.white)
-            binding.kid.setTextColor(resources.getColor(R.color.primary_color))
-            binding.men.setTextColor(resources.getColor(R.color.primary_color))
+            binding.kid.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.men.setTextColor(resources.getColor(R.color.primary_faint))
             binding.women.setTextColor(resources.getColor(R.color.white))
-            binding.sale.setTextColor(resources.getColor(R.color.primary_color))
+            binding.sale.setTextColor(resources.getColor(R.color.primary_faint))
             categoryViewModel.filterSubCategory = true
             subCategory = "women"
             categoryViewModel.filterBySubCategory("women")
@@ -160,10 +160,10 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             binding.kid.setBackgroundResource(R.color.white)
             binding.men.setBackgroundResource(R.color.white)
             binding.women.setBackgroundResource(R.color.white)
-            binding.sale.setBackgroundResource(R.color.primary_color)
-            binding.kid.setTextColor(resources.getColor(R.color.primary_color))
-            binding.men.setTextColor(resources.getColor(R.color.primary_color))
-            binding.women.setTextColor(resources.getColor(R.color.primary_color))
+            binding.sale.setBackgroundResource(R.color.primary_faint)
+            binding.kid.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.men.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.women.setTextColor(resources.getColor(R.color.primary_faint))
             binding.sale.setTextColor(resources.getColor(R.color.white))
             categoryViewModel.filterSubCategory = true
             subCategory = "sale"
@@ -241,21 +241,21 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             binding.connectivity.visibility = View.VISIBLE
             binding.noConnectivity.visibility = View.GONE
 
-            binding.shoesCategory.setBackgroundResource(R.color.primary_color)
+            binding.shoesCategory.setBackgroundResource(R.color.primary_faint)
             binding.accessoriesCategory.setBackgroundResource(R.color.white)
             binding.shirtCategory.setBackgroundResource(R.color.white)
             binding.shoesMainCategoryText.setTextColor(resources.getColor(R.color.white))
-            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
-            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_color))
+            binding.accessoriesMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.shirtMainCategoryText.setTextColor(resources.getColor(R.color.primary_faint))
 
-            binding.kid.setBackgroundResource(R.color.primary_color)
+            binding.kid.setBackgroundResource(R.color.primary_faint)
             binding.men.setBackgroundResource(R.color.white)
             binding.women.setBackgroundResource(R.color.white)
             binding.sale.setBackgroundResource(R.color.white)
             binding.kid.setTextColor(resources.getColor(R.color.white))
-            binding.men.setTextColor(resources.getColor(R.color.primary_color))
-            binding.women.setTextColor(resources.getColor(R.color.primary_color))
-            binding.sale.setTextColor(resources.getColor(R.color.primary_color))
+            binding.men.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.women.setTextColor(resources.getColor(R.color.primary_faint))
+            binding.sale.setTextColor(resources.getColor(R.color.primary_faint))
 
             categoryViewModel.filterMainCategory = false
             categoryViewModel.getProducts()

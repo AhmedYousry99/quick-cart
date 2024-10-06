@@ -2,6 +2,7 @@ package com.senseicoder.quickcart.features.main.ui.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.DisplayBrand
 import com.senseicoder.quickcart.core.repo.product.ProductsRepo
 import com.senseicoder.quickcart.core.repo.product.ProductsRepoInterface
@@ -29,12 +30,12 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 repoInterface.getAllBrand().catch { e ->
-                    brands.value = ApiState.Failure(e)
+                    brands.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
                 }.collect { data ->
                     brands.value = ApiState.Success(data)
                 }
             } catch (e: Exception) {
-                brands.value = ApiState.Failure(e)
+                brands.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }
 
         }
