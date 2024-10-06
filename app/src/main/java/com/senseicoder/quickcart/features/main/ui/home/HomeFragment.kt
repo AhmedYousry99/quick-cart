@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.NavUtils
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -24,6 +26,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.button.setOnClickListener{
+            NavUtils.getNavController(requireActivity()).navigate(R.id.loginFragment)
+        }
     }
 }

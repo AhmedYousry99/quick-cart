@@ -5,16 +5,20 @@
     //primary
     <color name="primary">#feba00</color>
     //primary dark
-    <color name="yellow_200">#ffdd7f</color>
+    <color name="primary_faint">#ffdd7f</color>
     //primary variant
     <color name="primary_variant">#cb9500</color>
     //color secondary
-    <color name="green_200">#cee993</color>
+    <color name="secondary_faint">#cee993</color>
     //color on secondary
     <color name="secondary">#a3d139</color>
     <color name="secondary_variant">#a3d139</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="translucent">#66000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="red">#F44336</color>
+    <color name="light_red">#66F44336</color>
 
 
 

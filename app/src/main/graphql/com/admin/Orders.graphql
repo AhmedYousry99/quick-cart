@@ -1,0 +1,32 @@
+query GetOrderDetails($id: ID!) {
+    order(id: $id) {
+        clientIp
+        closed
+        closedAt
+        confirmationNumber
+        confirmed
+        createdAt
+        currencyCode
+        currentSubtotalLineItemsQuantity
+        currentTotalWeight
+        customerAcceptsMarketing
+        customerLocale
+        discountCode
+        discountCodes
+        displayFinancialStatus
+        displayFulfillmentStatus
+        dutiesIncluded
+        edited
+        email
+        estimatedTaxes
+        fulfillable
+        fullyPaid
+        hasTimelineComment
+        id
+        customerJourneySummary {
+            lastVisit {
+                landingPageHtml
+            }
+        }
+    }
+}

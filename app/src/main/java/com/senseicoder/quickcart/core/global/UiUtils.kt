@@ -2,7 +2,10 @@ package com.senseicoder.quickcart.core.global
 
 import android.app.Activity
 import android.view.View
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -20,6 +23,11 @@ object KeyboardUtils{
             view = View(activity)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun showKeyboard(activity: Activity, view: View) {
+        view.requestFocus()
+        WindowCompat.getInsetsController(activity.window, view).show(WindowInsetsCompat.Type.ime())
     }
 
 }
