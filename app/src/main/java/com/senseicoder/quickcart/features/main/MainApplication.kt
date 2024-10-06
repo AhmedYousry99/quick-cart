@@ -12,6 +12,6 @@ class MainApplication: Application() {
         SharedPrefsService.init(applicationContext)
     }
     companion object{
-        private const val TAG = "t"
+        private const val TAG = "MainApplication"
     }
 }

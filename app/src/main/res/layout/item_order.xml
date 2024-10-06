@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:elevation="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_product_order"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="10dp"
+            tools:src="@drawable/bag"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:scaleType="fitXY"/>
+
+        <TextView
+            android:id="@+id/tv_product_name_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="Order Number"
+            android:fontFamily="@font/alexandria_medium"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/image_product_order"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_product_price_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="$$$"
+            android:fontFamily="@font/alexandria_medium"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            app:layout_constraintEnd_toEndOf="@+id/tv_product_name_order"
+            app:layout_constraintStart_toStartOf="@+id/tv_product_name_order"
+            app:layout_constraintTop_toBottomOf="@+id/tv_product_name_order" />
+
+        <TextView
+            android:id="@+id/tv_product_date_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1/10/2024"
+            android:fontFamily="@font/alexandria_medium"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tv_product_name_order"
+            app:layout_constraintStart_toStartOf="@+id/tv_product_name_order"
+            app:layout_constraintTop_toBottomOf="@+id/tv_product_price_order" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
