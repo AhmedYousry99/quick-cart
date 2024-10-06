@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface ProductsApiInterface {@GET("smart_collections.json")
 //password
-suspend fun getAllBrand(@Header("X-Shopify-Access-Token") passwordToken: String =BuildConfig.shopify_admin_api_access_token): BrandResponse
+suspend fun getAllBrand(@Header("X-Shopify-Access-Token") passwordToken: String = BuildConfig.shopify_admin_api_access_token): BrandResponse
 
     @GET("products.json")
     suspend fun getAllProducts(@Header("X-Shopify-Access-Token") passwordToken: String =BuildConfig.shopify_admin_api_access_token): ProductResponse

@@ -22,7 +22,10 @@
     <color name="light_red">#66F44336</color>
     <color name="background">#79F5F6F8</color>
     <color name="background2">#F5F6F8</color>
-
+    <color name="translucent">#66000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="red">#F44336</color>
+    <color name="light_red">#66F44336</color>
 
 
 

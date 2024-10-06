@@ -1,11 +1,10 @@
 package com.senseicoder.quickcart.core.entity.product
 
-import androidx.room.PrimaryKey
 import com.senseicoder.quickcart.core.entity.brand.Image
 import com.senseicoder.quickcart.core.model.DisplayProduct
 
 data class Product(
-    @PrimaryKey
+    //@PrimaryKey
     val id: Long,
     val title: String,
     val body_html: String,

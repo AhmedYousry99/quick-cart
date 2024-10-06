@@ -50,7 +50,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as MainActivity).showBottomNavBar()
         brandAdapter = HomeBrandAdapter(requireContext(), this)
 
         // Set up RecyclerView
@@ -124,6 +123,10 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).showBottomNavBar()
+    }
 
 
 
