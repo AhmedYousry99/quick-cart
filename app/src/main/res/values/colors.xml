@@ -16,6 +16,9 @@
     <color name="secondary_variant">#a3d139</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background">#79F5F6F8</color>
+    <color name="background2">#F5F6F8</color>
+
 
 
 
