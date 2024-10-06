@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.senseicoder.quickcart" />
+                  <option name="mobileSdkAppId" value="1:681899465374:android:9133c4fcd421d0ffeb398f" />
+                  <option name="projectId" value="quick-cart-bcc2f" />
+                  <option name="projectNumber" value="681899465374" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

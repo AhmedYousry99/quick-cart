@@ -4,8 +4,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id ("kotlin-kapt")
-    id ("androidx.navigation.safeargs")
+    id("com.apollographql.apollo") version "4.0.1"
+    alias(libs.plugins.google.gms.google.services)
 }
+
+val properties= Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.senseicoder.quickcart"
@@ -20,11 +24,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val properties= Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField ("String","shopify_admin_api_access_token","\"${properties.getProperty("shopify_admin_api_access_token")}\"")
         buildConfigField ("String","shopify_api_key","\"${properties.getProperty("shopify_api_key")}\"")
         buildConfigField ("String","shopify_secret_key","\"${properties.getProperty("shopify_secret_key")}\"")
+        buildConfigField ("String","shopify_store_front_api_access_token","\"${properties.getProperty("shopify_store_front_api_access_token")}\"")
     }
 
     buildTypes {
@@ -49,6 +52,32 @@ android {
     }
 }
 
+apollo {
+    service("Admin") {
+        // Adds the given directory as a GraphQL source root
+        srcDir("src/main/graphql")
+        // The package name for the generated models
+        packageName.set("com.admin")
+        // Warn if using a deprecated field
+        warnOnDeprecatedUsages.set(true)
+        // Whether to generate Kotlin or Java models
+        generateKotlinModels.set(true)
+        // wire the generated models to the "test" source set
+//        outputDirConnection {
+//            connectToKotlinSourceSet("test")
+//        }
+        // This creates a downloadAdminApolloSchemaFromIntrospection task
+        introspection {
+            headers.put("X-Shopify-Access-Token", properties["shopify_admin_api_access_token"].toString())
+            endpointUrl.set("https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json")
+            // The path is interpreted relative to the current project
+            schemaFile.set(file("src/main/graphql/com/admin/schema.graphqls"))
+        }
+        //Make IDEA aware of codegen and will run it during your Gradle Sync, default: false
+        generateSourcesDuringGradleSync.set(true)
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -62,6 +91,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -127,44 +157,4 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-library:2.2")
     androidTestImplementation("org.hamcrest:hamcrest:2.2")
     androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
-
-
-    ///////////////////////////////////////////////////////////
-    implementation ("io.github.zagori:bottomnavbar:1.0.3")
-    implementation ("com.github.bumptech.glide:glide:4.15.0")
-
-
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
-    implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.6.0")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation ("com.airbnb.android:lottie:5.2.0")
-
-    implementation ("com.google.firebase:firebase-firestore:24.1.1")
-    implementation ("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation ("com.google.android.material:material:1.8.0")
-
-    implementation ("androidx.viewpager2:viewpager2:1.0.0")
-
-    implementation("com.tbuonomo:dotsindicator:4.2")
-
-    //retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.google.code.gson:gson:2.10.1")
-
-    // Json Parser
-    implementation ("com.google.code.gson:gson:2.10.1")
-    //json converter
-    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
-
-    //Room
-    implementation ("androidx.room:room-ktx:2.5.0")
-    implementation ("androidx.room:room-runtime:2.5.0")
-    kapt ("androidx.room:room-compiler:2.5.0")
-
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
-
 }
