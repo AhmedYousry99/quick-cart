@@ -29,7 +29,17 @@
         android:id="@+id/profileFragment"
         android:name="com.senseicoder.quickcart.features.main.ui.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_howToUseFragment"
+            app:destination="@id/howToUseFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
+    </fragment>
     <fragment
         android:id="@+id/brandFragment"
         android:name="com.senseicoder.quickcart.features.main.ui.brand.BrandFragment"
@@ -62,4 +72,29 @@
         android:name="com.senseicoder.quickcart.features.signup.SignupFragment"
         android:label="@string/fragment_signup"
         tools:layout="@layout/fragment_signup" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_currencyFragment"
+            app:destination="@id/currencyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/howToUseFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.how_to_use.HowToUseFragment"
+        android:label="fragment_how_to_use"
+        tools:layout="@layout/fragment_how_to_use" />
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.address.AddressFragment"
+        android:label="AddressFragment" />
+    <fragment
+        android:id="@+id/currencyFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.currency.CurrencyFragment"
+        android:label="fragment_currency"
+        tools:layout="@layout/fragment_currency" />
 </navigation>
