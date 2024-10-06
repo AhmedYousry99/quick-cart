@@ -32,5 +32,3 @@ query ProductsQuery($query: String!, $context: ContextualPricingContext!) {
         }
     }
 }
-
-
