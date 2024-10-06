@@ -129,7 +129,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private fun setupCouponViewPager() {
         // Sample coupon image list (replace with real data)
         val couponImages = listOf(
-            R.drawable.img,  // Replace with your actual drawable resources
+            R.drawable.img,
             R.drawable.img,
             R.drawable.img
         )
