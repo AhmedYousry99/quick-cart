@@ -3,7 +3,6 @@ package com.senseicoder.quickcart.core.dialogs
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.view.WindowManager
 import androidx.appcompat.app.ActionBar.LayoutParams
 import androidx.appcompat.app.AlertDialog
 import com.senseicoder.quickcart.R
