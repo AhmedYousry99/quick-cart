@@ -37,8 +37,6 @@ class BrandAdapter(
 
         holder.binding.nameProduct.title(getItem(position).title)
 
-        //holder.binding.priceProduct.setPrice(getItem(position).price.toDouble())
-
         holder.binding.priceProduct.setPrice(holder.itemView.context, getItem(position).price.toDouble())
 
         holder.binding.cardProduct.setOnClickListener {
@@ -80,14 +78,14 @@ fun ImageView.setImageFromUrl(url : String){
 fun TextView.setPrice(context: Context, price: Double) {
     val cManager = CurrencyManager(CurrencySharedPref.sharedPreferences)
     val pair = cManager.getCurrencyPair()  // Fetch the currency code and rate
-    val code = pair.first  // Currency code (e.g., USD)
+    val code = pair.first  // Currency code (e.g., EGP)
     val rate = pair.second  // Exchange rate
 
     // Convert the product price based on the current rate
     val newPrice = price * rate
     text = buildString {
         append(String.format("%.2f", newPrice))  // Format price to two decimal places
-        append(" $code")  // Append the currency code (e.g., "USD")
+        append(" $code")  // Append the currency code (as "EGP")
     }
 }
 
