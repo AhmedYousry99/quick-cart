@@ -1,13 +1,11 @@
 package com.senseicoder.quickcart.features.main.ui.category.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.model.DisplayProduct
 import com.senseicoder.quickcart.core.repo.product.ProductsRepo
 import com.senseicoder.quickcart.core.repo.product.ProductsRepoInterface
-import com.senseicoder.quickcart.core.wrappers.RemoteStatus
+import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -15,7 +13,7 @@ import kotlinx.coroutines.launch
 class CategoryViewModel(private val repoInterface: ProductsRepoInterface = ProductsRepo()) :
     ViewModel() {
 
-    var products = MutableStateFlow<RemoteStatus<List<DisplayProduct>>>(RemoteStatus.Loading)
+    var products = MutableStateFlow<ApiState<List<DisplayProduct>>>(ApiState.Loading)
     private lateinit var productMainCategory: List<DisplayProduct>
     private var productSubCategory: MutableList<DisplayProduct> = mutableListOf()
     var allData: List<DisplayProduct> = listOf()
@@ -30,12 +28,12 @@ class CategoryViewModel(private val repoInterface: ProductsRepoInterface = Produ
         viewModelScope.launch {
             try {
                 repoInterface.getAllProduct().catch { e ->
-                    products.value = RemoteStatus.Failure(e)
+                    products.value = ApiState.Failure(e)
                 }.collect { data ->
-                    products.value = RemoteStatus.Success(data)
+                    products.value = ApiState.Success(data)
                 }
             } catch (e: Exception) {
-                products.value = RemoteStatus.Failure(e)
+                products.value = ApiState.Failure(e)
             }
         }
     }
@@ -45,10 +43,10 @@ class CategoryViewModel(private val repoInterface: ProductsRepoInterface = Produ
             productMainCategory = allData.filter {
                 it.product_type == mainCategory
             }
-            products.value = RemoteStatus.Success(productMainCategory)
+            products.value = ApiState.Success(productMainCategory)
 
         } else {
-            products.value = RemoteStatus.Success(allData)
+            products.value = ApiState.Success(allData)
         }
     }
 
@@ -65,12 +63,12 @@ class CategoryViewModel(private val repoInterface: ProductsRepoInterface = Produ
                         }
                     }
                 }
-                products.value = RemoteStatus.Success(productSubCategory)
+                products.value = ApiState.Success(productSubCategory)
             } else {
-                products.value = RemoteStatus.Success(productMainCategory)
+                products.value = ApiState.Success(productMainCategory)
             }
         } else {
-            products.value = RemoteStatus.Success(allData)
+            products.value = ApiState.Success(allData)
         }
     }
 }

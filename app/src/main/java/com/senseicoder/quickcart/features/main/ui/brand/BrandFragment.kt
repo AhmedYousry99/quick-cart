@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
-import com.senseicoder.quickcart.core.wrappers.RemoteStatus
+import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentBrandBinding
 import com.senseicoder.quickcart.features.main.ui.brand.viewmodel.BrandViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -183,7 +183,7 @@ class BrandFragment : Fragment(), OnItemProductClicked {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 brandViewModel.products.collectLatest {
                     when (it) {
-                        is RemoteStatus.Loading -> {
+                        is ApiState.Loading -> {
 
                             if (networkConnectivity.isOnline()) {
                                 binding.noConnectivity.visibility = View.GONE
@@ -197,7 +197,7 @@ class BrandFragment : Fragment(), OnItemProductClicked {
 
                         }
 
-                        is RemoteStatus.Success -> {
+                        is ApiState.Success -> {
                             binding.recyclerView.visibility = View.VISIBLE
                             binding.shimmerFrameLayoutBrand.visibility = View.GONE
                             binding.shimmerFrameLayoutBrand.stopShimmer()

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.wrappers.MyDialog
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
-import com.senseicoder.quickcart.core.wrappers.RemoteStatus
+import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
 import com.senseicoder.quickcart.features.main.ui.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -80,7 +80,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 homeViewModel.brands.collectLatest {
                     when (it) {
-                        is RemoteStatus.Loading -> {
+                        is ApiState.Loading -> {
                             if (networkConnectivity.isOnline()) {
                                 binding.brandRecycle.visibility = View.GONE
                                 binding.shimmerFrameLayout.visibility = View.VISIBLE
@@ -94,7 +94,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                             }
                         }
 
-                        is RemoteStatus.Success -> {
+                        is ApiState.Success -> {
                             binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
                             binding.shimmerFrameLayout.stopShimmer()
@@ -157,7 +157,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         if (networkConnectivity.isOnline()) {
             binding.noConnectivity.visibility = View.GONE
             binding.connectivity.visibility = View.VISIBLE
-            homeViewModel.brands.value = RemoteStatus.Loading
+            homeViewModel.brands.value = ApiState.Loading
             homeViewModel.getBrand()
 
         } else {
