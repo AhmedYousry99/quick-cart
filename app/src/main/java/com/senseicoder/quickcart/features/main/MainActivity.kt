@@ -11,6 +11,8 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
+import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         setupWithNavController(binding.navView, navController)
+        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT)
+            navController.navigate(R.id.action_loginFragment_to_homeFragment)
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -14,6 +14,7 @@ object Constants {
 
     object API{
         const val ADMIN = "https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json"
+        const val STORE_FRONT = "https://android-alex-team5.myshopify.com/api/2024-10/graphql.json"
         const val CUSTOMER_ID_PREFIX = "gid://shopify/Customer/"
         const val ORDER_ID_PREFIX = "gid://shopify/Order/"
     }

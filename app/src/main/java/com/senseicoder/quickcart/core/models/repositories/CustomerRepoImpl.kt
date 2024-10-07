@@ -6,23 +6,26 @@ import com.senseicoder.quickcart.core.models.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.zip
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(FlowPreview::class)
 class CustomerRepoImpl private constructor(
     private val firebaseHandler: FirebaseHandler,
     private val adminHandler: AdminHandler,
     private val sharedPrefsService: SharedPrefs
 ) : CustomerRepo{
 
-
     override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
-        return firebaseHandler.loginUsingNormalEmail(email, password)
+        return firebaseHandler.loginUsingNormalEmail(email, password).timeout(15.seconds)
     }
 
     override suspend fun loginUsingGuest(): Flow<CustomerDTO> {
-        return firebaseHandler.loginUsingGuest()
+        return firebaseHandler.loginUsingGuest().timeout(15.seconds)
     }
 
     /* override fun getCustomerUsingEmail(email: String): Flow<ApiState<CustomerDTO>> = flow {
@@ -68,7 +71,7 @@ class CustomerRepoImpl private constructor(
         }.collect {
             emit(it)
         }
-    }
+    }.timeout(15.seconds)
 
     companion object {
         private const val TAG = "CustomerRepoImpl"

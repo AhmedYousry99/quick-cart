@@ -145,7 +145,7 @@ class SignupFragment : Fragment() {
                 validateFields()
             }
             signupText.setOnClickListener{
-                findNavController().popBackStack()
+                findNavController().navigateUp()
             }
             confirmPasswordSignupEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {

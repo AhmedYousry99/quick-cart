@@ -23,6 +23,7 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
             customerRepo.loginUsingNormalEmail(email = email, password = password).catch { e ->
                 _loginState.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect {
+                customerRepo.setUserId(it.id)
                 _loginState.value = ApiState.Success(it)
             }
         }
