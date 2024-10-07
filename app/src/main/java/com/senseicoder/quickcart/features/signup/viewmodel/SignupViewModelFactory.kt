@@ -2,7 +2,7 @@ package com.senseicoder.quickcart.features.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.senseicoder.quickcart.core.models.repositories.CustomerRepo
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 
 @Suppress("UNCHECKED_CAST")
 class SignupViewModelFactory(private val customerRepo: CustomerRepo): ViewModelProvider.Factory {

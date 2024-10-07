@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.models
+package com.senseicoder.quickcart.core.model
 
 data class CustomerDTO(
     val displayName: String,

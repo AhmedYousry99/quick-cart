@@ -1,21 +1,16 @@
-package com.senseicoder.quickcart.core.models.repositories
+package com.senseicoder.quickcart.core.repos.customer
 
 import android.util.Log
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.models.CustomerDTO
+import com.senseicoder.quickcart.core.model.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 //import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.timeout
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
 
@@ -24,7 +19,7 @@ class CustomerRepoImpl private constructor(
     private val firebaseHandler: FirebaseHandler,
     private val storefrontHandler: StorefrontHandler,
     private val sharedPrefsService: SharedPrefs
-) : CustomerRepo{
+) : CustomerRepo {
 
     override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
         return firebaseHandler.loginUsingNormalEmail(email, password).zip(storefrontHandler.loginUser(
@@ -104,7 +99,7 @@ class CustomerRepoImpl private constructor(
                         storefrontHandler,
                         sharedPrefs
                     )
-                this.instance = instance
+                Companion.instance = instance
                 instance
             }
         }
@@ -124,6 +119,14 @@ class CustomerRepoImpl private constructor(
 
     override fun getUserToken(): String {
         return sharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT)
+    }
+
+    override fun setEmail(email: String) {
+        return sharedPrefsService.setSharedPrefString(Constants.USER_EMAIL, email)
+    }
+
+    override fun setDisplayName(displayName: String) {
+        return sharedPrefsService.setSharedPrefString(Constants.USER_DISPLAY_NAME, displayName)
     }
 
 }

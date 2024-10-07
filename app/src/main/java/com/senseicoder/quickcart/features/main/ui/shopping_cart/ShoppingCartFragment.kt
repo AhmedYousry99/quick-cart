@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.senseicoder.quickcart.core.network.CartRepoImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.FragmentShoppingCartBinding
 import com.senseicoder.quickcart.features.main.MainActivity

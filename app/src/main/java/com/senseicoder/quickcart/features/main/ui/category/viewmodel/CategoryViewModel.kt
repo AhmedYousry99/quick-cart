@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.DisplayProduct
-import com.senseicoder.quickcart.core.repo.product.ProductsRepo
-import com.senseicoder.quickcart.core.repo.product.ProductsRepoInterface
+import com.senseicoder.quickcart.core.repos.product.ProductsRepo
+import com.senseicoder.quickcart.core.repos.product.ProductsRepoInterface
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch

@@ -1,10 +1,10 @@
-package com.senseicoder.quickcart.core.remote.product
+package com.senseicoder.quickcart.core.network.product
 
 import com.senseicoder.quickcart.core.entity.brand.BrandResponse
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.entity.product.ProductResponse
 import com.senseicoder.quickcart.core.network.ApiService
-import com.senseicoder.quickcart.core.network.product.ProductsApiInterface
+import com.senseicoder.quickcart.core.network.interfaces.RemoteProductsDataSource
 
 class RemoteProductsDataSourceImp(private val productsAPIInterface: ProductsApiInterface = ApiService.brandsApiService) :
     RemoteProductsDataSource {

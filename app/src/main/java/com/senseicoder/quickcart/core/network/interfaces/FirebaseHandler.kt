@@ -1,6 +1,6 @@
 package com.senseicoder.quickcart.core.network.interfaces
 
-import com.senseicoder.quickcart.core.models.CustomerDTO
+import com.senseicoder.quickcart.core.model.CustomerDTO
 import kotlinx.coroutines.flow.Flow
 
 interface FirebaseHandler {

@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
@@ -24,7 +23,7 @@ import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.matchesPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
-import com.senseicoder.quickcart.core.models.repositories.CustomerRepoImpl
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 //import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
@@ -105,7 +104,6 @@ class SignupFragment : Fragment() {
     }*/
 
     private fun subscribeToObservables(){
-        val activity = requireActivity() as MainActivity
         lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.CREATED){
                 signupViewModel.signUpState.collect{
@@ -168,8 +166,8 @@ class SignupFragment : Fragment() {
 
     private fun validateFields(){
         hideValidationErrors()
-        clearFocueses()
         KeyboardUtils.hideKeyboard(requireActivity())
+        clearFocueses()
         binding.apply {
             val firstName: String = firstNameSignupEditText.text.toString()
             val lastName: String = lastNameSignupEditText.text.toString()

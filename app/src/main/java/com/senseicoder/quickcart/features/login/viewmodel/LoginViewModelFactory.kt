@@ -2,7 +2,7 @@ package com.senseicoder.quickcart.features.login.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.senseicoder.quickcart.core.models.repositories.CustomerRepo
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 
 class LoginViewModelFactory(private val customerRepo: CustomerRepo): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -4,9 +4,8 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.models.CustomerDTO
+import com.senseicoder.quickcart.core.model.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -26,11 +25,13 @@ object FirebaseHandlerImpl :FirebaseHandler{
         val displayName = if(firstNameEmpty && lastNameEmpty) email else{
             if(!firstNameEmpty) firstName else lastName
         }
-        emit(CustomerDTO(
+        emit(
+            CustomerDTO(
             task.user!!.displayName ?: displayName,
             email,
             password
-        ))
+        )
+        )
        /* val profileUpdates = userProfileChangeRequest {
             displayName = displayName
         }
@@ -41,11 +42,13 @@ object FirebaseHandlerImpl :FirebaseHandler{
         val task = firebaseAuthInstance.signInWithEmailAndPassword(email, password).await()
         Log.d(TAG, "loginUsingNormalEmail: success")
         task.user.let {
-            emit(CustomerDTO(
+            emit(
+                CustomerDTO(
                 it!!.displayName ?: Constants.Errors.UNKNOWN,
                 it.email!!,
                 password,
-            ))
+            )
+            )
         }
     }
 
@@ -61,12 +64,14 @@ object FirebaseHandlerImpl :FirebaseHandler{
 
     override suspend fun loginUsingGuest() = flow<CustomerDTO> {
         val task = firebaseAuthInstance.signInAnonymously().await()
-        emit(CustomerDTO(
+        emit(
+            CustomerDTO(
             "",
             "",
             "",
             isGuest = true
-        ))
+        )
+        )
     }
 
 
