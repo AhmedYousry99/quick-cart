@@ -11,4 +11,6 @@ interface CustomerRepo {
     suspend fun loginUsingGuest(): Flow<CustomerDTO>
     fun setUserId(value: String)
     fun getUserId(): String
+    fun setUserToken(token: String)
+    fun getUserToken(): String
 }

@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             )
         ).build()
         navController = findNavController(this, R.id.nav_host)
-        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT){
+        if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
             navController.navigate(R.id.action_loginFragment_to_homeFragment)
             navController.graph.setStartDestination(R.id.homeFragment)
         }

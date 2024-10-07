@@ -6,7 +6,9 @@ data class CustomerDTO(
     val password: String = INVALID_PASSWORD,
     val id: String = INVALID_ID,
     val isVerified: Boolean = false,
-    val isGuest: Boolean = false
+    val isGuest: Boolean = false,
+    val token: String = "",
+    val expireAt: Any? = null,
 ){
 
     companion object{

@@ -3,6 +3,7 @@ package com.senseicoder.quickcart.core.global
 object Constants {
     object Errors{
         const val UNKNOWN = "unknown error occurred"
+        const val CUSTOMER_CREATE_FAILED = "customer creation failed"
     }
 
     sealed class SharedPrefs{
@@ -19,6 +20,8 @@ object Constants {
         const val ORDER_ID_PREFIX = "gid://shopify/Order/"
     }
 
+    const val USER_TOKEN_DEFAULT: String = "unknown"
+    const val USER_TOKEN: String = "userToken"
     const val USER_ID = "userId"
     const val USER_ID_DEFAULT = "unknown"
 }

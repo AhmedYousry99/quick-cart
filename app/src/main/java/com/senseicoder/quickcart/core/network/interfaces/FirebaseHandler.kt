@@ -12,6 +12,10 @@ interface FirebaseHandler {
         password: String,
     ): Flow<CustomerDTO>
 
+    suspend fun updateDisplayName(
+        customerDTO: CustomerDTO
+    ): Flow<CustomerDTO>
+
 
 //    fun loginUsingGoogleEmail(idToken: String?)
 //

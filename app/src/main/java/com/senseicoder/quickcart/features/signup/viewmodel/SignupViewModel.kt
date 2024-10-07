@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.signup.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
@@ -32,6 +33,7 @@ class SignupViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 lastName = lastName,
                 password = password
             ).catch { e ->
+                Log.e(TAG, "signUpUsingEmailAndPassword: ", e)
                 _signUpState.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect {
                 customerRepo.setUserId(it.id)
@@ -41,6 +43,8 @@ class SignupViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
 
     }
 
-
+companion object{
+    private const val TAG = "SignupViewModel"
+}
 
 }
