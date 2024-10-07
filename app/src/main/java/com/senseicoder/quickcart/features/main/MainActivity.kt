@@ -54,23 +54,30 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun hideBottomNavBar(){
+    fun hideBottomNavBar() {
         binding.navView.visibility = View.GONE
     }
 
-    fun showBottomNavBar(){
+    fun showBottomNavBar() {
         binding.navView.visibility = View.VISIBLE
     }
 
-    fun showLoading(){
+    fun showLoading() {
         progressBar.startProgressBar()
     }
 
-    fun hideLoading(){
+    fun hideLoading() {
         progressBar.dismissProgressBar()
     }
 
-    companion object{
+    fun toolbarVisibility(flag: Boolean){
+        if(flag)
+            binding.toolbar.visibility = View.VISIBLE
+        else
+            binding.toolbar.visibility = View.GONE
+    }
+
+    companion object {
         private const val TAG = "MainActivity"
     }
 }
