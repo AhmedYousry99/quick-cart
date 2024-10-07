@@ -1,0 +1,81 @@
+query CustomerOrders($accessToken: String!) {
+    customer(customerAccessToken: $accessToken) {
+        orders(first: 10) {
+            edges {
+                node {
+                    id
+                    name
+                    currencyCode
+                    canceledAt
+                    billingAddress {
+                        address1
+                        address2
+                        city
+                        country
+                        firstName
+                        lastName
+                        name
+                        phone
+                    }
+                    phone
+                    financialStatus
+                    lineItems(first: 10){
+                        edges {
+                            node {
+                                currentQuantity
+                                title
+                                variant {
+                                    title
+                                    id
+                                    image {
+                                        url
+                                    }
+                                    priceV2 {
+                                        amount
+                                        currencyCode
+                                    }
+                                    product {
+                                        id
+                                        title
+                                        productType
+                                        handle
+                                        description
+                                        images(first: 10){
+                                            edges {
+                                                node {
+                                                    url
+                                                    altText
+                                                }
+                                            }
+                                        }
+                                        createdAt
+                                        totalInventory
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    orderNumber
+                    processedAt
+                    currentTotalPrice {
+                        amount
+                        currencyCode
+                    }
+                    currentSubtotalPrice {
+                        amount
+                        currencyCode
+                    }
+                    billingAddress {
+                        address1
+                    }
+                    currentTotalTax {
+                        currencyCode
+                        amount
+                    }
+
+                }
+            }
+        }
+    }
+}

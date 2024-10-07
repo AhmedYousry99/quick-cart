@@ -25,8 +25,9 @@ import com.senseicoder.quickcart.core.global.matchesPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.models.repositories.CustomerRepoImpl
-import com.senseicoder.quickcart.core.network.AdminHandlerImpl
+//import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSignupBinding
@@ -57,7 +58,7 @@ class SignupFragment : Fragment() {
         val factory = SignupViewModelFactory(
             CustomerRepoImpl.getInstance(
                 FirebaseHandlerImpl,
-                AdminHandlerImpl,
+                StorefrontHandlerImpl,
                 SharedPrefsService
             )
         )
@@ -168,6 +169,7 @@ class SignupFragment : Fragment() {
     private fun validateFields(){
         hideValidationErrors()
         clearFocueses()
+        KeyboardUtils.hideKeyboard(requireActivity())
         binding.apply {
             val firstName: String = firstNameSignupEditText.text.toString()
             val lastName: String = lastNameSignupEditText.text.toString()

@@ -1,0 +1,40 @@
+query GetProductsByBrandId($brandId: ID!) {
+    collection(id: $brandId) {
+        id
+        title
+        products(first: 20) {
+            edges {
+                node {
+                    id
+                    title
+                    handle
+                    description
+                    productType
+                    images(first: 1) {
+                        edges {
+                            node {
+                                originalSrc
+                                altText
+                            }
+                        }
+                    }
+                    variants(first: 10) {
+                        edges {
+                            node {
+                                id
+                                priceV2 {
+                                    amount
+                                    currencyCode
+                                }
+                                selectedOptions {
+                                    name
+                                    value
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

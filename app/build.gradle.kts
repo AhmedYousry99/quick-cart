@@ -72,7 +72,31 @@ apollo {
             headers.put("X-Shopify-Access-Token", properties["shopify_admin_api_access_token"].toString())
             endpointUrl.set("https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json")
             // The path is interpreted relative to the current project
-            schemaFile.set(file("src/main/graphql/com/admin/schema.graphqls"))
+            schemaFile.set(file("src/main/graphql/com/admin/admin.graphqls"))
+        }
+        //Make IDEA aware of codegen and will run it during your Gradle Sync, default: false
+        generateSourcesDuringGradleSync.set(false)
+    }
+
+    service("StoreFront") {
+        // Adds the given directory as a GraphQL source root
+        srcDir("src/main/graphql")
+        // The package name for the generated models
+        packageName.set("com.storefront")
+        // Warn if using a deprecated field
+        warnOnDeprecatedUsages.set(true)
+        // Whether to generate Kotlin or Java models
+        generateKotlinModels.set(true)
+        // wire the generated models to the "test" source set
+//        outputDirConnection {
+//            connectToKotlinSourceSet("test")
+//        }
+        // This creates a downloadStorefrontApolloSchemaFromIntrospection task
+        introspection {
+            headers.put("X-Shopify-Storefront-Access-Token", properties["shopify_store_front_api_access_token"].toString())
+            endpointUrl.set("https://android-alex-team5.myshopify.com/api/2024-10/graphql.json")
+            // The path is interpreted relative to the current project
+            schemaFile.set(file("src/main/graphql/com/storefront/storefront.graphqls"))
         }
         //Make IDEA aware of codegen and will run it during your Gradle Sync, default: false
         generateSourcesDuringGradleSync.set(false)

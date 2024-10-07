@@ -1,0 +1,21 @@
+query GetProductsByType($type:String!) {
+    products(first: 20, query: $type) {
+            edges {
+                node {
+                    id
+                    title
+                    handle
+                    description
+                    productType
+                    images(first: 1) {
+                        edges {
+                            node {
+                                originalSrc
+                                altText
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
