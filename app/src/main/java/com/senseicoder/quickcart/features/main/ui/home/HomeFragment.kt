@@ -125,7 +125,10 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as MainActivity).showBottomNavBar()
+        (requireActivity() as MainActivity).apply {
+            showBottomNavBar()
+            toolbarVisibility(true)
+        }
     }
 
 
