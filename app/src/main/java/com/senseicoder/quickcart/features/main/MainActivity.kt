@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var progressBar: CircularProgressIndicatorDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +39,11 @@ class MainActivity : AppCompatActivity() {
             )
         ).build()
         navController = findNavController(this, R.id.nav_host)
-        progressBar = CircularProgressIndicatorDialog(this)
+        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT){
+            navController.navigate(R.id.action_loginFragment_to_homeFragment)
+            navController.graph.setStartDestination(R.id.homeFragment)
+        }
+
 //        progressBar.startProgressBar()
 
         setSupportActionBar(binding.toolbar)
@@ -64,14 +67,6 @@ class MainActivity : AppCompatActivity() {
 
     fun showBottomNavBar() {
         binding.navView.visibility = View.VISIBLE
-    }
-
-    fun showLoading() {
-        progressBar.startProgressBar()
-    }
-
-    fun hideLoading() {
-        progressBar.dismissProgressBar()
     }
 
     fun toolbarVisibility(flag: Boolean){

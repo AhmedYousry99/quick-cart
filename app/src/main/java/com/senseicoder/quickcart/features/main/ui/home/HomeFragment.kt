@@ -131,6 +131,13 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        (requireActivity() as MainActivity).apply {
+            toolbarVisibility(false)
+        }
+    }
+
 
 
     private fun setupCouponViewPager() {
