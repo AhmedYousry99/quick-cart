@@ -1,6 +1,6 @@
-package com.senseicoder.quickcart.core.models.repositories
+package com.senseicoder.quickcart.core.repos.customer
 
-import com.senseicoder.quickcart.core.models.CustomerDTO
+import com.senseicoder.quickcart.core.model.CustomerDTO
 import kotlinx.coroutines.flow.Flow
 
 interface CustomerRepo {
@@ -13,4 +13,6 @@ interface CustomerRepo {
     fun getUserId(): String
     fun setUserToken(token: String)
     fun getUserToken(): String
+    fun setEmail(email: String)
+    fun setDisplayName(displayName: String)
 }

@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.wrappers
+package com.senseicoder.quickcart.core.dialogs
 
 import android.app.AlertDialog
 import android.content.Context

@@ -9,7 +9,7 @@ import androidx.navigation.Navigation
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
-import com.senseicoder.quickcart.core.enums.DialogType
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.databinding.FragmentProfileBinding
 import com.senseicoder.quickcart.features.main.MainActivity
 

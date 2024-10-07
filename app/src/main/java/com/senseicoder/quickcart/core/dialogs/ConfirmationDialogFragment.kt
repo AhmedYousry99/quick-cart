@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.enums.DialogType
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.databinding.FragmentConfirmationDialogBinding
 
 

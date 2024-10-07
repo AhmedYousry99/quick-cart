@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.models.keys;
+package com.senseicoder.quickcart.core.model.keys;
 
 public class UserKeys {
 

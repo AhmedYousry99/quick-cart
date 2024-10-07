@@ -1,10 +1,10 @@
-package com.senseicoder.quickcart.core.network.interfaces
+package com.senseicoder.quickcart.core.repos.cart
 
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.Flow
 
-interface ICartRepo {
+interface CartRepo {
     suspend fun createCart(email: String, token: String): Flow<ApiState<String?>>
     suspend fun addToCartById(
         cartId: String,

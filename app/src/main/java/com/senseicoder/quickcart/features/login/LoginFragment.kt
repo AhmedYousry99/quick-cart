@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
@@ -24,18 +23,15 @@ import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
-import com.senseicoder.quickcart.core.models.repositories.CustomerRepoImpl
 //import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentLoginBinding
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModel
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModelFactory
-import com.senseicoder.quickcart.features.main.MainActivity
-import com.senseicoder.quickcart.features.signup.SignupFragment
-import com.senseicoder.quickcart.features.signup.SignupFragment.Companion
 import kotlinx.coroutines.launch
 
 
@@ -172,8 +168,8 @@ class LoginFragment : Fragment() {
 
     private fun validateFields(){
         hideValidationErrors()
-        clearFocuses()
         KeyboardUtils.hideKeyboard(requireActivity())
+        clearFocuses()
         binding.apply {
             val email: String = emailLoginEditText.text.toString()
             val password: String = passwordLoginEditText.text.toString()

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.wrappers.MyDialog
+import com.senseicoder.quickcart.core.dialogs.MyDialog
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding

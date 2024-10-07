@@ -1,10 +1,10 @@
-package com.senseicoder.quickcart.core.repo.product
+package com.senseicoder.quickcart.core.repos.product
 
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.model.DisplayBrand
 import com.senseicoder.quickcart.core.model.DisplayProduct
-import com.senseicoder.quickcart.core.remote.product.RemoteProductsDataSource
-import com.senseicoder.quickcart.core.remote.product.RemoteProductsDataSourceImp
+import com.senseicoder.quickcart.core.network.interfaces.RemoteProductsDataSource
+import com.senseicoder.quickcart.core.network.product.RemoteProductsDataSourceImp
 import com.senseicoder.quickcart.core.entity.product.mapRemoteProductToDisplayProduct
 import com.senseicoder.quickcart.core.entity.brand.mapRemoteBrandToDisplayBrand
 

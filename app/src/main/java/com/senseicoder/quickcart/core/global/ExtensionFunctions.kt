@@ -17,7 +17,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.models.CustomerDTO
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

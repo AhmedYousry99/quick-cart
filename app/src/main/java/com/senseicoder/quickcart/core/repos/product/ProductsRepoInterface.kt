@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.repo.product
+package com.senseicoder.quickcart.core.repos.product
 
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.model.DisplayBrand

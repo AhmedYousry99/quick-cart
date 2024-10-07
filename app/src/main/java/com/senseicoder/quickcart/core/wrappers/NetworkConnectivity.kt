@@ -47,9 +47,9 @@ class NetworkConnectivity private constructor(val application: Application) {
         connectivityManager.requestNetwork(networkRequest, networkCallback)
     }
     fun isOnline(): Boolean {
-        val connMgr = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo: NetworkInfo? = connMgr.activeNetworkInfo
-        return networkInfo?.isConnected == true
+        val cm = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
     companion object {
         private lateinit var instance: NetworkConnectivity

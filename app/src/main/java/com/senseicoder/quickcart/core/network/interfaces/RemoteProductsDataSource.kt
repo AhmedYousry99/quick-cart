@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.remote.product
+package com.senseicoder.quickcart.core.network.interfaces
 
 import com.senseicoder.quickcart.core.entity.brand.BrandResponse
 import com.senseicoder.quickcart.core.entity.product.ProductDetails

@@ -3,8 +3,8 @@ package com.senseicoder.quickcart.features.login.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.models.CustomerDTO
-import com.senseicoder.quickcart.core.models.repositories.CustomerRepo
+import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +25,8 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
             }.collect {
 //                customerRepo.setUserId(it.id)
                 customerRepo.setUserToken(it.token)
+                customerRepo.setEmail(it.email)
+                customerRepo.setDisplayName(it.displayName)
                 _loginState.value = ApiState.Success(it)
             }
         }
