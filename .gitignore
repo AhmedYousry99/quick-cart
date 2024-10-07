@@ -15,3 +15,5 @@
 local.properties
 /app/src/main/graphql/com/admin/schema.graphqls
 /app/src/main/graphql/com/admin/graphql.config.yml
+/app/src/main/graphql/com/storefront/storefront.graphqls
+/app/src/main/graphql/com/storefront/graphql.config.yml

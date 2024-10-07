@@ -2,9 +2,11 @@ package com.senseicoder.quickcart.core.network
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.models.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -45,6 +47,16 @@ object FirebaseHandlerImpl :FirebaseHandler{
                 password,
             ))
         }
+    }
+
+    override suspend fun updateDisplayName(customerDTO: CustomerDTO)= flow<CustomerDTO> {
+        val user = firebaseAuthInstance.currentUser
+
+        val profileUpdates = userProfileChangeRequest {
+            displayName = customerDTO.displayName
+        }
+        user!!.updateProfile(profileUpdates).await()
+        emit(customerDTO)
     }
 
     override suspend fun loginUsingGuest() = flow<CustomerDTO> {

@@ -1,0 +1,22 @@
+#mutation createDraftOrder(
+#    $lineItems: [DraftOrderLineItemInput!]!,
+#    $shippingAddress: MailingAddressInput!,
+#    $note: String
+#) {
+#    draftOrderCreate(input: {
+#        lineItems: $lineItems,
+#        shippingAddress: $shippingAddress,
+#        note: $note,
+#        useCustomerDefaultAddress: true
+#    }) {
+#        draftOrder {
+#            id
+#            name
+#            invoiceUrl
+#        }
+#        userErrors {
+#            field
+#            message
+#        }
+#    }
+#}

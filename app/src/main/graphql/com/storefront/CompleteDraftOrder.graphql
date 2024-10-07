@@ -1,0 +1,16 @@
+#mutation CompleteDraftOrder($id: ID!, $paymentPending: Boolean!) {
+#    draftOrderComplete(id: $id, paymentPending: $paymentPending) {
+#        draftOrder {
+#            id
+#            name
+#            order {
+#                id
+#                name
+#            }
+#        }
+#        userErrors {
+#            field
+#            message
+#        }
+#    }
+#}

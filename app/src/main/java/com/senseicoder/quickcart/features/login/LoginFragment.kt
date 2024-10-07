@@ -18,14 +18,16 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.models.repositories.CustomerRepoImpl
-import com.senseicoder.quickcart.core.network.AdminHandlerImpl
+//import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentLoginBinding
@@ -63,7 +65,7 @@ class LoginFragment : Fragment() {
         val factory = LoginViewModelFactory(
             CustomerRepoImpl.getInstance(
                 FirebaseHandlerImpl,
-                AdminHandlerImpl,
+                StorefrontHandlerImpl,
                 SharedPrefsService
             )
         )
@@ -171,6 +173,7 @@ class LoginFragment : Fragment() {
     private fun validateFields(){
         hideValidationErrors()
         clearFocuses()
+        KeyboardUtils.hideKeyboard(requireActivity())
         binding.apply {
             val email: String = emailLoginEditText.text.toString()
             val password: String = passwordLoginEditText.text.toString()
