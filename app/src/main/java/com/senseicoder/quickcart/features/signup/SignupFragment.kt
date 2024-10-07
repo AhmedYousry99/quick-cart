@@ -1,6 +1,7 @@
 package com.senseicoder.quickcart.features.signup
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
@@ -38,6 +41,8 @@ class SignupFragment : Fragment() {
 
     private lateinit var binding: FragmentSignupBinding
     private lateinit var signupViewModel: SignupViewModel
+//    private lateinit var progressBar: CircularProgressIndicatorDialog
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +62,8 @@ class SignupFragment : Fragment() {
             )
         )
         signupViewModel = ViewModelProvider(this, factory)[SignupViewModel::class]
+//        progressBar = CircularProgressIndicatorDialog(requireActivity())
+
         /*binding.emailSignupEditText.doOnTextChanged { text, start, before, count ->
             binding.emailSignupLayout.error = if(text!!.length> 2){
                 "no more!"
@@ -70,8 +77,8 @@ class SignupFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as MainActivity).hideBottomNavBar()
         binding.firstNameSignupLayout.requestFocus()
+        Log.d(TAG, "onStart: ${Navigation.findNavController(requireView()).currentDestination}, ${Navigation.findNavController(requireView()).currentBackStackEntry}")
         KeyboardUtils.showKeyboard(requireActivity(), binding.firstNameSignupLayout)
     }
 
@@ -104,20 +111,20 @@ class SignupFragment : Fragment() {
                     when(it){
                         ApiState.Init ->{
                         enableButtons()
-                        activity.hideLoading()
+//                        progressBar.dismissProgressBar(this@SignupFragment)
                         }
                         ApiState.Loading -> {
                             disableButtons()
-                            activity.showLoading()
+//                            progressBar.startProgressBar()
                         }
                         is ApiState.Success -> {
                             enableButtons()
-                            activity.hideLoading()
+//                            progressBar.dismissProgressBar(this@SignupFragment)
                             showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}")
                         }
                         is ApiState.Failure -> {
                             enableButtons()
-                            activity.hideLoading()
+//                            progressBar.dismissProgressBar(this@SignupFragment)
                             showErrorSnackbar(
                                 when(it.msg){
                                     Constants.Errors.UNKNOWN -> getString(R.string.something_went_wrong)
@@ -145,6 +152,7 @@ class SignupFragment : Fragment() {
                 validateFields()
             }
             signupText.setOnClickListener{
+//                findNavController().navigate(R.id.action_signupFragment_to_loginFragment)
                 findNavController().navigateUp()
             }
             confirmPasswordSignupEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->

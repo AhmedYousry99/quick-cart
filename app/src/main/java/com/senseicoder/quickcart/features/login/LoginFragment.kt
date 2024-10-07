@@ -1,6 +1,7 @@
 package com.senseicoder.quickcart.features.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
@@ -29,6 +32,8 @@ import com.senseicoder.quickcart.databinding.FragmentLoginBinding
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModel
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModelFactory
 import com.senseicoder.quickcart.features.main.MainActivity
+import com.senseicoder.quickcart.features.signup.SignupFragment
+import com.senseicoder.quickcart.features.signup.SignupFragment.Companion
 import kotlinx.coroutines.launch
 
 
@@ -37,7 +42,8 @@ class LoginFragment : Fragment() {
     private lateinit var binding:FragmentLoginBinding
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var confirmationDialog: ConfirmationDialog
-    private lateinit var mainActivity: MainActivity
+//    private lateinit var progressBar: CircularProgressIndicatorDialog
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,10 +67,10 @@ class LoginFragment : Fragment() {
                 SharedPrefsService
             )
         )
-        mainActivity = requireActivity() as MainActivity
+//        progressBar = CircularProgressIndicatorDialog(requireActivity())
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
         confirmationDialog = ConfirmationDialog(requireActivity(), null){
-            mainActivity.showLoading()
+//            progressBar.startProgressBar()
             loginViewModel.signupAsGuest()
         }
         confirmationDialog.message = getString(R.string.you_wont_have_access_to_features)
@@ -81,30 +87,35 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        mainActivity.hideBottomNavBar()
+        Log.d(TAG, "onStart: ${Navigation.findNavController(requireView()).currentDestination}\n ${Navigation.findNavController(requireView()).currentBackStackEntry}")
     }
 
     private fun subscribeToObservables(){
         lifecycleScope.launch{
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 loginViewModel.loginState.collect{
                     when(it){
                         ApiState.Init ->{
                             enableButtons()
-                            mainActivity.hideLoading()
+//                            progressBar.dismissProgressBar(this@LoginFragment)
                         }
                         ApiState.Loading -> {
                             disableButtons()
-                            mainActivity.showLoading()
+//                            progressBar.startProgressBar()
                         }
                         is ApiState.Success -> {
                             enableButtons()
-                            mainActivity.hideLoading()
-                            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+//                            progressBar.dismissProgressBar(this@LoginFragment)
+                            try{
+                                findNavController().graph.setStartDestination(R.id.homeFragment)
+                                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                            }catch(e:Exception){
+
+                            }
                         }
                         is ApiState.Failure -> {
                             enableButtons()
-                            mainActivity.hideLoading()
+//                            progressBar.dismissProgressBar(this@LoginFragment)
                             showErrorSnackbar(
                                 when(it.msg){
                                     Constants.Errors.UNKNOWN -> getString(R.string.something_went_wrong)
@@ -144,7 +155,8 @@ class LoginFragment : Fragment() {
                 confirmationDialog.showDialog()
             }
             loginText.setOnClickListener{
-                findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+//                findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+                Navigation.findNavController(it).navigate(R.id.action_loginFragment_to_signupFragment)
             }
             passwordLoginEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
