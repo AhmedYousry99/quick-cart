@@ -7,14 +7,17 @@ import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
+import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 import com.storefront.AddProductsToCartMutation
+import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
 import com.storefront.GetCartDetailsQuery
-import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineInput
+import com.storefront.RemoveProductFromCartMutation
+import com.storefront.type.CartLineUpdateInput
 import com.storefront.type.CustomerCreateInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -98,6 +101,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
         }
     }
 
+
+    override suspend fun getProductsCart(cartId: String): Flow<List<ProductOfCart>?> = flow {
+        val query = GetCartDetailsQuery(cartId)
+        val response = apolloClient.query(query).execute()
+        if (response.data != null)
+            emit(response.data?.cart?.lines?.edges?.fromEdges())
+        else
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+    }
+
     override suspend fun createCart(email: String, token: String) = flow {
         val mutation = CreateCartMutation(email, token)
 
@@ -112,9 +125,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun addToCartById(
         cartId: String,
         productsOfCart: List<ProductOfCart>
-    )=flow{
-        val mutation = AddProductsToCartMutation(cartId, productsOfCart.map { CartLineInput(merchandiseId = it.variantId, quantity = Optional.present(it.quantity)) })
-            val response = apolloClient.mutation(mutation).execute()
+    ) = flow {
+        val mutation = AddProductsToCartMutation(
+            cartId,
+            productsOfCart.map {
+                CartLineInput(
+                    merchandiseId = it.variantId,
+                    quantity = Optional.present(it.quantity)
+                )
+            })
+        val response = apolloClient.mutation(mutation).execute()
         if (response.data?.cartLinesAdd != null) {
             emit(response.data!!.cartLinesAdd!!)
         } else {
@@ -122,21 +142,30 @@ object StorefrontHandlerImpl : StorefrontHandler {
         }
     }
 
-    override suspend fun getCartProducts(cartId: String) = flow<GetCartDetailsQuery.Cart> {
-        val mutation = GetCartDetailsQuery(cartId)
-        val response = apolloClient.query(mutation).execute()
-        if (response.data?.cart!= null) {
-            emit(response.data!!.cart!!)
+    override suspend fun updateQuantityOfProduct(
+        cartId: String,
+        lineId: String,
+        quantity:Int
+    ): Flow<CartLinesUpdateMutation.Lines?> = flow {
+        val mutation = CartLinesUpdateMutation(cartId, listOf(CartLineUpdateInput(lineId, quantity = Optional.present(quantity))))
+        val response = apolloClient.mutation(mutation).execute()
+        if (response.data?.cartLinesUpdate != null) {
+            emit(response.data?.cartLinesUpdate?.cart?.lines)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
+
     }
 
-    override suspend fun removeProductFromCart(cartId: String, lineId: String) = flow {
+
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<RemoveProductFromCartMutation.CartLinesRemove?> = flow {
         val mutation = RemoveProductFromCartMutation(cartId, lineId)
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.cartLinesRemove != null) {
-            emit(response.data!!.cartLinesRemove!!.toString())
+            emit(response.data!!.cartLinesRemove)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }

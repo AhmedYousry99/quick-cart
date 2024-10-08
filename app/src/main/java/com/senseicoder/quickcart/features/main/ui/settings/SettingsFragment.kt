@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.databinding.FragmentSettingsBinding
-import com.senseicoder.quickcart.features.main.MainActivity
 
 class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding

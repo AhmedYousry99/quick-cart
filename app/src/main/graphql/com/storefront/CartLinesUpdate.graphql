@@ -1,0 +1,45 @@
+mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart {
+            id
+            lines(first: 10) {
+                edges {
+                    node {
+                        id
+                        merchandise {
+                            ... on ProductVariant {
+                                availableForSale
+                                barcode
+                                currentlyNotInStock
+                                id
+                                quantityAvailable
+                                requiresShipping
+                                sku
+                                taxable
+                                title
+                                weight
+                                weightUnit
+                                image {
+                                    altText
+                                    height
+                                    id
+                                    url
+                                    width
+                                }
+                                price {
+                                    amount
+                                    currencyCode
+                                }
+                            }
+                        }
+                        quantity
+                    }
+                }
+            }
+        }
+        userErrors {
+            field
+            message
+        }
+    }
+}

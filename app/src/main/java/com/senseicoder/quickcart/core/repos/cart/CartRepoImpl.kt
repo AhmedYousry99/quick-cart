@@ -2,6 +2,7 @@ package com.senseicoder.quickcart.core.repos.cart
 
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
+import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.model.mapCartLineToProductOfCart
 import com.senseicoder.quickcart.core.model.mapCartLinesAddProductOfCart
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
@@ -13,16 +14,17 @@ import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.storefront.CreateCartMutation
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.transform
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPref : SharedPrefs)
-    : CartRepo {
+class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPref: SharedPrefs) :
+    CartRepo {
     override suspend fun createCart(email: String, token: String)
-    : Flow<String> {
+            : Flow<String> {
         return remoteDataSource.createCart(email, token).map { it.id }
     }
 
@@ -31,9 +33,9 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPr
     }
 
     override suspend fun addToCartByIds(cartId: String, productsOfCart: List<ProductOfCart>)
-    : Flow<List<ProductOfCart>> {
+            : Flow<List<ProductOfCart>> {
         return remoteDataSource.addToCartById(cartId, productsOfCart).transform {
-            emit(it.cart!!.lines.nodes.map { productVariant-> productVariant.mapCartLinesAddProductOfCart() })
+            emit(it.cart!!.lines.nodes.map { productVariant -> productVariant.mapCartLinesAddProductOfCart() })
         }.timeout(15.seconds)
     }
 
@@ -45,16 +47,34 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPr
         return sharedPref.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
     }
 
-    override suspend fun getCartProducts(cartId: String)
-    : Flow<List<ProductOfCart>> {
-        return remoteDataSource.getCartProducts(cartId).transform { cart ->
-            emit(cart.lines.edges.map { it.node.mapCartLineToProductOfCart() })
-        }.timeout(15.seconds)
+    override fun updateQuantityOfProduct(
+        cartId: String,
+        lineId: String,
+        quantity: Int
+    ): Flow<List<ProductOfCart>?> = flow {
+        remoteDataSource.updateQuantityOfProduct(cartId, lineId,quantity).collect{
+            emit(ProductOfCart.fromEdges(it?.edges))
+        }
     }
 
-    override suspend fun removeProductFromCart(cartId: String, lineId: String)
-    : Flow<String> {
-        return remoteDataSource.removeProductFromCart(cartId, lineId).timeout(15.seconds)
+    override suspend fun getCartProducts(cartId: String): Flow<List<ProductOfCart>> =
+        flow {
+            remoteDataSource.getProductsCart(cartId).collect {
+                emit(it ?: emptyList())
+            }
+        }
+
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<String?> = flow {
+        remoteDataSource.removeProductFromCart(cartId, lineId).collect {
+            emit(it?.userErrors?.firstOrNull()?.message)
+        }
+    }
+
+    override fun getSharedPrefString(key: String, defaultValue: String): String {
+        return sharedPref.getSharedPrefString(key, defaultValue)
     }
 
 
