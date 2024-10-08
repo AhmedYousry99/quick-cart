@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:constraint_referenced_ids="btnToPayment,rvDraftOrder,txtGrandTotal,txtValueOfGrandTotal"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btnToPayment"
@@ -50,6 +51,7 @@
         app:layout_constraintBottom_toTopOf="@+id/txtGrandTotal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle"
         tools:listitem="@layout/row_of_draftorder" />
 
     <TextView
@@ -78,16 +80,102 @@
         app:layout_constraintBottom_toTopOf="@+id/btnToPayment"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFrameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+
+        <include layout="@layout/cart_shimmer_placeholder" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtTitle"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/emptyanimation" />
+        app:lottie_rawRes="@raw/emptyanimation"
+        tools:visibility="gone" />
+
+<!--    <com.google.android.material.bottomsheet.BottomSheetDialogFragment-->
+<!--        android:id="@+id/bottomSheetDialog"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="?android:attr/windowBackground"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:padding="16dp">-->
+
+<!--            &lt;!&ndash; Payment Options &ndash;&gt;-->
+<!--            <RadioGroup-->
+<!--                android:id="@+id/radioGroupPayment"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/radioCash"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Pay with Cash" />-->
+
+<!--                <RadioButton-->
+<!--                    android:id="@+id/radioCard"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Pay with Card" />-->
+<!--            </RadioGroup>-->
+
+<!--            &lt;!&ndash; Discount Code &ndash;&gt;-->
+<!--            <EditText-->
+<!--                android:id="@+id/etDiscountCode"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Enter discount code"-->
+<!--                android:inputType="text" />-->
+
+<!--            &lt;!&ndash; Total before and after discount &ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/txtTotalBeforeDiscount"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Total Before Discount: $3130"-->
+<!--                android:textSize="16sp" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/txtTotalAfterDiscount"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="16dp"-->
+<!--                android:text="Total After Discount: $0"-->
+<!--                android:textSize="16sp" />-->
+
+<!--            &lt;!&ndash; Confirm Button &ndash;&gt;-->
+<!--            <Button-->
+<!--                android:id="@+id/btnConfirmPayment"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Confirm Payment" />-->
+
+<!--        </LinearLayout>-->
+<!--    </com.google.android.material.bottomsheet.BottomSheetDialogFragment>-->
+
 </androidx.constraintlayout.widget.ConstraintLayout>
