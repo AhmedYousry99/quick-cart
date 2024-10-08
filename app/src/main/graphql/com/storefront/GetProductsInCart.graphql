@@ -52,7 +52,6 @@ query GetCartDetails($cartId: ID!) {
                         city
                         company
                         country
-                        countryCode
                         countryCodeV2
                         firstName
                         formatted

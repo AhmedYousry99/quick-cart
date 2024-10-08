@@ -6,9 +6,15 @@ import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
+import com.storefront.AddProductsToCartMutation
+import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
+import com.storefront.GetCartDetailsQuery
+import com.storefront.RemoveProductFromCartMutation
+import com.storefront.type.CartLineInput
 import com.storefront.type.CustomerCreateInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -88,6 +94,50 @@ object StorefrontHandlerImpl : StorefrontHandler {
                     }.joinToString { it.message })
             )
         } else {// Something wrong happened
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
+    override suspend fun createCart(email: String, token: String) = flow {
+        val mutation = CreateCartMutation(email, token)
+
+        val response = apolloClient.mutation(mutation).execute()
+        if (response.data?.cartCreate != null) {
+            emit(response.data!!.cartCreate!!.cart!!)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
+    override suspend fun addToCartById(
+        cartId: String,
+        productsOfCart: List<ProductOfCart>
+    )=flow{
+        val mutation = AddProductsToCartMutation(cartId, productsOfCart.map { CartLineInput(merchandiseId = it.variantId, quantity = Optional.present(it.quantity)) })
+            val response = apolloClient.mutation(mutation).execute()
+        if (response.data?.cartLinesAdd != null) {
+            emit(response.data!!.cartLinesAdd!!)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
+    override suspend fun getCartProducts(cartId: String) = flow<GetCartDetailsQuery.Cart> {
+        val mutation = GetCartDetailsQuery(cartId)
+        val response = apolloClient.query(mutation).execute()
+        if (response.data?.cart!= null) {
+            emit(response.data!!.cart!!)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
+    override suspend fun removeProductFromCart(cartId: String, lineId: String) = flow {
+        val mutation = RemoveProductFromCartMutation(cartId, lineId)
+        val response = apolloClient.mutation(mutation).execute()
+        if (response.data?.cartLinesRemove != null) {
+            emit(response.data!!.cartLinesRemove!!.toString())
+        } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
     }

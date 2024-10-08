@@ -1,16 +1,63 @@
-mutation AddProductToCart($cartid : ID!,$quantity : Int!,$varientid : ID!) {
+mutation AddProductsToCart($cartId: ID!, $productVariants: [CartLineInput!]!) {
     cartLinesAdd(
-        cartId: $cartid,
-        lines: [
-            {
-                quantity: $quantity,
-                merchandiseId:$varientid
-            },
-        ]
+        cartId: $cartId
+        lines: $productVariants
     ) {
         userErrors {
             field
             message
+        }
+        cart {
+            checkoutUrl
+            createdAt
+            id
+            note
+            totalQuantity
+            updatedAt
+            lines(first: 50) {
+                nodes {
+                    id
+                    merchandise {
+                        ... on ProductVariant {
+                            availableForSale
+                            currentlyNotInStock
+                            id
+                            quantityAvailable
+                            requiresComponents
+                            requiresShipping
+                            sku
+                            taxable
+                            title
+                            weight
+                            weightUnit
+                            price {
+                                amount
+                                currencyCode
+                            }
+                            unitPrice {
+                                amount
+                                currencyCode
+                            }
+                            product {
+                                title
+                                description
+                                vendor
+                                id
+                                availableForSale
+                                images{
+                                    nodes {
+                                        altText
+                                        url
+                                        height
+                                        width
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    quantity
+                }
+            }
         }
     }
 }

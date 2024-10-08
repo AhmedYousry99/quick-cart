@@ -20,6 +20,8 @@ object Constants {
         const val ORDER_ID_PREFIX = "gid://shopify/Order/"
     }
 
+    const val CART_ID:  String = "cartId"
+    const val CART_ID_DEFAULT:  String = "unknown"
     const val USER_EMAIL: String = "userEmail"
     const val USER_DISPLAY_NAME: String = "userDisplayName"
     const val USER_TOKEN_DEFAULT: String = "unknown"
