@@ -120,6 +120,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation ("com.google.android.material:material:1.9.0")
     //idk if this would be needed
     implementation("androidx.preference:preference:1.2.1")
     //legacy support for NestedRecyclerView
