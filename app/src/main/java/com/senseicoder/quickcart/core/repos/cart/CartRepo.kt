@@ -13,7 +13,8 @@ interface CartRepo {
     suspend fun removeProductFromCart(
         cartId: String,
         lineId: String
-    ): Flow<String>
+    ): Flow<String?>
+    fun getSharedPrefString(key: String, defaultValue: String): String
 
     suspend fun addToCartByIds(
         cartId: String,
@@ -22,4 +23,5 @@ interface CartRepo {
 
     fun setCartId(cartId: String)
     fun getCartId(): String
+    fun updateQuantityOfProduct(cartId: String, lineId: String,quantity :Int): Flow<List<ProductOfCart>?>
 }
