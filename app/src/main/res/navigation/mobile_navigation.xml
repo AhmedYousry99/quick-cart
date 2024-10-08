@@ -24,7 +24,11 @@
         android:id="@+id/shoppingCartFragment"
         android:name="com.senseicoder.quickcart.features.main.ui.shopping_cart.ShoppingCartFragment"
         android:label="@string/title_shopping_cart"
-        tools:layout="@layout/fragment_shopping_cart" />
+        tools:layout="@layout/fragment_shopping_cart" >
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.senseicoder.quickcart.features.main.ui.profile.ProfileFragment"
@@ -97,4 +101,9 @@
         android:name="com.senseicoder.quickcart.features.main.ui.currency.CurrencyFragment"
         android:label="fragment_currency"
         tools:layout="@layout/fragment_currency" />
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.product_details.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" />
 </navigation>
