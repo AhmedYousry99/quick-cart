@@ -1,16 +1,16 @@
-package com.senseicoder.quickcart.features.main
+package com.senseicoder.quickcart.features.main.ui.main_activity
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.CircularProgressIndicatorDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
@@ -20,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val mainViewModel : MainActivityViewModel by lazy{
+        ViewModelProvider(this)[MainActivityViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +51,13 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
+        mainViewModel
         setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         setupWithNavController(binding.navView, navController)
-        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT)
+        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT) {
             navController.navigate(R.id.action_loginFragment_to_homeFragment)
+            navController.graph.setStartDestination(R.id.homeFragment)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
