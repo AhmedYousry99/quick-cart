@@ -18,8 +18,8 @@ import com.senseicoder.quickcart.core.dialogs.MyDialog
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
-import com.senseicoder.quickcart.features.main.MainActivity
 import com.senseicoder.quickcart.features.main.ui.home.viewmodel.HomeViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(), OnItemBrandClicked {
