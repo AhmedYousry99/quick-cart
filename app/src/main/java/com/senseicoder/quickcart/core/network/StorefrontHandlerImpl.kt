@@ -10,14 +10,13 @@ import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
-import com.storefront.AddProductsToCartMutation
+import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
 import com.storefront.GetCartDetailsQuery
 import com.storefront.GetProductByIdQuery
-import com.storefront.type.CartLineInput
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
 import com.storefront.type.CustomerCreateInput
@@ -61,7 +60,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val mutation = CreateCustomerAccessTokenMutation(email, password)
 
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.customerAccessTokenCreate != null) {
+        if (response.data?.customerAccessTokenCreate != null && response.exception == null) {
             emit(response.data!!.customerAccessTokenCreate!!.customerAccessToken!!)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -74,7 +73,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         password: String,
         firstName: String,
         lastName: String
-    ) = flow<CreateCustomerMutation.Customer> {
+    ) = flow {
         val response = apolloClient.mutation(
             CreateCustomerMutation(
                 CustomerCreateInput(
@@ -85,20 +84,9 @@ object StorefrontHandlerImpl : StorefrontHandler {
                 )
             )
         ).execute()
-
-        if (!response.hasErrors() && response.data != null) {
-            Log.d(TAG, "createCustomer: ${response.errors.toString()}")
-            emit(
-                response.data?.customerCreate?.customer
-                    ?: throw Exception(response.data!!.customerCreate!!.customerUserErrors.map {
-                        CreateCustomerMutation.CustomerUserError(
-                            code = it.code,
-                            field = it.field?.toList(),
-                            message = it.message
-                        )
-                    }.joinToString { it.message })
-            )
-        } else {// Something wrong happened
+        if (response.data?.customerCreate != null && response.exception == null) {
+            emit(response.data!!.customerCreate!!.customer!!)
+        } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
     }
@@ -107,18 +95,18 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun getProductsCart(cartId: String): Flow<List<ProductOfCart>?> = flow {
         val query = GetCartDetailsQuery(cartId)
         val response = apolloClient.query(query).execute()
-        if (response.data != null)
+        if (response.data != null && response.exception == null)
             emit(response.data?.cart?.lines?.edges?.fromEdges())
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
 
-    override suspend fun createCart(email: String, token: String) = flow {
-        val mutation = CreateCartMutation(email, token)
+    override suspend fun createCart(email: String) = flow {
+        val mutation = CreateCartMutation(email)
 
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartCreate != null) {
-            emit(response.data!!.cartCreate!!.cart!!)
+        if (response.data?.cartCreate != null && response.exception == null) {
+            emit(response.data!!.cartCreate!!.cart!! )
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
@@ -126,18 +114,19 @@ object StorefrontHandlerImpl : StorefrontHandler {
 
     override suspend fun addToCartById(
         cartId: String,
-        productsOfCart: List<ProductOfCart>
+        quantity: Int,
+        variantId: String
     ) = flow {
-        val mutation = AddProductsToCartMutation(
+        Log.d(
+            TAG,
+            "addToCartById: ${"cartId: $cartId, quantity: $quantity, variantId: $variantId"}"
+        )
+        val mutation = AddProductToCartMutation(
             cartId,
-            productsOfCart.map {
-                CartLineInput(
-                    merchandiseId = it.variantId,
-                    quantity = Optional.present(it.quantity)
-                )
-            })
+            quantity,
+            variantId)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartLinesAdd != null) {
+        if (response.data?.cartLinesAdd != null && response.exception == null) {
             emit(response.data!!.cartLinesAdd!!)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -151,7 +140,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
     ): Flow<CartLinesUpdateMutation.Lines?> = flow {
         val mutation = CartLinesUpdateMutation(cartId, listOf(CartLineUpdateInput(lineId, quantity = Optional.present(quantity))))
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartLinesUpdate != null) {
+        if (response.data?.cartLinesUpdate != null && response.exception == null) {
             emit(response.data?.cartLinesUpdate?.cart?.lines)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -162,7 +151,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun getProductDetailsById(id: String) = flow {
         val query = GetProductByIdQuery(id)
         val response = apolloClient.query(query).execute()
-        if (response.data?.product != null) {
+        if (response.data?.product != null && response.exception == null) {
             emit(response.data?.product)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -176,7 +165,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
     ): Flow<RemoveProductFromCartMutation.CartLinesRemove?> = flow {
         val mutation = RemoveProductFromCartMutation(cartId, lineId)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartLinesRemove != null) {
+        if (response.data?.cartLinesRemove != null && response.exception == null) {
             emit(response.data!!.cartLinesRemove)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)

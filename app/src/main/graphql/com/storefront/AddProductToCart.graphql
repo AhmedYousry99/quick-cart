@@ -1,7 +1,7 @@
-mutation AddProductsToCart($cartId: ID!, $productVariants: [CartLineInput!]!) {
+mutation AddProductToCartMutation($cartId: ID!, $quantity: Int!, $varientid: ID!) {
     cartLinesAdd(
         cartId: $cartId
-        lines: $productVariants
+        lines: [{ quantity: $quantity, merchandiseId: $varientid }]
     ) {
         userErrors {
             field
@@ -14,45 +14,34 @@ mutation AddProductsToCart($cartId: ID!, $productVariants: [CartLineInput!]!) {
             note
             totalQuantity
             updatedAt
-            lines(first: 50) {
+            lines(first: 10) {
                 nodes {
                     id
                     merchandise {
                         ... on ProductVariant {
                             availableForSale
+                            barcode
                             currentlyNotInStock
                             id
+                            product{
+                                id
+                                title
+                                images(first: 5){
+                                    nodes{
+                                        url
+                                    }
+                                }
+                            }
+                            price{
+                                amount
+                            }
                             quantityAvailable
-                            requiresComponents
                             requiresShipping
                             sku
                             taxable
                             title
                             weight
                             weightUnit
-                            price {
-                                amount
-                                currencyCode
-                            }
-                            unitPrice {
-                                amount
-                                currencyCode
-                            }
-                            product {
-                                title
-                                description
-                                vendor
-                                id
-                                availableForSale
-                                images{
-                                    nodes {
-                                        altText
-                                        url
-                                        height
-                                        width
-                                    }
-                                }
-                            }
                         }
                     }
                     quantity

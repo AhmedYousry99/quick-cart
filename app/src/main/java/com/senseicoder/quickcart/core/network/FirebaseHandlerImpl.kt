@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -27,10 +27,9 @@ object FirebaseHandlerImpl :FirebaseHandler{
         }
         emit(
             CustomerDTO(
-            task.user!!.displayName ?: displayName,
-            email,
-            password
-        )
+            displayName = task.user!!.displayName ?: displayName,
+            email = email,
+            password = password)
         )
        /* val profileUpdates = userProfileChangeRequest {
             displayName = displayName

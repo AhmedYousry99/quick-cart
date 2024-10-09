@@ -2,7 +2,7 @@ package com.senseicoder.quickcart.core.network.interfaces
 
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.model.ProductOfCart
-import com.storefront.AddProductsToCartMutation
+import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
@@ -28,10 +28,13 @@ interface StorefrontHandler {
 
     suspend fun getProductsCart(cartId: String): Flow<List<ProductOfCart>?>
 
-    suspend fun createCart(email: String, token: String): Flow<CreateCartMutation.Cart>
-
-    suspend fun addToCartById(cartId: String, productsOfCart: List<ProductOfCart>): Flow<AddProductsToCartMutation.CartLinesAdd>
 
     suspend fun updateQuantityOfProduct(cartId: String, lineId: String,quantity:Int): Flow<CartLinesUpdateMutation.Lines?>
     suspend fun getProductDetailsById(id: String): Flow<GetProductByIdQuery.Product?>
+    suspend fun createCart(email: String): Flow<CreateCartMutation.Cart>
+    suspend fun addToCartById(
+        cartId: String,
+        quantity: Int,
+        variantId: String
+    ): Flow<AddProductToCartMutation.CartLinesAdd>
 }

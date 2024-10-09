@@ -36,6 +36,7 @@ object RetrofitHelper {
     private val stripeInterceptor = Interceptor { chain ->
         val original = chain.request()
         val requestBuilder = original.newBuilder()
+            //TODO: add your header if stripe is used
 //            .header("Authorization", "Bearer $SECRET_KEY")
             .header("Content-Type", "application/x-www-form-urlencoded")
         val request = requestBuilder.build()
