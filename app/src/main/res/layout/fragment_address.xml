@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:text="Address"
         android:textColor="@color/black"
+        android:fontFamily="@font/alexandria_medium"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imgBtnBack"
