@@ -1,9 +1,10 @@
 package com.senseicoder.quickcart.core.network.interfaces
 
+import com.senseicoder.quickcart.core.entity.order.Order
+import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.admin.adapter.CreateAddressMutation_ResponseAdapter
 import com.senseicoder.quickcart.core.model.ProductOfCart
-import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
@@ -29,6 +30,10 @@ interface StorefrontHandler {
         firstName: String,
         lastName: String
     ): Flow<CreateCustomerMutation.Customer>
+
+
+    //getting orders
+    fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>>
 
     //SHOPPING CART NEEDED
 
