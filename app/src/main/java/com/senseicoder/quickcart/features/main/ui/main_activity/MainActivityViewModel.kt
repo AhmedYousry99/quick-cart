@@ -11,4 +11,11 @@ class MainActivityViewModel : ViewModel() {
     fun setCurrentProductId(id: String) {
         _currentProductId.value = id
     }
+
+    private  val _location : MutableStateFlow<Pair<Double,Double>> = MutableStateFlow(Pair(0.0,0.0))
+    val location = _location
+
+    fun setLocation(lat:Double,long:Double){
+        _location.value = Pair(lat,long)
+    }
 }
