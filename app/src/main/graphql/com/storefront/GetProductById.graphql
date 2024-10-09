@@ -5,30 +5,57 @@ query GetProductById($id: ID!) {
         description
         productType
         vendor
+        handle
+
+        options {
+            id
+            name
+            optionValues {
+                id
+                name
+            }
+        }
+        priceRange {
+            maxVariantPrice {
+                amount
+                currencyCode
+            }
+            minVariantPrice {
+                amount
+                currencyCode
+            }
+        }
         totalInventory
-        variants(first: 10) {
-            edges {
-                node {
-                    id
-                    quantityAvailable
-                    price {
-                        amount
-                        currencyCode
-                    }
-                    selectedOptions {
-                        name
-                        value
-                    }
+        featuredImage {
+            url
+            width
+            height
+        }
+        variants(first: 20) {
+            nodes {
+                id
+                quantityAvailable
+                currentlyNotInStock
+                availableForSale
+                image {
+                    height
+                    width
+                    url
+                }
+                price {
+                    amount
+                    currencyCode
+                }
+                selectedOptions {
+                    name
+                    value
                 }
             }
         }
         images(first: 10) {
-            edges {
-                node {
-                    url
-                }
+            nodes{
+                url
             }
         }
-        onlineStoreUrl
     }
 }
