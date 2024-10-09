@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/element"
+    android:layout_width="157dp"
+    android:layout_height="208dp"
+
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="24dp"
+    android:layout_marginBottom="16dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/brandConstrainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/brandImage"
+            android:layout_width="141dp"
+            android:layout_height="149dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/img"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/brandName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:lines="1"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alexandria_medium"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/brandImage" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="300 EGP"
+            android:textStyle="bold"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/primary"
+            android:textColorHint="@color/primary"
+            app:layout_constraintStart_toStartOf="@+id/brandName"
+            app:layout_constraintTop_toBottomOf="@+id/brandName" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

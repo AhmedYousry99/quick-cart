@@ -1,11 +1,17 @@
 package com.senseicoder.quickcart.core.network
 
 import android.util.Log
+
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
+import com.senseicoder.quickcart.core.entity.order.Order
+import com.senseicoder.quickcart.core.entity.product.Product
+import com.senseicoder.quickcart.core.entity.product.Products
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.fromEdges
@@ -13,6 +19,7 @@ import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateAddressMutation
 import com.storefront.CreateCartMutation
+import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
 import com.storefront.CustomerAddressUpdateMutation
@@ -23,8 +30,11 @@ import com.storefront.GetCartDetailsQuery
 import com.storefront.GetProductByIdQuery
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
+import com.storefront.CustomerOrdersQuery
 import com.storefront.type.CustomerCreateInput
 import com.storefront.type.MailingAddressInput
+
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.Interceptor
@@ -250,5 +260,71 @@ object StorefrontHandlerImpl : StorefrontHandler {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
 
+//    getting orders
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
+        val query = CustomerOrdersQuery(token)
+        Log.i(TAG, "getOrders: ")
+        try {
+            emit(ApiState.Loading)
+            val response: ApolloResponse<CustomerOrdersQuery.Data> =
+                apolloClient.query(query).execute()
+
+            if (response.hasErrors()) {
+                Log.i(TAG, "get Orders: error" + response.errors)
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages).toString()))
+            } else {
+                val data = response.data?.customer?.orders?.edges ?: emptyList()
+                Log.i(TAG, "getOrders: data" + data)
+
+                if (data.isEmpty()) {
+                    // Handle the case where there are no orders
+                    emit(ApiState.Success(emptyList())) // Emit an empty list instead of an error
+                } else {
+                    val orders: MutableList<Order> = mutableListOf()
+                    data.forEach {
+                        val products = mutableListOf<Product>()
+                        it.node.lineItems.edges.forEach { item ->
+                            products.add(
+                                Product(
+                                    item.node.variant?.id ?: "",
+                                    item.node.title,
+                                    item.node.variant?.product?.handle ?: "",
+                                    item.node.variant?.product?.description ?: "",
+                                    item.node.variant?.product?.images!!.edges[0].node.url.toString(),
+                                    item.node.variant.product.productType,
+                                    item.node.variant.priceV2.amount.toString(),
+                                    item.node.variant.priceV2.currencyCode.toString()
+                                )
+                            )
+                        }
+                        orders.add(
+                            Order(
+                                it.node.id,
+                                it.node.name,
+                                it.node.billingAddress?.address1,
+                                it.node.currentTotalPrice.amount.toString(),
+                                it.node.currentTotalPrice.currencyCode.toString(),
+                                it.node.currentSubtotalPrice.amount.toString(),
+                                it.node.currentSubtotalPrice.currencyCode.toString(),
+                                it.node.currentTotalTax.amount.toString(),
+                                it.node.currentTotalTax.currencyCode.toString(),
+                                it.node.processedAt.toString(),
+                                it.node.phone,
+                                products
+                            )
+                        )
+                    }
+                    emit(ApiState.Success(orders))
+                }
+            }
+        } catch (e: ApolloException) {
+            Log.e(TAG, "Error fetching orders", e)
+            emit(ApiState.Failure(e.toString()))
+        }
+    }
+
     private const val TAG = "StorefrontHandlerImpl"
+
+
 }

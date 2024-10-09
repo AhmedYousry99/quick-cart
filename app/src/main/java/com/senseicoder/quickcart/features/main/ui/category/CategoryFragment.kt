@@ -129,7 +129,8 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             categoryViewModel.filterSubCategory = true
             subCategory = "kid"
             categoryViewModel.filterBySubCategory("kid")
-
+            // Reset to SHOES when subcategory is selected
+            binding.shoesCategory.performClick()
         }
 
         binding.men.setOnClickListener {
@@ -144,6 +145,8 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             categoryViewModel.filterSubCategory = true
             subCategory = "men"
             categoryViewModel.filterBySubCategory("men")
+            // Reset to SHOES when subcategory is selected
+            binding.shoesCategory.performClick()
         }
 
         binding.women.setOnClickListener {
@@ -158,6 +161,8 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             categoryViewModel.filterSubCategory = true
             subCategory = "women"
             categoryViewModel.filterBySubCategory("women")
+            // Reset to SHOES when subcategory is selected
+            binding.shoesCategory.performClick()
         }
 
         binding.sale.setOnClickListener {
@@ -172,10 +177,12 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             categoryViewModel.filterSubCategory = true
             subCategory = "sale"
             categoryViewModel.filterBySubCategory("sale")
+            // Reset to SHOES when subcategory is selected
+            binding.shoesCategory.performClick()
         }
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 categoryViewModel.products.collectLatest {
                     when (it) {
                         is ApiState.Loading -> {
@@ -183,7 +190,7 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
                                 binding.recyclerView.visibility = View.GONE
                                 binding.shimmerFrameLayout.startShimmer()
                                 binding.noConnectivity.visibility = View.GONE
-                            }else{
+                            } else {
                                 binding.noConnectivity.visibility = View.VISIBLE
                                 binding.connectivity.visibility = View.GONE
                             }
@@ -201,7 +208,7 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
                                     categoryViewModel.filterSubCategory = true
                                     subCategory = "kid"
                                     categoryViewModel.filterBySubCategory(subCategory)
-                                }else{
+                                } else {
                                     categoryViewModel.getProducts()
                                 }
                             }
@@ -226,7 +233,6 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
                 }
             }
         }
-
     }
 
     override fun onStart() {
@@ -244,7 +250,7 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
         findNavController().navigate(R.id.action_categoryFragment_to_productDetailsFragment)
     }
 
-    private fun refresh(){
+    private fun refresh() {
         if (networkConnectivity.isOnline()) {
             binding.connectivity.visibility = View.VISIBLE
             binding.noConnectivity.visibility = View.GONE

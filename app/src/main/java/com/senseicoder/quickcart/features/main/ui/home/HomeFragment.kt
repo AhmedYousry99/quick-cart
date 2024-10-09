@@ -4,17 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.MyDialog
+import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
@@ -30,6 +35,14 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private lateinit var brandAdapter: HomeBrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
+
+    private val onDestinationChangedListener =
+        NavController.OnDestinationChangedListener { controller, destination, arguments ->
+            if (!canNavigate(destination.id)){
+                controller.popBackStack()
+                Toast.makeText(requireContext(), getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+            }
+        }
 
     private val networkConnectivity by lazy {
         NetworkConnectivity.getInstance(requireActivity().application)
@@ -63,6 +76,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         binding.swipeRefresher.setColorSchemeResources(R.color.black)
 
+        findNavController().addOnDestinationChangedListener(onDestinationChangedListener)
 
         if (networkConnectivity.isOnline()) {
             binding.connectivity.visibility = View.VISIBLE
@@ -138,13 +152,17 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
+    }
+
 
     private fun setupCouponViewPager() {
-        // Sample coupon image list (replace with real data)
+
         val couponImages = listOf(
-            R.drawable.img,
-            R.drawable.img,
-            R.drawable.img
+            R.drawable.coupon10bg,
+            R.drawable.coupon20bg
         )
 
         // Initialize the adapter
@@ -179,6 +197,14 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
 
         binding.swipeRefresher.isRefreshing = false
+    }
+
+    private fun canNavigate(destinationId: Int): Boolean {
+        if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
+            val isUserGuest = SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT
+            return !isUserGuest
+        }
+        return true
     }
 
 
