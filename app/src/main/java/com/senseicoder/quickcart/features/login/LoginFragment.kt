@@ -32,6 +32,8 @@ import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentLoginBinding
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModel
 import com.senseicoder.quickcart.features.login.viewmodel.LoginViewModelFactory
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.launch
 
 
@@ -85,6 +87,7 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        (requireActivity() as MainActivity).hideBottomNavBar()
         Log.d(TAG, "onStart: ${Navigation.findNavController(requireView()).currentDestination}\n ${Navigation.findNavController(requireView()).currentBackStackEntry}")
     }
 
@@ -103,12 +106,13 @@ class LoginFragment : Fragment() {
                         }
                         is ApiState.Success -> {
                             enableButtons()
+                            ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].updateCurrentUser(it.data)
 //                            progressBar.dismissProgressBar(this@LoginFragment)
                             try{
                                 findNavController().graph.setStartDestination(R.id.homeFragment)
                                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                             }catch(e:Exception){
-
+                                Log.d(TAG, "subscribeToObservables: navigation error happened")
                             }
                         }
                         is ApiState.Failure -> {

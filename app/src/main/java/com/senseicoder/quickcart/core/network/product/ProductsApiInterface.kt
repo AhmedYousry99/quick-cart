@@ -4,11 +4,8 @@ import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.entity.brand.BrandResponse
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.entity.product.ProductResponse
-import com.senseicoder.quickcart.core.model.SignupCustomResponse
-import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ProductsApiInterface {@GET("smart_collections.json")

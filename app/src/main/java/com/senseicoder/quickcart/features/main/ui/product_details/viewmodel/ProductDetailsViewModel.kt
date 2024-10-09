@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.ReviewDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.repos.cart.CartRepo
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,14 +59,14 @@ class ProductDetailsViewModel(
         MutableSharedFlow(1)
     val selectedProduct = _selectedProduct.asSharedFlow()
 
-    private val _cartItemRemove: MutableStateFlow<ApiState<String?>> =
+/*    private val _cartItemRemove: MutableStateFlow<ApiState<String?>> =
         MutableStateFlow(ApiState.Init)
-    val cartItemRemove = _cartItemRemove.asStateFlow()
+    val cartItemRemove = _cartItemRemove.asStateFlow()*/
 
 
     fun createCart(email: String) {
         viewModelScope.launch {
-            cartRepo.createCart(email, cartRepo.getUserToken()).catch {
+            cartRepo.createCart(email).catch {
                 _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
             }.collect { cartId ->
                 cartRepo.setCartId(cartId)
@@ -74,7 +76,7 @@ class ProductDetailsViewModel(
     }
 
     fun getProductDetails(productId: String = "gid://shopify/Product/8309909618854") {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             productsRepo.getProductDetailsGraph(productId).catch {
                 _product.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
             }.map { productDTO ->
@@ -92,7 +94,7 @@ class ProductDetailsViewModel(
         }
     }
 
-    fun removeProductFromCart(cartId: String, lineId: String) {
+    /*fun removeProductFromCart(cartId: String, lineId: String) {
         viewModelScope.launch {
             cartRepo.removeProductFromCart(cartId, lineId).catch {
                 _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
@@ -101,14 +103,33 @@ class ProductDetailsViewModel(
                     _cartItemRemove.value = ApiState.Success(it)
                 }
         }
-    }
+    }*/
 
-    fun addProductToCart(productId: String, products: List<ProductOfCart>) {
-        viewModelScope.launch {
-            cartRepo.addToCartByIds(productId, products).catch {
-                _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
-            }.collect {
-                _addingToCart.value = ApiState.Success(it)
+    fun addProductToCart(selectedAmount: Int,variants: List<Variant>, currentCustomer: CustomerDTO) {
+        viewModelScope.launch(Dispatchers.Default) {
+            val id = cartRepo.getCartId()
+            //TODO: handle if cart_id is invalid
+            if(id != Constants.CART_ID_DEFAULT){
+                Log.d(TAG, "addProductToCart: cartId exists: $id")
+                cartRepo.addToCartByIds(id, selectedAmount, variants.first().id).catch {
+                    _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
+                }.collect {
+                    withContext(Dispatchers.Main){
+                        _addingToCart.value = ApiState.Success(it)
+                    }
+                }
+            }else{
+                Log.d(TAG, "addProductToCart: creating ID")
+                cartRepo.createCart(currentCustomer.email)
+                    .flatMapConcat { cartId ->
+                        cartRepo.addToCartByIds(cartId,selectedAmount, variants.first().id)
+                    }.catch {
+                        _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
+                    }.collect {
+                        withContext(Dispatchers.Main){
+                            _addingToCart.value = ApiState.Success(it)
+                        }
+                    }
             }
         }
     }
@@ -221,4 +242,12 @@ class ProductDetailsViewModel(
         Color,
         Size
     }
+}
+
+private fun ProductOfCart.Companion.fromVariant(cartId: String, selectedAmount: Int, it: Variant): ProductOfCart {
+    return ProductOfCart(
+        id = cartId,
+        quantity = selectedAmount,
+        variantId = it.id
+    )
 }

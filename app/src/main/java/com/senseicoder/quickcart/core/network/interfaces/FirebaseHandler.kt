@@ -1,6 +1,6 @@
 package com.senseicoder.quickcart.core.network.interfaces
 
-import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import kotlinx.coroutines.flow.Flow
 
 interface FirebaseHandler {
@@ -11,7 +11,6 @@ interface FirebaseHandler {
         email: String,
         password: String,
     ): Flow<CustomerDTO>
-
     suspend fun updateDisplayName(
         customerDTO: CustomerDTO
     ): Flow<CustomerDTO>

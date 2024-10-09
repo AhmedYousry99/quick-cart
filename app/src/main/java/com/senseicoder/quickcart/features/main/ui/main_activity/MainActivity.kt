@@ -3,6 +3,7 @@ package com.senseicoder.quickcart.features.main.ui.main_activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
@@ -43,10 +45,6 @@ class MainActivity : AppCompatActivity() {
             )
         ).build()
         navController = findNavController(this, R.id.nav_host)
-        if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
-            navController.navigate(R.id.action_loginFragment_to_homeFragment)
-            navController.graph.setStartDestination(R.id.homeFragment)
-        }
 
 //        progressBar.startProgressBar()
 
@@ -58,6 +56,13 @@ class MainActivity : AppCompatActivity() {
         if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT) {
             navController.navigate(R.id.action_loginFragment_to_homeFragment)
             navController.graph.setStartDestination(R.id.homeFragment)
+        }
+        navController.addOnDestinationChangedListener{
+                _, destination, _ ->
+            if (!canNavigate(destination.id)){
+                navController.popBackStack();
+                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -81,6 +86,14 @@ class MainActivity : AppCompatActivity() {
             binding.toolbar.visibility = View.VISIBLE
         else
             binding.toolbar.visibility = View.GONE
+    }
+
+    private fun canNavigate(destinationId: Int): Boolean {
+        if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
+            val isUserGuest = SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT
+            return !isUserGuest
+        }
+        return true
     }
 
     companion object {
