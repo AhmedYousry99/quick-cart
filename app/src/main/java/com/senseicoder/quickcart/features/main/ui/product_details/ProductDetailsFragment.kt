@@ -175,6 +175,7 @@ class ProductDetailsFragment : Fragment() {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
+                                selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()
                                 Log.d(TAG, "subscribeToObservables: MultiSelected\n${selectedProducts.data.first}")
                                 variant.let {
