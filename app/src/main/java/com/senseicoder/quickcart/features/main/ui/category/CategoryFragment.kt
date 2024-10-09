@@ -9,13 +9,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentCategoryBinding
 import com.senseicoder.quickcart.features.main.ui.category.viewmodel.CategoryViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -231,9 +234,8 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
     }
 
     override fun productClicked(id: Long) {
-//        val action =
-//            CategoryFragmentDirections.actionNavigationDashboardToProductDetailsFragment(id) //to move to the product info fragment
-//        binding.root.findNavController().navigate(action)
+        ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].setCurrentProductId(id.toString())
+        findNavController().navigate(R.id.action_categoryFragment_to_productDetailsFragment)
     }
 
     private fun refresh(){

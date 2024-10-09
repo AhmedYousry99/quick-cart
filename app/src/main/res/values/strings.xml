@@ -54,4 +54,10 @@
     <string name="street_name">Street Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="address_details">Address Details</string>
+    <string name="sizes_text">Sizes:</string>
+    <string name="colors_text">Colors:</string>
+    <string name="add_to_cart">Add To Cart</string>
+    <string name="in_stock">In Stock:\u0020</string>
+    <string name="products_amount_text">0</string>
+    <string name="price_text">Price:\u0020</string>
 </resources>

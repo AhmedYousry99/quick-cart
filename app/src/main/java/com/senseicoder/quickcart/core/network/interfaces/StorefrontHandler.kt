@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.core.network.interfaces
 
+import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.admin.adapter.CreateAddressMutation_ResponseAdapter
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -8,6 +9,7 @@ import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
+import com.storefront.GetProductByIdQuery
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.RemoveProductFromCartMutation
@@ -42,6 +44,7 @@ interface StorefrontHandler {
 
     suspend fun addToCartById(cartId: String, productsOfCart: List<ProductOfCart>): Flow<AddProductsToCartMutation.CartLinesAdd>
 
+    suspend fun getProductDetailsById(id: String): Flow<GetProductByIdQuery.Product?>
     //ADDRESS NEEDED
 
     suspend fun getCustomerAddresses(token: String): Flow<CustomerAddressesQuery.Customer?>
