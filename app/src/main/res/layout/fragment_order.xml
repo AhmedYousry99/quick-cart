@@ -1,28 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/swipeRefresher"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".OrderFragment">
-
-<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefresher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent">
+    tools:context=".features.main.ui.order.OrderFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
             android:id="@+id/txt_orders_title"
@@ -33,94 +24,127 @@ tools:context=".OrderFragment">
             android:textColor="@color/black"
             android:textSize="24sp"
             android:fontFamily="@font/alexandria_medium"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycleOrders"
+        <!-- ShimmerFrameLayout aligned with RecyclerView -->
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerFrameLayoutOrders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/txt_orders_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+                <include layout="@layout/order_brand_shimmer_placeholder" />
+
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ordersRV"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/shimmerFrameLayoutOrders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/no_orders"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_order" />
 
-    </LinearLayout>
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerFrameLayoutOrders"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        <!-- No Orders View -->
         <LinearLayout
+            android:id="@+id/no_orders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/ordersRV"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <include layout="@layout/order_brand_shimmer_placeholder" />
+            <!-- Lottie Animation for No Orders -->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/emptyAnimation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/emptyanimation" />
 
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
-            <include layout="@layout/order_brand_shimmer_placeholder" />
-
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="32dp"
+                android:text="@string/no_orders"
+                android:textAlignment="center"
+                android:textColor="@color/translucent"
+                android:textSize="12sp" />
         </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/networkLottie"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="200dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/nointernet" />
+        <!-- Lottie Animation for No Internet -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/networkLottie"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/nointernet" />
 
-    <TextView
-        android:id="@+id/noInternet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:text="@string/noInternet"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/networkLottie" />
+        <TextView
+            android:id="@+id/noInternet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/noInternet"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/networkLottie" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/connectivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="shimmerFrameLayoutOrders" />
+        <!-- Group to hide/show network-related views -->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/connectivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="ordersRV,shimmerFrameLayoutOrders" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/noConnectivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="noInternet,networkLottie" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/noConnectivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="noInternet,networkLottie" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

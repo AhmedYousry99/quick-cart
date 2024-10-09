@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".features.main.ui.order.OrderDetailsFragment">
+
+<TextView
+    android:id="@+id/textView9"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="@string/order_items"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="20sp"
+    android:textColor="@color/black"
+    android:textStyle="bold"
+    app:layout_constraintStart_toStartOf="@+id/textView2"
+    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+<LinearLayout
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+
+    <TextView
+        android:id="@+id/tv_favorite_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        android:text="@string/order_details"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:fontFamily="@font/alexandria_medium"
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+</LinearLayout>
+
+<TextView
+    android:id="@+id/textView2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="-24dp"
+    android:text="@string/order_id"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="20sp"
+    android:textColor="@color/black"
+    android:textStyle="bold"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+<TextView
+    android:id="@+id/order_id"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:text="#1111"
+    android:textColor="@color/primary"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+    app:layout_constraintStart_toEndOf="@+id/textView2"
+    app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+<TextView
+    android:id="@+id/items_count"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="24dp"
+    android:text="2 items"
+    android:textColor="@color/primary"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="16sp"
+    android:textStyle="normal"
+    app:layout_constraintBottom_toBottomOf="@+id/textView9"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/order_products_rv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+<View
+    android:id="@+id/divider"
+    android:layout_width="327dp"
+    android:layout_height="1dp"
+    android:background="?android:attr/listDivider"
+    android:backgroundTint="@color/background"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/order_products_rv" />
+
+<View
+    android:id="@+id/view"
+    android:layout_width="327dp"
+    android:layout_height="1dp"
+    android:layout_marginTop="16dp"
+    android:background="?android:attr/listDivider"
+    android:backgroundTint="@color/background"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+<androidx.cardview.widget.CardView
+    android:id="@+id/cardView"
+    android:layout_width="0dp"
+    android:layout_height="118dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="24dp"
+    android:background="@drawable/round_btn"
+    android:backgroundTint="@color/background"
+    app:cardCornerRadius="14dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/divider">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/home_address"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alexandria_medium"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="36dp"
+            android:fontFamily="@font/alexandria_medium"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/imageView5" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/location"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toTopOf="@+id/address" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
+
+<TextView
+    android:id="@+id/textView12"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="16dp"
+    android:text="@string/subtotal"
+    android:textColor="@color/black"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/view" />
+
+<TextView
+    android:id="@+id/tax"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="00.00 EGP"
+    android:textColor="@color/secondary_variant"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    app:layout_constraintEnd_toEndOf="@+id/sub_total"
+    app:layout_constraintTop_toTopOf="@+id/textView14" />
+
+<TextView
+    android:id="@+id/sub_total"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="24dp"
+    android:text="300.00 EGP"
+    android:fontFamily="@font/alexandria_medium"
+    android:textColor="@color/black"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/textView12" />
+
+<TextView
+    android:id="@+id/textView14"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:text="@string/total_tax"
+    android:textColor="@color/secondary_variant"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    app:layout_constraintStart_toStartOf="@+id/textView12"
+    app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+<TextView
+    android:id="@+id/textView15"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:text="@string/total_cost"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:textColor="@color/black"
+    app:layout_constraintStart_toStartOf="@+id/textView12"
+    app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
+<TextView
+    android:id="@+id/total_price"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="300.00 EGP"
+    android:fontFamily="@font/alexandria_medium"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    android:textColor="@color/black"
+    app:layout_constraintEnd_toEndOf="@+id/sub_total"
+    app:layout_constraintTop_toTopOf="@+id/textView15" />
+</androidx.constraintlayout.widget.ConstraintLayout>
