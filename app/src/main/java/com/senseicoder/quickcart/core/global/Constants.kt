@@ -26,14 +26,19 @@ object Constants {
 
     const val CART_ID:  String = "cartId"
     const val CART_ID_DEFAULT:  String = "unknown"
+
     const val USER_EMAIL: String = "userEmail"
     const val USER_EMAIL_DEFAULT: String = "unknown"
+
     const val USER_DISPLAY_NAME: String = "userDisplayName"
     const val USER_DISPLAY_NAME_DEFAULT: String = "unknown"
+
     const val USER_TOKEN: String = "userToken"
     const val USER_TOKEN_DEFAULT: String = "unknown"
+
     const val USER_ID = "userId"
     const val USER_ID_DEFAULT = "unknown"
+
     const val CURRENCY = "currency"
     const val CURRENCY_DEFAULT = "EGP"
 }

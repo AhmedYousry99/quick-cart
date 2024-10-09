@@ -30,9 +30,7 @@ import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewM
 import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.storefront.type.MailingAddressInput
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.util.Locale
 
 class AddressFragment : Fragment(), OnAddressClickListener {

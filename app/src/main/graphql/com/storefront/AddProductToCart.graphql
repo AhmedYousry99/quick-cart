@@ -1,4 +1,4 @@
-mutation AddProductToCartMutation($cartId: ID!, $quantity: Int!, $varientid: ID!) {
+mutation AddProductToCart($cartId: ID!, $quantity: Int!, $varientid: ID!) {
     cartLinesAdd(
         cartId: $cartId
         lines: [{ quantity: $quantity, merchandiseId: $varientid }]
@@ -34,6 +34,7 @@ mutation AddProductToCartMutation($cartId: ID!, $quantity: Int!, $varientid: ID!
                             }
                             price{
                                 amount
+                                currencyCode
                             }
                             quantityAvailable
                             requiresShipping

@@ -71,11 +71,11 @@
             android:id="@+id/imgBtnMinusOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/ripple_red"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imgProduct"
-            app:layout_constraintTop_toBottomOf="@+id/txtPrice"
+            app:layout_constraintStart_toStartOf="@+id/textView2"
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
             app:srcCompat="@drawable/ic_minus" />
 
         <ImageButton
@@ -100,6 +100,27 @@
             app:layout_constraintBottom_toBottomOf="@+id/imgBtnMinusOne"
             app:layout_constraintStart_toEndOf="@+id/imgBtnMinusOne"
             app:layout_constraintTop_toTopOf="@+id/imgBtnMinusOne" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="SIze:"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/txtPrice"
+            app:layout_constraintTop_toBottomOf="@+id/txtPrice" />
+
+        <TextView
+            android:id="@+id/txtValueOfSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="@+id/textView2"
+            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintTop_toTopOf="@+id/textView2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -25,6 +25,9 @@ class CartAdapter(private val listener: OnCartItemClickListner) :
         val currentPosition: ProductOfCart = getItem(position)
         holder.binding.apply {
             setUpListener(this, position)
+            //TODO ADD VALUE OF SIZE AND SHOW IT
+//            txtValueOfSize.text = currentPosition.variantTitle
+            txtValueOfSize.visibility = ViewGroup.GONE
             txtPrice.text = currentPosition.variantPrice
             txtNameOfProduct.text = currentPosition.productTitle
             txtCount.text = String.format(currentPosition.quantity.toString())

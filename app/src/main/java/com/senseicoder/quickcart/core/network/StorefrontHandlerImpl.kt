@@ -261,7 +261,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
 
-//    getting orders
+    //    getting orders
     override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
         val query = CustomerOrdersQuery(token)
         Log.i(TAG, "getOrders: ")
@@ -285,36 +285,38 @@ object StorefrontHandlerImpl : StorefrontHandler {
                     val orders: MutableList<Order> = mutableListOf()
                     data.forEach {
                         val products = mutableListOf<Product>()
-                        it.node.lineItems.edges.forEach { item ->
-                            products.add(
-                                Product(
-                                    item.node.variant?.id ?: "",
-                                    item.node.title,
-                                    item.node.variant?.product?.handle ?: "",
-                                    item.node.variant?.product?.description ?: "",
-                                    item.node.variant?.product?.images!!.edges[0].node.url.toString(),
-                                    item.node.variant.product.productType,
-                                    item.node.variant.priceV2.amount.toString(),
-                                    item.node.variant.priceV2.currencyCode.toString()
+                        it.node.apply {
+                            lineItems.edges.forEach { item ->
+                                products.add(
+                                    Product(
+                                        item.node.variant?.id ?: "",
+                                        item.node.title,
+                                        item.node.variant?.product?.handle ?: "",
+                                        item.node.variant?.product?.description ?: "",
+                                        item.node.variant?.product?.images!!.edges[0].node.url.toString(),
+                                        item.node.variant.product.productType,
+                                        item.node.variant.price.amount.toString(),
+                                        item.node.variant.price.currencyCode.toString()
+                                    )
+                                )
+                            }
+                            orders.add(
+                                Order(
+                                    id,
+                                    name,
+                                    billingAddress?.address1,
+                                    currentTotalPrice.amount.toString(),
+                                    currentTotalPrice.currencyCode.toString(),
+                                    currentSubtotalPrice.amount.toString(),
+                                    currentSubtotalPrice.currencyCode.toString(),
+                                    currentTotalTax.amount.toString(),
+                                    currentTotalTax.currencyCode.toString(),
+                                    processedAt.toString(),
+                                    phone,
+                                    products
                                 )
                             )
                         }
-                        orders.add(
-                            Order(
-                                it.node.id,
-                                it.node.name,
-                                it.node.billingAddress?.address1,
-                                it.node.currentTotalPrice.amount.toString(),
-                                it.node.currentTotalPrice.currencyCode.toString(),
-                                it.node.currentSubtotalPrice.amount.toString(),
-                                it.node.currentSubtotalPrice.currencyCode.toString(),
-                                it.node.currentTotalTax.amount.toString(),
-                                it.node.currentTotalTax.currencyCode.toString(),
-                                it.node.processedAt.toString(),
-                                it.node.phone,
-                                products
-                            )
-                        )
                     }
                     emit(ApiState.Success(orders))
                 }

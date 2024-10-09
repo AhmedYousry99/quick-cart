@@ -55,6 +55,16 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        SharedPrefsService.apply {
+            Constants.also {
+                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_ID, it.USER_ID_DEFAULT)}")
+                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_TOKEN, it.USER_TOKEN_DEFAULT)}")
+                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_EMAIL, it.USER_ID_DEFAULT)}")
+                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.CART_ID, it.CART_ID_DEFAULT)}")
+                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_DISPLAY_NAME, it.USER_DISPLAY_NAME_DEFAULT)}")
+
+            }
+        }
         /*
         * used when endIcon is set to custom icon to handle on click events*/
         /*binding.emailLoginLayout.setEndIconOnClickListener{
