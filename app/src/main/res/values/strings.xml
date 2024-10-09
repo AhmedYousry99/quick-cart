@@ -56,4 +56,7 @@
     <string name="in_stock">In Stock:\u0020</string>
     <string name="products_amount_text">0</string>
     <string name="price_text">Price:\u0020</string>
+    <string name="product_added_successfully">Product Added To Cart Successfully!</string>
+    <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again Later</string>
+    <string name="permission_denied">You must be logged in to access thees features.</string>
 </resources>
