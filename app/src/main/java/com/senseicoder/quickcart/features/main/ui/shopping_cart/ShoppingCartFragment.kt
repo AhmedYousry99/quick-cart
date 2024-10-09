@@ -159,7 +159,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
 
     fun updateTotalPrice(list: List<ProductOfCart>?) {
         val res = Math.round(
-            (list?.sumOf { it.variantPrice.toDouble() * it.quantity })?.times(100.0) ?: 0.00
+            (list?.sumOf { it.variantPrice!!.toDouble() * it.quantity })?.times(100.0) ?: 0.00
         ) / 100.0
         fragmentBinding.txtValueOfGrandTotal.text = String.format(res.toString())
     }
@@ -174,19 +174,19 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     override fun onPlusClick(item: ProductOfCart) {
         fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old + item.variantPrice.toDouble()
+            val new = old + item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
             Log.d("Filo", "onPlusClick: ${item.quantity}")
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId,item.quantity)
+            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
         }
     }
 
     override fun onMinusClick(item: ProductOfCart) {
         fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old - item.variantPrice.toDouble()
+            val new = old - item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId,item.quantity)
+            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
         }
     }
 
