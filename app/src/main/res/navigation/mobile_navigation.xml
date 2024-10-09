@@ -18,7 +18,11 @@
         android:id="@+id/categoryFragment"
         android:name="com.senseicoder.quickcart.features.main.ui.category.CategoryFragment"
         android:label="@string/title_category"
-        tools:layout="@layout/fragment_category" />
+        tools:layout="@layout/fragment_category" >
+        <action
+            android:id="@+id/action_categoryFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/shoppingCartFragment"
@@ -51,6 +55,9 @@
         <argument
             android:name="brand"
             app:argType="string" />
+        <action
+            android:id="@+id/action_brandFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
