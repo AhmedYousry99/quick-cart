@@ -243,13 +243,17 @@ object StorefrontHandlerImpl : StorefrontHandler {
         token: String,
         id: String
     ): Flow<List<CustomerDefaultAddressUpdateMutation.Node>?> = flow {
-        val mutation = CustomerDefaultAddressUpdateMutation(token, id )
+        val mutation = CustomerDefaultAddressUpdateMutation(token, id)
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.customerDefaultAddressUpdate != null)
-            emit(response.data!!.customerDefaultAddressUpdate?.customer?.addresses?.nodes ?: emptyList() )
+            emit(
+                response.data!!.customerDefaultAddressUpdate?.customer?.addresses?.nodes
+                    ?: emptyList()
+            )
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
+
     private const val TAG = "StorefrontHandlerImpl"
 }
 

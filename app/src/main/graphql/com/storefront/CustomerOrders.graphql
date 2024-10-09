@@ -25,14 +25,13 @@ query CustomerOrders($accessToken: String!) {
                                 currentQuantity
                                 title
                                 variant {
+                                    price {
+                                        amount
+                                    }
                                     title
                                     id
                                     image {
                                         url
-                                    }
-                                    priceV2 {
-                                        amount
-                                        currencyCode
                                     }
                                     product {
                                         id

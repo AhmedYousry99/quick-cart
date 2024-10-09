@@ -1,9 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui
 
-import android.location.Address
-import android.location.Geocoder
 import androidx.fragment.app.Fragment
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -22,10 +17,8 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.databinding.FragmentMapsBinding
-import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.launch
-import java.io.IOException
-import java.util.Locale
 
 class MapsFragment : Fragment() {
     lateinit var binding: FragmentMapsBinding
