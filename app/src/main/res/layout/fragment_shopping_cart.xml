@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -109,73 +108,74 @@
         app:lottie_rawRes="@raw/emptyanimation"
         tools:visibility="gone" />
 
-<!--    <com.google.android.material.bottomsheet.BottomSheetDialogFragment-->
-<!--        android:id="@+id/bottomSheetDialog"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="?android:attr/windowBackground"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent">-->
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical"-->
-<!--            android:padding="16dp">-->
+    <!--    <com.google.android.material.bottomsheet.BottomSheetDialogFragment-->
+    <!--        android:id="@+id/bottomSheetDialog"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background="?android:attr/windowBackground"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent">-->
 
-<!--            &lt;!&ndash; Payment Options &ndash;&gt;-->
-<!--            <RadioGroup-->
-<!--                android:id="@+id/radioGroupPayment"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical"-->
+    <!--            android:padding="16dp">-->
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioCash"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Pay with Cash" />-->
+    <!--            &lt;!&ndash; Payment Options &ndash;&gt;-->
+    <!--            <RadioGroup-->
+    <!--                android:id="@+id/radioGroupPayment"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:orientation="vertical">-->
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioCard"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Pay with Card" />-->
-<!--            </RadioGroup>-->
+    <!--                <RadioButton-->
+    <!--                    android:id="@+id/radioCash"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:text="Pay with Cash" />-->
 
-<!--            &lt;!&ndash; Discount Code &ndash;&gt;-->
-<!--            <EditText-->
-<!--                android:id="@+id/etDiscountCode"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="Enter discount code"-->
-<!--                android:inputType="text" />-->
+    <!--                <RadioButton-->
+    <!--                    android:id="@+id/radioCard"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:text="Pay with Card" />-->
+    <!--            </RadioGroup>-->
 
-<!--            &lt;!&ndash; Total before and after discount &ndash;&gt;-->
-<!--            <TextView-->
-<!--                android:id="@+id/txtTotalBeforeDiscount"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Total Before Discount: $3130"-->
-<!--                android:textSize="16sp" />-->
+    <!--            &lt;!&ndash; Discount Code &ndash;&gt;-->
+    <!--            <EditText-->
+    <!--                android:id="@+id/etDiscountCode"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:hint="Enter discount code"-->
+    <!--                android:inputType="text" />-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/txtTotalAfterDiscount"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginBottom="16dp"-->
-<!--                android:text="Total After Discount: $0"-->
-<!--                android:textSize="16sp" />-->
+    <!--            &lt;!&ndash; Total before and after discount &ndash;&gt;-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/txtTotalBeforeDiscount"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="Total Before Discount: $3130"-->
+    <!--                android:textSize="16sp" />-->
 
-<!--            &lt;!&ndash; Confirm Button &ndash;&gt;-->
-<!--            <Button-->
-<!--                android:id="@+id/btnConfirmPayment"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Confirm Payment" />-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/txtTotalAfterDiscount"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:layout_marginBottom="16dp"-->
+    <!--                android:text="Total After Discount: $0"-->
+    <!--                android:textSize="16sp" />-->
 
-<!--        </LinearLayout>-->
-<!--    </com.google.android.material.bottomsheet.BottomSheetDialogFragment>-->
+    <!--            &lt;!&ndash; Confirm Button &ndash;&gt;-->
+    <!--            <Button-->
+    <!--                android:id="@+id/btnConfirmPayment"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="Confirm Payment" />-->
+
+    <!--        </LinearLayout>-->
+    <!--    </com.google.android.material.bottomsheet.BottomSheetDialogFragment>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

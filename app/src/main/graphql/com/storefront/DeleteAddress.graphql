@@ -5,9 +5,5 @@ mutation DeleteAddress($addressId: ID!, $token: String!) {
             field
             message
         }
-        userErrors {
-            field
-            message
-        }
     }
 }

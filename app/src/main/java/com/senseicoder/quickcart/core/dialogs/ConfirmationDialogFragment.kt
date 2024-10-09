@@ -53,6 +53,16 @@ class ConfirmationDialogFragment(val code: DialogType, val function: ()->Unit) :
                         "Sign Out"
                     )
                 }
+
+                DialogType.SAVE_ADDRESS -> {
+                    setDialogDetails(
+                        "Save Address",
+                        R.drawable.ic_edit_address,
+                        "Are you sure you will add this address",
+                        "ADD"
+                    )
+                }
+
             }
             btnCancel.setOnClickListener{
                 dismiss()

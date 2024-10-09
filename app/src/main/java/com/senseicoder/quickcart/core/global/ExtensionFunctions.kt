@@ -19,11 +19,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlinx.coroutines.runBlocking
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -268,3 +271,10 @@ fun Long.toDateTime(pattern: String): String {
         refreshLayout.scrollUpChild = it
     }
 }*/
+fun main (){
+    runBlocking{
+        StorefrontHandlerImpl.getCustomerAddresses("33ee30c05ce560ce1ea3b312c46aa8cc").collect{
+            println()
+        }
+    }
+}
