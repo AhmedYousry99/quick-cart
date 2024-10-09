@@ -197,8 +197,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-
-
     private fun hideValidationErrors() {
         binding.apply {
             emailPasswordLayout.error = null

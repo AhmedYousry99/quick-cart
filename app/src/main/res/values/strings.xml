@@ -50,4 +50,10 @@
     <string name="dialog_on_confirm_default">Confirm</string>
     <string name="dialog_on_cancel_default">Cancel</string>
     <string name="you_wont_have_access_to_features">You won\'t have access to most features (Favorites, Shopping Cart)</string>
+    <string name="sizes_text">Sizes:</string>
+    <string name="colors_text">Colors:</string>
+    <string name="add_to_cart">Add To Cart</string>
+    <string name="in_stock">In Stock:\u0020</string>
+    <string name="products_amount_text">0</string>
+    <string name="price_text">Price:\u0020</string>
 </resources>

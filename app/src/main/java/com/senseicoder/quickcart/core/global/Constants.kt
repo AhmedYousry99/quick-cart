@@ -18,6 +18,7 @@ object Constants {
         const val STORE_FRONT = "https://android-alex-team5.myshopify.com/api/2024-10/graphql.json"
         const val CUSTOMER_ID_PREFIX = "gid://shopify/Customer/"
         const val ORDER_ID_PREFIX = "gid://shopify/Order/"
+        const val PRODUCT_ID_PREFIX = "gid://shopify/Product/"
     }
 
     const val CART_ID:  String = "cartId"
@@ -28,4 +29,6 @@ object Constants {
     const val USER_TOKEN: String = "userToken"
     const val USER_ID = "userId"
     const val USER_ID_DEFAULT = "unknown"
+    const val CURRENCY = "currency"
+    const val CURRENCY_DEFAULT = "EGP"
 }

@@ -1,17 +1,31 @@
 package com.senseicoder.quickcart.core.repos.product
 
+import android.util.Log
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.model.DisplayBrand
 import com.senseicoder.quickcart.core.model.DisplayProduct
 import com.senseicoder.quickcart.core.network.interfaces.RemoteProductsDataSource
 import com.senseicoder.quickcart.core.network.product.RemoteProductsDataSourceImp
-import com.senseicoder.quickcart.core.entity.product.mapRemoteProductToDisplayProduct
+import com.senseicoder.quickcart.core.entity.product.mapApiRemoteProductToDisplayProduct
 import com.senseicoder.quickcart.core.entity.brand.mapRemoteBrandToDisplayBrand
+import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
+import com.senseicoder.quickcart.core.model.graph_product.mapQueryProductToProductDTO
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
+import com.senseicoder.quickcart.core.services.SharedPrefs
+import com.senseicoder.quickcart.core.services.SharedPrefsService
+import com.storefront.GetProductByIdQuery
+import kotlinx.coroutines.FlowPreview
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.timeout
+import kotlinx.coroutines.flow.transform
+import kotlin.time.Duration.Companion.seconds
 
-class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSource = RemoteProductsDataSourceImp()) :
+@OptIn(FlowPreview::class)
+class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSource = RemoteProductsDataSourceImp(), private val storefrontHandler: StorefrontHandler = StorefrontHandlerImpl, private val sharedPrefs: SharedPrefs = SharedPrefsService) :
     ProductsRepoInterface {
 
     override suspend fun getAllBrand(): Flow<List<DisplayBrand>> {
@@ -25,7 +39,7 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
         return flowOf(remoteProductsDataSource.getAllProductInBrand(brand).products.filter {
             it.vendor == brand
         }.map {
-            it.mapRemoteProductToDisplayProduct()
+            it.mapApiRemoteProductToDisplayProduct()
         })
     }
 
@@ -33,10 +47,48 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
         return flowOf(remoteProductsDataSource.getProductById(id))
     }
 
+    override suspend fun getProductDetailsGraph(id: String): Flow<ProductDTO> {
+        return storefrontHandler.getProductDetailsById(id).transform { product: GetProductByIdQuery.Product? ->
+            emit(product.let {
+                Log.d(TAG, "getProductDetailsGraph: old item:\n $it")
+                it!!.mapQueryProductToProductDTO()
+            }.also {
+                Log.d(TAG, "getProductDetailsGraph: new item:\n$it")
+            })
+        }.timeout(15.seconds)
+    }
+
     override suspend fun getAllProduct(): Flow<List<DisplayProduct>> {
 
-        return flowOf(remoteProductsDataSource.getAllProduct().products.map { it.mapRemoteProductToDisplayProduct() })
+        return flowOf(remoteProductsDataSource.getAllProduct().products.map { it.mapApiRemoteProductToDisplayProduct() })
 
+    }
+
+    override suspend fun getCurrency(): String {
+        return sharedPrefs.getSharedPrefString(Constants.CURRENCY, Constants.CURRENCY_DEFAULT)
+    }
+
+    companion object {
+        private const val TAG = "ProductsRepo"
+
+        @Volatile
+        private var instance: ProductsRepo? = null
+        fun getInstance(
+            remoteProductsDataSource: RemoteProductsDataSource = RemoteProductsDataSourceImp(),
+            storefrontHandler: StorefrontHandler = StorefrontHandlerImpl,
+            sharedPrefs: SharedPrefs = SharedPrefsService
+        ): ProductsRepo {
+            return instance ?: synchronized(this) {
+                val instance =
+                    ProductsRepo(
+                        remoteProductsDataSource,
+                        storefrontHandler,
+                        sharedPrefs
+                    )
+                Companion.instance = instance
+                instance
+            }
+        }
     }
 
 }
