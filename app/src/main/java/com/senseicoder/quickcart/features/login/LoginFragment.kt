@@ -112,7 +112,7 @@ class LoginFragment : Fragment() {
                                 findNavController().graph.setStartDestination(R.id.homeFragment)
                                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                             }catch(e:Exception){
-
+                                Log.d(TAG, "subscribeToObservables: navigation error happened")
                             }
                         }
                         is ApiState.Failure -> {

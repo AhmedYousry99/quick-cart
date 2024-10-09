@@ -43,8 +43,11 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
             customerRepo.loginUsingGuest().catch { e ->
                 _loginState.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect {
-//                customerRepo.setUserId(Constants.USER_ID_DEFAULT)
+                customerRepo.setUserId(Constants.USER_ID_DEFAULT)
                 customerRepo.setUserToken(Constants.USER_TOKEN_DEFAULT)
+                customerRepo.setEmail(Constants.CART_ID_DEFAULT)
+                customerRepo.setDisplayName(Constants.USER_DISPLAY_NAME_DEFAULT)
+                customerRepo.setCartId(Constants.CART_ID_DEFAULT)
                 withContext(Dispatchers.Main){
                     _loginState.value = ApiState.Success(it)
                 }

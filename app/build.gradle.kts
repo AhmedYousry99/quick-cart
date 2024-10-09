@@ -158,40 +158,10 @@ dependencies {
 
     ///////////////////////////////////////////////////////////
     implementation ("io.github.zagori:bottomnavbar:1.0.3")
-    implementation ("com.github.bumptech.glide:glide:4.15.0")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.tbuonomo:dotsindicator:4.2")
 
-  //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
-    //implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    //implementation ("androidx.navigation:navigation-fragment-ktx:2.6.0")
-    //implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
-    //implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    //implementation ("com.airbnb.android:lottie:5.2.0")
-
-    //implementation ("com.google.firebase:firebase-firestore:24.1.1")
-    //implementation ("androidx.legacy:legacy-support-v4:1.0.0")
-    //implementation ("com.google.android.material:material:1.8.0")
-
-
-
-    //retrofit
-    //implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    //implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    //implementation ("com.google.code.gson:gson:2.10.1")
-
-    // Json Parser
-    //implementation ("com.google.code.gson:gson:2.10.1")
-    //json converter
-    //implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
-
-    //Room
-    //implementation ("androidx.room:room-ktx:2.5.0")
-    //implementation ("androidx.room:room-runtime:2.5.0")
-    //kapt ("androidx.room:room-compiler:2.5.0")
-
-    //implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     //Testing
     // Unit Testing

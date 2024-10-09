@@ -22,14 +22,16 @@ class MainActivityViewModel : ViewModel() {
         _currentUser.value = customerDTO
     }
 
-    companion object{
-        const val INIT: String = "init"
-    }
-
     private  val _location : MutableStateFlow<Pair<Double,Double>> = MutableStateFlow(Pair(0.0,0.0))
     val location = _location
 
     fun setLocation(lat:Double,long:Double){
         _location.value = Pair(lat,long)
     }
+
+    companion object{
+        private const val TAG = "MainActivityViewModel"
+        const val INIT: String = "init"
+    }
+
 }

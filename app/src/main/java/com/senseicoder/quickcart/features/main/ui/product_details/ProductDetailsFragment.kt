@@ -195,8 +195,8 @@ class ProductDetailsFragment : Fragment() {
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${it.quantityAvailable}"
                                     currentSelectedQuantityProductDetails.text = "0"
                                     cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
-                                    pagerAdapter.updateList(listOf(variant.image))
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
+                                    /*pagerAdapter.updateList(listOf(variant.image))
+                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)*/
                                     increaseQuantityBtnProductDetails.setOnClickListener{ _->
                                         selectedAmount++
                                         if(selectedAmount == variant.quantityAvailable.toInt()){

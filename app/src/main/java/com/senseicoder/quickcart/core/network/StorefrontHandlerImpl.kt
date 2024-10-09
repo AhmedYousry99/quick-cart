@@ -142,7 +142,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
 
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.cartCreate != null && response.exception == null) {
-            emit(response.data!!.cartCreate!!.cart!! )
+            emit(response.data!!.cartCreate!!.cart!!)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
@@ -160,7 +160,8 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val mutation = AddProductToCartMutation(
             cartId,
             quantity,
-            variantId)
+            variantId
+        )
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.cartLinesAdd != null && response.exception == null) {
             emit(response.data!!.cartLinesAdd!!)
@@ -180,12 +181,13 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.customerAddressCreate != null && response.exception == null) {
             emit(response.data!!.customerAddressCreate!!.customerAddress?.firstName)
-            Log.d(TAG, "createAddress: ${response.data?.customerAddressCreate?.customerUserErrors?.map { it.message }}")
-        }
-        else
+            Log.d(
+                TAG,
+                "createAddress: ${response.data?.customerAddressCreate?.customerUserErrors?.map { it.message }}"
+            )
+        } else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
-
 
 
     override suspend fun getProductDetailsById(id: String) = flow {
@@ -197,6 +199,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
     }
+
     override suspend fun getCustomerAddresses(token: String): Flow<CustomerAddressesQuery.Customer?> =
         flow {
             val query = CustomerAddressesQuery(token)
@@ -214,19 +217,20 @@ object StorefrontHandlerImpl : StorefrontHandler {
     ): Flow<String?> = flow {
         val mutation = CustomerAddressUpdateMutation(address, token, id)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartLinesRemove != null && response.exception == null) {
-            emit(response.data!!.cartLinesRemove)
+        if (response.data?.customerAddressUpdate != null && response.exception == null) {
+            emit(response.data!!.customerAddressUpdate!!.customerAddress!!.id)
         } else {
-        if (response.data?.customerAddressUpdate != null)
-            emit(response.data!!.customerAddressUpdate!!.customerAddress?.id)
-        else
-            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+            if (response.data?.customerAddressUpdate != null)
+                emit(response.data!!.customerAddressUpdate!!.customerAddress?.id)
+            else
+                throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
     }
 
     override suspend fun deleteAddress(id: String, token: String): Flow<String?> = flow {
         val mutation = DeleteAddressMutation(id, token)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.customerAddressDelete != null)
+        if (response.data?.customerAddressDelete != null && response.exception == null)
             emit(response.data!!.customerAddressDelete!!.deletedCustomerAddressId)
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -236,13 +240,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
         token: String,
         id: String
     ): Flow<List<CustomerDefaultAddressUpdateMutation.Node>?> = flow {
-        val mutation = CustomerDefaultAddressUpdateMutation(token, id )
+        val mutation = CustomerDefaultAddressUpdateMutation(token, id)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.customerDefaultAddressUpdate != null)
-            emit(response.data!!.customerDefaultAddressUpdate?.customer?.addresses?.nodes ?: emptyList() )
+        if (response.data?.customerDefaultAddressUpdate != null && response.exception == null)
+            emit(
+                response.data!!.customerDefaultAddressUpdate?.customer?.addresses?.nodes
+                    ?: emptyList()
+            )
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
-    }
+
     private const val TAG = "StorefrontHandlerImpl"
 }
