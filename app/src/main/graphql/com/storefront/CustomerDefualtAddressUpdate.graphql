@@ -1,0 +1,38 @@
+mutation CustomerDefaultAddressUpdate(
+    $customerAccessToken : String!,
+    $addressId : ID!
+) {
+    customerDefaultAddressUpdate(
+        customerAccessToken: $customerAccessToken,
+        addressId: $addressId) {
+        customerUserErrors {
+            code
+            field
+            message
+        }
+        customer {
+            addresses(first: 10) {
+                nodes {
+                    address1
+                    address2
+                    city
+                    company
+                    country
+                    countryCodeV2
+                    firstName
+                    formatted
+                    formattedArea
+                    id
+                    lastName
+                    latitude
+                    longitude
+                    name
+                    phone
+                    province
+                    provinceCode
+                    zip
+                }
+            }
+        }
+    }
+}

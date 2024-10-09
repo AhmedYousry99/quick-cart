@@ -3,16 +3,42 @@ query CustomerAddresses($customerAccessToken: String!) {
         addresses(first: 10) {
             edges {
                 node {
-                    id
-                    firstName
-                    lastName
                     address1
                     address2
                     city
                     country
+                    firstName
+                    id
+                    lastName
+                    latitude
                     phone
+                    longitude
+                    name
+                    provinceCode
+                    province
+                    zip
+                    countryCodeV2
+                    company
                 }
             }
+        }
+        defaultAddress {
+            address1
+            address2
+            city
+            country
+            firstName
+            id
+            lastName
+            latitude
+            phone
+            longitude
+            name
+            provinceCode
+            province
+            zip
+            countryCodeV2
+            company
         }
     }
 }
