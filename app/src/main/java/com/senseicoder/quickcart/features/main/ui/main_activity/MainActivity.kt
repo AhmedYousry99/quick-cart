@@ -14,6 +14,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 

@@ -25,7 +25,6 @@ data class Product(
     val image: Image,
 )
 
-fun Product.mapRemoteProductToDisplayProduct(): DisplayProduct {
+fun Product.mapApiRemoteProductToDisplayProduct(): DisplayProduct {
     return DisplayProduct(this.id,this.variants[0].price, this.product_type,this.title ?: "", this.image?.src ?: "", this.tags)
 }
-

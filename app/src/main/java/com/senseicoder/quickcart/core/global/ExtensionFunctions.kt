@@ -6,6 +6,8 @@ package com.senseicoder.quickcart.core.global
  */
 
 import android.content.BroadcastReceiver
+import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.util.Patterns
 import android.view.View
@@ -20,6 +22,8 @@ import com.senseicoder.quickcart.R
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -50,6 +54,64 @@ fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
         view.setBackgroundColor(this.context.getColor(R.color.secondary))
         show()
     }
+}
+
+
+fun String.toColor(): Int {
+    return when (this.lowercase()) {
+        "red" -> Color.RED
+        "green" -> Color.GREEN
+        "blue" -> Color.BLUE
+        "black" -> Color.BLACK
+        "white" -> Color.WHITE
+        "burgundy" -> Color.parseColor("#800020")
+        "burgandy" -> Color.parseColor("#800020")
+        "yellow" -> Color.YELLOW
+        "cyan" -> Color.CYAN
+        "magenta" -> Color.MAGENTA
+        "gray" -> Color.GRAY
+        "dark_gray" -> Color.DKGRAY
+        "light_gray" -> Color.LTGRAY
+        "purple" -> Color.parseColor("#800080")
+        "orange" -> Color.parseColor("#FFA500")
+        "pink" -> Color.parseColor("#FFC0CB")
+        "brown" -> Color.parseColor("#A52A2A")
+        "beige" -> Color.parseColor("#F5F5DC")
+        "olive" -> Color.parseColor("#808000")
+        "maroon" -> Color.parseColor("#800000")
+        "navy" -> Color.parseColor("#000080")
+        "teal" -> Color.parseColor("#008080")
+        "lime" -> Color.parseColor("#00FF00")
+        "indigo" -> Color.parseColor("#4B0082")
+        "violet" -> Color.parseColor("#EE82EE")
+        "gold" -> Color.parseColor("#FFD700")
+        "silver" -> Color.parseColor("#C0C0C0")
+        "turquoise" -> Color.parseColor("#40E0D0")
+        "coral" -> Color.parseColor("#FF7F50")
+        "aqua" -> Color.parseColor("#00FFFF")
+        "chocolate" -> Color.parseColor("#D2691E")
+        "crimson" -> Color.parseColor("#DC143C")
+        "fuchsia" -> Color.parseColor("#FF00FF")
+        "khaki" -> Color.parseColor("#F0E68C")
+        "lavender" -> Color.parseColor("#E6E6FA")
+        "plum" -> Color.parseColor("#DDA0DD")
+        "salmon" -> Color.parseColor("#FA8072")
+        "sienna" -> Color.parseColor("#A0522D")
+        "tan" -> Color.parseColor("#D2B48C")
+        else -> Color.GRAY
+    }
+}
+
+fun Int.dpToPx(context: Context): Int {
+    val density = context.resources.displayMetrics.density
+    return (this * density).toInt()
+}
+
+fun Int.lightenColor(factor: Float = 3f): Int {
+    val red = 255.coerceAtMost((Color.red(this) * (1 - factor) + 255 * factor).toInt())
+    val green = 255.coerceAtMost((Color.green(this) * (1 - factor) + 255 * factor).toInt())
+    val blue = 255.coerceAtMost((Color.blue(this) * (1 - factor) + 255 * factor).toInt())
+    return Color.rgb(red, green, blue)
 }
 
 fun Fragment.showErrorSnackbar(snackbarText: String, timeLength: Int = 4000) {
@@ -146,6 +208,10 @@ fun Double.toTwoDecimalPlaces(locale: Locale = Locale.US): String {
     val numberFormat = NumberFormat.getInstance(locale)
     val parsedNumber = numberFormat.parse(this.toString())?.toDouble() ?: throw NumberFormatException("Cannot parse: $this")
     return String.format(locale, "%.2f", parsedNumber)
+}
+
+fun Double.toTwoDecimalPlaces(): String {
+    return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toString()
 }
 
 /*fun View.setupSnackbar(

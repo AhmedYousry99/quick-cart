@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
+import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.fromEdges
@@ -15,6 +16,7 @@ import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
 import com.storefront.CreateCustomerMutation
 import com.storefront.GetCartDetailsQuery
+import com.storefront.GetProductByIdQuery
 import com.storefront.type.CartLineInput
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
@@ -155,6 +157,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
 
+    }
+
+    override suspend fun getProductDetailsById(id: String) = flow {
+        val query = GetProductByIdQuery(id)
+        val response = apolloClient.query(query).execute()
+        if (response.data?.product != null) {
+            emit(response.data?.product)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
     }
 
 
