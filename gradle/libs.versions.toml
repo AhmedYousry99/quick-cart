@@ -31,6 +31,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 playServicesMaps = "19.0.0"
+firebaseFirestore = "25.1.0"
 
 
 [libraries]
@@ -66,6 +67,7 @@ touchimageview = { module = "com.github.MikeOrtiz:TouchImageView", version.ref =
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 
 [plugins]
