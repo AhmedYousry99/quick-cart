@@ -50,4 +50,8 @@
     <string name="dialog_on_confirm_default">Confirm</string>
     <string name="dialog_on_cancel_default">Cancel</string>
     <string name="you_wont_have_access_to_features">You won\'t have access to most features (Favorites, Shopping Cart)</string>
+    <string name="submit_address">Submit Address</string>
+    <string name="street_name">Street Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="address_details">Address Details</string>
 </resources>
