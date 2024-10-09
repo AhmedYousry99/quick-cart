@@ -1,3 +1,3 @@
 package com.senseicoder.quickcart.core.entity.product
 
-data class ProductDetails(var product: Product)
+data class ProductDetails(var products: Products)
