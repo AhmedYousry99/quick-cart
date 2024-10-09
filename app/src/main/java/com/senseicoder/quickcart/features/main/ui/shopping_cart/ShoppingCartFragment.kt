@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,13 +21,13 @@ import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import com.senseicoder.quickcart.databinding.BottomSheetPaymentBinding
 import com.senseicoder.quickcart.databinding.FragmentShoppingCartBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.shopping_cart.viewmodel.ShoppingCartViewModel
 import com.senseicoder.quickcart.features.main.ui.shopping_cart.viewmodel.ShoppingCartViewModelFactory
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
@@ -37,9 +38,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             "gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUo5TUoxMVdDOVJHTjlQVjdWRzZCRUo3Vw?key=6d25762dfc534d13b171a91f490f8804"
     }
 
-    private lateinit var binding: FragmentShoppingCartBinding
+    private lateinit var fragmentBinding: FragmentShoppingCartBinding
     private lateinit var adapter: CartAdapter
     private lateinit var sharedViewModel: MainActivityViewModel
+    lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var bottomSheetBinding: BottomSheetPaymentBinding
     private val viewModel: ShoppingCartViewModel by lazy {
         ViewModelProvider(
             this,
@@ -58,8 +61,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentShoppingCartBinding.inflate(inflater, container, false)
-        return binding.root
+        fragmentBinding = FragmentShoppingCartBinding.inflate(inflater, container, false)
+        return fragmentBinding.root
     }
 
     @OptIn(FlowPreview::class)
@@ -68,7 +71,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         sharedViewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
         // TODO CHANGE THIS HARD CODED BY SHARED PREF CARD ID
         viewModel.fetchCartProducts(HARD_CODED_CARD_ID)
-        binding.apply {
+        fragmentBinding.apply {
+            btnToPayment.setOnClickListener {
+                showBottomSheet()
+            }
             lifecycleScope.launch {
                 viewModel.cartProducts.collect {
                     when (it) {
@@ -124,7 +130,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                 when (it) {
                     is ApiState.Success -> {
                         Snackbar.make(
-                            binding.root,
+                            fragmentBinding.root,
                             "Product updated successfully",
                             Snackbar.LENGTH_SHORT
                         ).show()
@@ -132,7 +138,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
 
                     is ApiState.Failure -> {
                         Snackbar.make(
-                            binding.root,
+                            fragmentBinding.root,
                             "Something went wrong",
                             Snackbar.LENGTH_SHORT
                         ).show()
@@ -149,16 +155,14 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         super.onStart()
         (requireActivity() as MainActivity).toolbarVisibility(false)
 
-//        val bottomSheetDialog : BottomSheetDialog = BottomSheetDialog(requireContext())
-//        val bottomSheetView : View = layoutInflater.inflate(R.layout.bottomSheetDialog, null)
-//        bottomSheetDialog.show()
+
     }
 
     fun updateTotalPrice(list: List<ProductOfCart>?) {
         val res = Math.round(
             (list?.sumOf { it.variantPrice.toDouble() * it.quantity })?.times(100.0) ?: 0.00
         ) / 100.0
-        binding.txtValueOfGrandTotal.text = String.format(res.toString())
+        fragmentBinding.txtValueOfGrandTotal.text = String.format(res.toString())
     }
 
     override fun onProductClick(item: ProductOfCart) {
@@ -169,7 +173,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     }
 
     override fun onPlusClick(item: ProductOfCart) {
-        binding.apply {
+        fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
             val new = old + item.variantPrice.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
@@ -179,7 +183,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     }
 
     override fun onMinusClick(item: ProductOfCart) {
-        binding.apply {
+        fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
             val new = old - item.variantPrice.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
@@ -203,7 +207,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                         is ApiState.Success -> {
 //                            viewModel.fetchCartProducts(HARD_CODED_CARD_ID)
                             Snackbar.make(
-                                binding.root,
+                                fragmentBinding.root,
                                 "Product deleted successfully",
                                 Snackbar.LENGTH_SHORT
                             ).show()
@@ -216,5 +220,43 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                 }
             }
         }.show(childFragmentManager, "ConfirmationDialogFragment")
+    }
+
+    fun showBottomSheet(){
+        bottomSheetBinding = BottomSheetPaymentBinding.inflate(layoutInflater)
+        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)  // Use binding.root instead of dialogView
+        bottomSheetDialog.show()
+        functionalityWhenBtnCompleteParchesClicked(bottomSheetBinding)
+        setPrices(bottomSheetBinding)
+    }
+    private fun setPrices(binding: BottomSheetPaymentBinding){
+        binding.apply {
+            txtValueOfBeforeDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
+            txtValueOfDiscount.text = String.format(0.0.toString())
+            txtValueOFAfterDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
+            btnAddCoupon.setOnClickListener{
+                //TODO HERE CHECK IF VALID COUPON
+                if (false){
+                    Snackbar.make(this.root.rootView, "Valid Coupon", Toast.LENGTH_SHORT).show()
+                    //TODO ADD DISCOUNT TO PRICE
+                    //TODO AND TOTAL AFTER DISCOUNT UPDATE
+                }else
+                    Snackbar.make(this.root.rootView, "Invalid Coupon", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+    private fun functionalityWhenBtnCompleteParchesClicked(binding: BottomSheetPaymentBinding){
+        binding.apply {
+            btnCompletePurches.setOnClickListener {
+                if(radBtnCash.isChecked){
+                    Toast.makeText(requireContext(), "Cash", Toast.LENGTH_SHORT).show()
+                }else if(radBtnCard.isChecked){
+                    Toast.makeText(requireContext(), "Card", Toast.LENGTH_SHORT).show()
+                }else
+                    Toast.makeText(requireContext(), "Please select payment method", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
