@@ -204,6 +204,11 @@ dependencies {
     testImplementation("androidx.test:core-ktx:1.4.0")
     testImplementation("androidx.test.ext:junit-ktx:1.1.3")
 
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+
+
+
     /*    // AndroidX Test - Instrumented Testing
         androidTestImplementation("androidx.test.ext:junit:1.1.5")
         androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")*/
@@ -225,6 +230,23 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-library:2.2")
     androidTestImplementation("org.hamcrest:hamcrest:2.2")
     androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
+
+
+
+    // Kotlin Coroutines
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    // Coroutine Testing
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
+    // JUnit
+    testImplementation ("junit:junit:4.13.2")
+
+    testImplementation ("io.mockk:mockk:1.12.0")
+
+    testImplementation ("org.robolectric:robolectric:4.9")
+
 
 
 

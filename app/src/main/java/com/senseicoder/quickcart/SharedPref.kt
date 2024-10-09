@@ -12,5 +12,5 @@ object SharedPref {
         SharedPref.context = context
         sharedPreferences = context.getSharedPreferences("CUSTOMER_PREF", Context.MODE_PRIVATE)
     }
-    //
+
 }

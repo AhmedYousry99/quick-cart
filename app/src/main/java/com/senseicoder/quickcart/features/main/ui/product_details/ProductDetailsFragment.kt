@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isNotEmpty
 import androidx.lifecycle.Lifecycle
@@ -23,6 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.dpToPx
 import com.senseicoder.quickcart.core.global.lightenColor
@@ -221,7 +223,15 @@ class ProductDetailsFragment : Fragment() {
                                     }
                                     addToCartBtnProductDetails.setOnClickListener {
                                         if(NetworkUtils.isConnected(requireContext())){
-                                            viewModel.addProductToCart(selectedAmount, selectedProducts.data.first, ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentUser.value)
+                                            if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
+                                                viewModel.addProductToCart(selectedAmount, selectedProducts.data.first, ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentUser.value)
+                                            }else{
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    getString(R.string.permission_denied),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                             }else{
                                                 showSnackbar(getString(R.string.no_internet_connection))
                                         }

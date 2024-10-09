@@ -32,7 +32,7 @@ class HomeBrandAdapter(
 
         holder.binding.imageBrand.setImageFromUrl(getItem(position).image)
 
-        holder.binding.brandName.text = getItem(position).title
+        //holder.binding.brandName.text = getItem(position).title
 
         holder.binding.cardBrand.setOnClickListener {
             onItemBrandClicked.brandClicked(getItem(position).title)
@@ -53,16 +53,28 @@ class DiffUtilsHomeBrand() : DiffUtil.ItemCallback<DisplayBrand>(){
 interface OnItemBrandClicked {
     fun brandClicked(brand : String)
 }
-fun ImageView.setImageFromUrl(url : String){
-    Glide.with(context)
+//fun ImageView.setImageFromUrl(url : String){
+//    Glide.with(context)
+//        .load(url)
+//        .apply(
+//            RequestOptions().override(
+//                this.width,
+//                this.height
+//            )
+//        )
+//        .placeholder(R.drawable.ic_launcher_foreground)
+//        .error(R.drawable.ic_launcher_background)
+//        .into(this)
+//}
+fun ImageView.setImageFromUrl(url: String) {
+    Glide.with(this.context)
         .load(url)
         .apply(
-            RequestOptions().override(
-                this.width,
-                this.height
-            )
+            RequestOptions()
+                .override(150, 150)  // Set a fixed size for the images
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_background)
+                .fitCenter()
         )
-        .placeholder(R.drawable.ic_launcher_foreground)
-        .error(R.drawable.ic_launcher_background)
         .into(this)
 }

@@ -57,13 +57,6 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_loginFragment_to_homeFragment)
             navController.graph.setStartDestination(R.id.homeFragment)
         }
-        navController.addOnDestinationChangedListener{
-                _, destination, _ ->
-            if (!canNavigate(destination.id)){
-                navController.popBackStack();
-                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -86,14 +79,6 @@ class MainActivity : AppCompatActivity() {
             binding.toolbar.visibility = View.VISIBLE
         else
             binding.toolbar.visibility = View.GONE
-    }
-
-    private fun canNavigate(destinationId: Int): Boolean {
-        if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
-            val isUserGuest = SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT
-            return !isUserGuest
-        }
-        return true
     }
 
     companion object {

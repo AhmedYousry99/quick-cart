@@ -23,33 +23,36 @@
 
         <ImageView
             android:id="@+id/imageBrand"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="fitXY"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_launcher_background"
-            app:layout_constraintBottom_toTopOf="@id/brandName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/ic_launcher_background"
 
-        <TextView
-            android:id="@+id/brandName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:paddingBottom="5dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/alexandria_medium"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/imageBrand"
-            app:layout_constraintStart_toStartOf="@+id/imageBrand"
-            app:layout_constraintTop_toBottomOf="@+id/imageBrand" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+        <!--<TextView
+           android:id="@+id/brandName"
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="10dp"
+           android:gravity="center"
+           android:paddingBottom="5dp"
+           android:textColor="@color/black"
+           android:fontFamily="@font/alexandria_medium"
+           android:textSize="18sp"
+           android:textStyle="bold"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="@+id/imageBrand"
+           app:layout_constraintStart_toStartOf="@+id/imageBrand"
+           app:layout_constraintTop_toBottomOf="@+id/imageBrand" /> -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -63,4 +63,18 @@
     <string name="product_added_successfully">Product Added To Cart Successfully!</string>
     <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again Later</string>
     <string name="permission_denied">You must be logged in to access thees features.</string>
+
+
+    <string name="order_items">Order Items</string>
+    <string name="order_details">Order Details</string>
+    <string name="order_id">Order ID:</string>
+    <string name="home_address">Delivery Address</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_tax">Total Tax</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="no_orders">>Woohoo! It looks like you haven’t added any orders yet! Start shopping now and make your first order!</string>
+
+
+
+
 </resources>
