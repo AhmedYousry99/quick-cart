@@ -10,11 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
@@ -67,9 +70,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sharedViewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
-        // TODO CHANGE THIS HARD CODED BY SHARED PREF CARD ID
-        viewModel.fetchCartProducts(HARD_CODED_CARD_ID)
+        sharedViewModel = ViewModelProvider(requireActivity())[MainActivityViewModel::class.java]
+        // TODO: get from view model
+        viewModel.fetchCartProducts(SharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT))
         fragmentBinding.apply {
             btnToPayment.setOnClickListener {
                 showBottomSheet()
@@ -152,41 +155,47 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as MainActivity).toolbarVisibility(false)
-
-
+        (requireActivity() as MainActivity).apply {
+            toolbarVisibility(false)
+            showBottomNavBar()
+        }
     }
 
     fun updateTotalPrice(list: List<ProductOfCart>?) {
         val res = Math.round(
-            (list?.sumOf { it.variantPrice.toDouble() * it.quantity })?.times(100.0) ?: 0.00
+            (list?.sumOf { it.variantPrice!!.toDouble() * it.quantity })?.times(100.0) ?: 0.00
         ) / 100.0
         fragmentBinding.txtValueOfGrandTotal.text = String.format(res.toString())
     }
 
     override fun onProductClick(item: ProductOfCart) {
-        sharedViewModel.setCurrentProductId(item.id)
-        //TODO HERE WE NEED TO CHECK ABOUT NETWORK BEFORE NAVIGATION
-        Navigation.findNavController(this.requireView())
-            .navigate(R.id.action_shoppingCartFragment_to_productDetailsFragment)
+        if(NetworkUtils.isConnected(requireContext())){
+            sharedViewModel.setCurrentProductId(item.productId!!.split("/").last().apply {
+                Log.d(TAG, "onProductClick: $this")
+            })
+            Navigation.findNavController(this.requireView())
+                .navigate(R.id.action_shoppingCartFragment_to_productDetailsFragment)
+        }else{
+            showSnackbar(getString(R.string.no_internet_connection))
+        }
     }
 
     override fun onPlusClick(item: ProductOfCart) {
         fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old + item.variantPrice.toDouble()
+            val new = old + item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
             Log.d("Filo", "onPlusClick: ${item.quantity}")
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId,item.quantity)
+            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
         }
     }
 
     override fun onMinusClick(item: ProductOfCart) {
         fragmentBinding.apply {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old - item.variantPrice.toDouble()
+            val new = old - item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId,item.quantity)
+            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
         }
     }
 

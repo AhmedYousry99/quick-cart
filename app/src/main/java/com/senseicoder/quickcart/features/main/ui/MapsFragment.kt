@@ -22,7 +22,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.databinding.FragmentMapsBinding
-import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale

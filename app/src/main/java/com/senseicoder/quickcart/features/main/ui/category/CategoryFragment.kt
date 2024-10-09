@@ -18,6 +18,7 @@ import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentCategoryBinding
 import com.senseicoder.quickcart.features.main.ui.category.viewmodel.CategoryViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -226,6 +227,11 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             }
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).showBottomNavBar()
     }
 
     override fun onDestroyView() {

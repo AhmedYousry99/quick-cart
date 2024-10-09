@@ -19,14 +19,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.dpToPx
 import com.senseicoder.quickcart.core.global.lightenColor
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.toColor
 import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
+import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.ReviewDTO
 import com.senseicoder.quickcart.core.model.graph_product.OptionValues
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
@@ -37,12 +40,15 @@ import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentProductDetailsBinding
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.product_details.adapters.ProductDetailsPagerAdapter
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModel
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModelFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class ProductDetailsFragment : Fragment() {
 
@@ -108,16 +114,14 @@ class ProductDetailsFragment : Fragment() {
             ProductsRepo.getInstance()
         )
         viewModel = ViewModelProvider(this, factory)[ProductDetailsViewModel::class.java]
-        initListeners()
         subscribeToObservables()
         viewModel.getProductDetails(ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentProductId.value)
         handler = Handler(Looper.getMainLooper())
     }
 
-    private fun initListeners() {
-        binding.apply {
-
-        }
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).hideBottomNavBar()
     }
 
     private fun subscribeToObservables() {
@@ -175,12 +179,14 @@ class ProductDetailsFragment : Fragment() {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
+                                selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()
                                 Log.d(TAG, "subscribeToObservables: MultiSelected\n${selectedProducts.data.first}")
                                 variant.let {
                                     if(variant.quantityAvailable.toInt() != 0)
                                     {
                                         enableButtons()
+                                        addToCartBtnProductDetails.isEnabled = false
                                         decreaseQuantityBtnProductDetails.isEnabled = false
                                     }
                                     else{
@@ -189,14 +195,15 @@ class ProductDetailsFragment : Fragment() {
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${it.quantityAvailable}"
                                     currentSelectedQuantityProductDetails.text = "0"
                                     cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
-                                    pagerAdapter.updateList(listOf(variant.image))
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
+                                    /*pagerAdapter.updateList(listOf(variant.image))
+                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)*/
                                     increaseQuantityBtnProductDetails.setOnClickListener{ _->
                                         selectedAmount++
                                         if(selectedAmount == variant.quantityAvailable.toInt()){
                                             increaseQuantityBtnProductDetails.isEnabled = false
                                         }
                                         decreaseQuantityBtnProductDetails.isEnabled = true
+                                        addToCartBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
                                         cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
@@ -205,6 +212,7 @@ class ProductDetailsFragment : Fragment() {
                                         selectedAmount--
                                         if(selectedAmount == 0){
                                             decreaseQuantityBtnProductDetails.isEnabled = false
+                                            addToCartBtnProductDetails.isEnabled = false
                                         }
                                         increaseQuantityBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
@@ -212,8 +220,11 @@ class ProductDetailsFragment : Fragment() {
                                         cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
                                     }
                                     addToCartBtnProductDetails.setOnClickListener {
-                                        //TODO: add product to cart
-//                                        viewModel.addProductToCart(cardId, listOf(ProductOfCart()))
+                                        if(NetworkUtils.isConnected(requireContext())){
+                                            viewModel.addProductToCart(selectedAmount, selectedProducts.data.first, ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentUser.value)
+                                            }else{
+                                                showSnackbar(getString(R.string.no_internet_connection))
+                                        }
                                     }
                                     // Link the ViewPager2 with the DotsIndicator
 //                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
@@ -273,6 +284,31 @@ class ProductDetailsFragment : Fragment() {
                         }
                     }
                     enableAllChipGroups()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.addingToCart.collect {
+                    when(it){
+                        ApiState.Init -> {
+
+                        }
+                        ApiState.Loading -> {
+                            disableButtons()
+                            disableAllChipGroups()
+                        }
+                        is ApiState.Success -> {
+                            this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
+                            delay(1.5.seconds)
+                            findNavController().navigateUp()
+                        }
+                        is ApiState.Failure -> {
+                            enableButtons()
+                            enableAllChipGroups()
+                            this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_unsuccessfully))
+                        }
+                    }
                 }
             }
         }
@@ -345,6 +381,7 @@ class ProductDetailsFragment : Fragment() {
         }
         chipGroup.addView(chip)
     }
+
     private fun addChipToSizesGroup(optionValues: OptionValues, variants: List<Variant>) {
         val chipGroup = binding.sizesChipGroupProductDetails
         val chip = Chip(chipGroup.context).apply {

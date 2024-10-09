@@ -30,6 +30,7 @@ import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSignupBinding
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.signup.viewmodel.SignupViewModel
 import com.senseicoder.quickcart.features.signup.viewmodel.SignupViewModelFactory
 import kotlinx.coroutines.launch
@@ -76,6 +77,7 @@ class SignupFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        (requireActivity() as MainActivity).hideBottomNavBar()
         binding.firstNameSignupLayout.requestFocus()
         Log.d(TAG, "onStart: ${Navigation.findNavController(requireView()).currentDestination}, ${Navigation.findNavController(requireView()).currentBackStackEntry}")
         KeyboardUtils.showKeyboard(requireActivity(), binding.firstNameSignupLayout)

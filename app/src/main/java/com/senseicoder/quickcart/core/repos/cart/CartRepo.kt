@@ -1,12 +1,13 @@
 package com.senseicoder.quickcart.core.repos.cart
 
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.CreateCartMutation
 import kotlinx.coroutines.flow.Flow
 
 interface CartRepo {
-    suspend fun createCart(email: String, token: String): Flow<String>
+    suspend fun createCart(email: String): Flow<String>
     fun getUserToken(): String
 
     suspend fun getCartProducts(cartId: String): Flow<List<ProductOfCart>>
@@ -18,7 +19,8 @@ interface CartRepo {
 
     suspend fun addToCartByIds(
         cartId: String,
-        productsOfCart: List<ProductOfCart>
+        quantity: Int,
+        variantId: String
     ): Flow<List<ProductOfCart>>
 
     fun setCartId(cartId: String)

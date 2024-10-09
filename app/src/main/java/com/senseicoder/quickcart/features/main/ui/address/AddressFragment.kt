@@ -28,7 +28,7 @@ import com.senseicoder.quickcart.databinding.BottomSheetAddressBinding
 import com.senseicoder.quickcart.databinding.FragmentAddressBinding
 import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewModel
 import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewModelFactory
-import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

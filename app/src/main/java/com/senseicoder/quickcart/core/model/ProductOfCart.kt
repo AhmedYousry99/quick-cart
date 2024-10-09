@@ -1,6 +1,6 @@
 package com.senseicoder.quickcart.core.model
 
-import com.storefront.AddProductsToCartMutation
+import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.GetCartDetailsQuery
 
@@ -8,13 +8,13 @@ import com.storefront.GetCartDetailsQuery
 class ProductOfCart(
     val id: String,
     var quantity: Int,
-    val productId: String,
-    val productTitle: String,
-    val productImageUrl: String,
+    val productId: String? = null,
+    val productTitle: String? = null,
+    val productImageUrl: String? = null,
     val variantId: String,
-    val variantTitle: String,
-    val variantPrice: String,
-    val linesId:String
+    val variantTitle: String? = null,
+    val variantPrice: String? = null,
+    val linesId:String? =  null
 ){
     companion object{
         fun fromEdges(edges: List<CartLinesUpdateMutation.Edge>?): List<ProductOfCart> {
@@ -113,9 +113,9 @@ fun  List<CartLinesUpdateMutation.Edge>?.fromEdges():List<ProductOfCart> {
     return cartProducts
 }
 
-fun AddProductsToCartMutation.Node.mapCartLinesAddProductOfCart(): ProductOfCart {
+fun AddProductToCartMutation.Node.mapCartLinesAddProductOfCart(): ProductOfCart {
     val productVariant = this.merchandise.onProductVariant
-    val product = productVariant?.product
+        val product = productVariant?.product
 
     return ProductOfCart(
         id = this.id,
