@@ -5,6 +5,7 @@ import com.admin.adapter.CreateAddressMutation_ResponseAdapter
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.AddProductsToCartMutation
+import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCartMutation
 import com.storefront.CreateCustomerAccessTokenMutation
@@ -59,4 +60,10 @@ interface StorefrontHandler {
     ): Flow<String?>
 
     suspend fun updateDefaultAddress(token:String,id :String):Flow<List<CustomerDefaultAddressUpdateMutation. Node>?>
+    suspend fun createCart(email: String): Flow<CreateCartMutation.Cart>
+    suspend fun addToCartById(
+        cartId: String,
+        quantity: Int,
+        variantId: String
+    ): Flow<AddProductToCartMutation.CartLinesAdd>
 }

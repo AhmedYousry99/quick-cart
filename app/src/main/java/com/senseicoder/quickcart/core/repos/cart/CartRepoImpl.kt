@@ -21,20 +21,20 @@ import kotlinx.coroutines.flow.transform
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPref: SharedPrefs) :
+class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val sharedPref: SharedPrefs) :
     CartRepo {
-    override suspend fun createCart(email: String, token: String)
+    override suspend fun createCart(email: String)
             : Flow<String> {
-        return remoteDataSource.createCart(email, token).map { it.id }
+        return remoteDataSource.createCart(email).map { it.id }
     }
 
     override fun getUserToken(): String {
         return sharedPref.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT)
     }
 
-    override suspend fun addToCartByIds(cartId: String, productsOfCart: List<ProductOfCart>)
+    override suspend fun addToCartByIds(cartId: String, quantity: Int, variantId: String)
             : Flow<List<ProductOfCart>> {
-        return remoteDataSource.addToCartById(cartId, productsOfCart).transform {
+        return remoteDataSource.addToCartById(cartId, quantity, variantId).transform {
             emit(it.cart!!.lines.nodes.map { productVariant -> productVariant.mapCartLinesAddProductOfCart() })
         }.timeout(15.seconds)
     }
@@ -77,15 +77,14 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, val sharedPr
         return sharedPref.getSharedPrefString(key, defaultValue)
     }
 
-
     companion object {
         private const val TAG = "CustomerRepoImpl"
 
         @Volatile
         private var instance: CartRepoImpl? = null
         fun getInstance(
-            storefrontHandler: StorefrontHandler,
-            sharedPrefs: SharedPrefs
+            storefrontHandler: StorefrontHandler = StorefrontHandlerImpl,
+            sharedPrefs: SharedPrefs = SharedPrefsService
         ): CartRepoImpl {
             return instance ?: synchronized(this) {
                 val instance =

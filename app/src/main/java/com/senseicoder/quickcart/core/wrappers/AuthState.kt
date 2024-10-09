@@ -1,6 +1,6 @@
 package com.senseicoder.quickcart.core.wrappers
 
-import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 
 sealed class AuthState {
     data object Loading : AuthState()

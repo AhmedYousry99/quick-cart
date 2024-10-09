@@ -5,11 +5,12 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
+import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
-import com.storefront.AddProductsToCartMutation
+import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateAddressMutation
 import com.storefront.CreateCartMutation
@@ -21,7 +22,6 @@ import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.DeleteAddressMutation
 import com.storefront.GetCartDetailsQuery
 import com.storefront.GetProductByIdQuery
-import com.storefront.type.CartLineInput
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
 import com.storefront.type.CustomerCreateInput
@@ -66,7 +66,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val mutation = CreateCustomerAccessTokenMutation(email, password)
 
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.customerAccessTokenCreate != null) {
+        if (response.data?.customerAccessTokenCreate != null && response.exception == null) {
             emit(response.data!!.customerAccessTokenCreate!!.customerAccessToken!!)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -79,7 +79,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         password: String,
         firstName: String,
         lastName: String
-    ) = flow<CreateCustomerMutation.Customer> {
+    ) = flow {
         val response = apolloClient.mutation(
             CreateCustomerMutation(
                 CustomerCreateInput(
@@ -90,20 +90,9 @@ object StorefrontHandlerImpl : StorefrontHandler {
                 )
             )
         ).execute()
-
-        if (!response.hasErrors() && response.data != null) {
-            Log.d(TAG, "createCustomer: ${response.errors.toString()}")
-            emit(
-                response.data?.customerCreate?.customer
-                    ?: throw Exception(response.data!!.customerCreate!!.customerUserErrors.map {
-                        CreateCustomerMutation.CustomerUserError(
-                            code = it.code,
-                            field = it.field?.toList(),
-                            message = it.message
-                        )
-                    }.joinToString { it.message })
-            )
-        } else {// Something wrong happened
+        if (response.data?.customerCreate != null && response.exception == null) {
+            emit(response.data!!.customerCreate!!.customer!!)
+        } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
     }
@@ -142,18 +131,18 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun getProductsCart(cartId: String): Flow<List<ProductOfCart>?> = flow {
         val query = GetCartDetailsQuery(cartId)
         val response = apolloClient.query(query).execute()
-        if (response.data != null)
+        if (response.data != null && response.exception == null)
             emit(response.data?.cart?.lines?.edges?.fromEdges())
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
 
-    override suspend fun createCart(email: String, token: String) = flow {
-        val mutation = CreateCartMutation(email, token)
+    override suspend fun createCart(email: String) = flow {
+        val mutation = CreateCartMutation(email)
 
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartCreate != null) {
-            emit(response.data!!.cartCreate!!.cart!!)
+        if (response.data?.cartCreate != null && response.exception == null) {
+            emit(response.data!!.cartCreate!!.cart!! )
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
@@ -161,18 +150,19 @@ object StorefrontHandlerImpl : StorefrontHandler {
 
     override suspend fun addToCartById(
         cartId: String,
-        productsOfCart: List<ProductOfCart>
+        quantity: Int,
+        variantId: String
     ) = flow {
-        val mutation = AddProductsToCartMutation(
+        Log.d(
+            TAG,
+            "addToCartById: ${"cartId: $cartId, quantity: $quantity, variantId: $variantId"}"
+        )
+        val mutation = AddProductToCartMutation(
             cartId,
-            productsOfCart.map {
-                CartLineInput(
-                    merchandiseId = it.variantId,
-                    quantity = Optional.present(it.quantity)
-                )
-            })
+            quantity,
+            variantId)
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.cartLinesAdd != null) {
+        if (response.data?.cartLinesAdd != null && response.exception == null) {
             emit(response.data!!.cartLinesAdd!!)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -188,7 +178,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val mutation = CreateAddressMutation(customerAddress, token)
         Log.d(TAG, "createAddress: ${customerAddress.country}")
         val response = apolloClient.mutation(mutation).execute()
-        if (response.data?.customerAddressCreate != null) {
+        if (response.data?.customerAddressCreate != null && response.exception == null) {
             emit(response.data!!.customerAddressCreate!!.customerAddress?.firstName)
             Log.d(TAG, "createAddress: ${response.data?.customerAddressCreate?.customerUserErrors?.map { it.message }}")
         }
@@ -201,7 +191,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun getProductDetailsById(id: String) = flow {
         val query = GetProductByIdQuery(id)
         val response = apolloClient.query(query).execute()
-        if (response.data?.product != null) {
+        if (response.data?.product != null && response.exception == null) {
             emit(response.data?.product)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
@@ -224,6 +214,9 @@ object StorefrontHandlerImpl : StorefrontHandler {
     ): Flow<String?> = flow {
         val mutation = CustomerAddressUpdateMutation(address, token, id)
         val response = apolloClient.mutation(mutation).execute()
+        if (response.data?.cartLinesRemove != null && response.exception == null) {
+            emit(response.data!!.cartLinesRemove)
+        } else {
         if (response.data?.customerAddressUpdate != null)
             emit(response.data!!.customerAddressUpdate!!.customerAddress?.id)
         else
@@ -250,10 +243,6 @@ object StorefrontHandlerImpl : StorefrontHandler {
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
+    }
     private const val TAG = "StorefrontHandlerImpl"
 }
-
-
-
-
-

@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.core.model
+package com.senseicoder.quickcart.core.model.customer
 
 
 import com.google.gson.annotations.SerializedName

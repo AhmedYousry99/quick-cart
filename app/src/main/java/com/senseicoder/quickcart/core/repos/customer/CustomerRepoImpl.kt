@@ -1,16 +1,25 @@
 package com.senseicoder.quickcart.core.repos.customer
 
 import android.util.Log
+import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
+import com.senseicoder.quickcart.core.db.remote.RemoteDataSource
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
+import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 //import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
+import com.senseicoder.quickcart.core.services.SharedPrefsService
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.timeout
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
 
@@ -18,7 +27,8 @@ import kotlin.time.Duration.Companion.seconds
 class CustomerRepoImpl private constructor(
     private val firebaseHandler: FirebaseHandler,
     private val storefrontHandler: StorefrontHandler,
-    private val sharedPrefsService: SharedPrefs
+    private val sharedPrefsService: SharedPrefs,
+    private val dbRemoteDataSource: RemoteDataSource
 ) : CustomerRepo {
 
     override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
@@ -26,12 +36,18 @@ class CustomerRepoImpl private constructor(
             email = email,
             password = password
         )){ dto, data ->
-            dto.copy(token = data.accessToken, expireAt = data.expiresAt)
+            dto.copy(token = data.accessToken, expireAt = data.expiresAt )
+        }.flatMapConcat {
+            dbRemoteDataSource.getUserByEmail(it.email)
         }.timeout(15.seconds)
     }
 
     override suspend fun loginUsingGuest(): Flow<CustomerDTO> {
         return firebaseHandler.loginUsingGuest().timeout(15.seconds)
+    }
+
+    override fun signOut() {
+        firebaseHandler.signOut()
     }
 
     /* override fun getCustomerUsingEmail(email: String): Flow<ApiState<CustomerDTO>> = flow {
@@ -59,12 +75,13 @@ class CustomerRepoImpl private constructor(
          }
      }*/
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun signupUsingEmailAndPassword(
         firstName: String,
         lastName: String,
         email: String,
         password: String
-    ):Flow<CustomerDTO> {
+    ): Flow<CustomerDTO> {
         return firebaseHandler.signupUsingNormalEmail(email, password, firstName, lastName).zip(
             storefrontHandler.createCustomer(
                 email = email,
@@ -76,10 +93,17 @@ class CustomerRepoImpl private constructor(
             Log.d(TAG, "createCustomer: success")
             dto.copy(id = data.id)
         }
-            .map {
+            .flatMapConcat {
                 firebaseHandler.updateDisplayName(it)
-                it}
-            .timeout(15.seconds)
+                }
+            .flatMapConcat {customer ->
+                storefrontHandler.createCart(customer.email).map {
+                    customer.copy(cartId = it.id)
+                }
+            }.flatMapConcat {
+                dbRemoteDataSource.getUserByIdOrAddUser(it)
+            }
+            .timeout(20.seconds)
     }
 
     companion object {
@@ -88,16 +112,18 @@ class CustomerRepoImpl private constructor(
         @Volatile
         private var instance: CustomerRepoImpl? = null
         fun getInstance(
-            firebaseHandler: FirebaseHandler,
-            storefrontHandler: StorefrontHandler,
-            sharedPrefs: SharedPrefs
+            firebaseHandler: FirebaseHandler = FirebaseHandlerImpl,
+            storefrontHandler: StorefrontHandler = StorefrontHandlerImpl,
+            sharedPrefs: SharedPrefs = SharedPrefsService,
+            dbRemoteDataSource: RemoteDataSource = FirebaseFirestoreDataSource
         ): CustomerRepoImpl {
             return instance ?: synchronized(this) {
                 val instance =
                     CustomerRepoImpl(
                         firebaseHandler,
                         storefrontHandler,
-                        sharedPrefs
+                        sharedPrefs,
+                        dbRemoteDataSource
                     )
                 Companion.instance = instance
                 instance
@@ -123,6 +149,14 @@ class CustomerRepoImpl private constructor(
 
     override fun setEmail(email: String) {
         return sharedPrefsService.setSharedPrefString(Constants.USER_EMAIL, email)
+    }
+
+    override fun setCartId(cartId: String) {
+        return sharedPrefsService.setSharedPrefString(Constants.CART_ID, cartId)
+    }
+
+    override fun getCartId(): String {
+        return sharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
     }
 
     override fun setDisplayName(displayName: String) {
