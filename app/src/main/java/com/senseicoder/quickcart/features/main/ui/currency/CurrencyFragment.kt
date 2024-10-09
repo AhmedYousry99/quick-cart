@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.databinding.FragmentCurrencyBinding
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 
 class CurrencyFragment : Fragment() {
     private lateinit var binding: FragmentCurrencyBinding
@@ -33,6 +34,11 @@ class CurrencyFragment : Fragment() {
                 Navigation.findNavController(it).popBackStack()
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).hideBottomNavBar()
     }
 
 }

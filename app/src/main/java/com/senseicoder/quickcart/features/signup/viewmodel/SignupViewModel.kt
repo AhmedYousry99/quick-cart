@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.model.CustomerDTO
+import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -25,7 +26,7 @@ class SignupViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
         lastName: String,
         password: String
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _signUpState.value = ApiState.Loading
             customerRepo.signupUsingEmailAndPassword(
                 email = email,
@@ -37,10 +38,10 @@ class SignupViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 _signUpState.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect {
                 customerRepo.setUserId(it.id)
+                customerRepo.setCartId(it.cartId)
                 _signUpState.value = ApiState.Success(it)
             }
         }
-
     }
 
 companion object{

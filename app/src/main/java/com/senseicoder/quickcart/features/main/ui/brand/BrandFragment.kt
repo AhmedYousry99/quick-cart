@@ -22,6 +22,7 @@ import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentBrandBinding
 import com.senseicoder.quickcart.features.main.ui.brand.viewmodel.BrandViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -228,6 +229,11 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).hideBottomNavBar()
     }
 
     override fun productClicked(id: Long) {
