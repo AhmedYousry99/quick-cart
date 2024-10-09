@@ -27,6 +27,7 @@ query CustomerOrders($accessToken: String!) {
                                 variant {
                                     price {
                                         amount
+                                        currencyCode
                                     }
                                     title
                                     id

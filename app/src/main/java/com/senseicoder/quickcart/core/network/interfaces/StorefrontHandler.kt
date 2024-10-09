@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.core.network.interfaces
 
+
 import com.senseicoder.quickcart.core.entity.order.Order
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
@@ -14,7 +15,6 @@ import com.storefront.GetProductByIdQuery
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.RemoveProductFromCartMutation
-import com.storefront.type.MailingAddressConnection
 import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 

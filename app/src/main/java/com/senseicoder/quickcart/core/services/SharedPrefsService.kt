@@ -4,14 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.features.login.LoginFragment
+import com.senseicoder.quickcart.features.login.LoginFragment.Companion
 
-object SharedPrefsService: SharedPrefs{
+object SharedPrefsService : SharedPrefs {
 
     private lateinit var sharedPrefs: SharedPreferences
 
-    fun init(context: Context){
+    fun init(context: Context) {
 
-            sharedPrefs = context.getSharedPreferences(Constants.SharedPrefs.Settings.SETTINGS, Context.MODE_PRIVATE)
+        sharedPrefs = context.getSharedPreferences(
+            Constants.SharedPrefs.Settings.SETTINGS,
+            Context.MODE_PRIVATE
+        )
     }
 
     override fun setSharedPrefString(key: String, value: String) {
@@ -32,6 +37,56 @@ object SharedPrefsService: SharedPrefs{
 
     override fun getSharedPrefBoolean(key: String, defaultValue: Boolean): Boolean {
         return sharedPrefs.getBoolean(key, defaultValue)
+    }
+
+    override fun logAllSharedPref(TAG: String, nameOfFunction: String) {
+        Constants.also {
+            Log.d(
+                TAG,
+                "${nameOfFunction}:USER_ID ${getSharedPrefString(it.USER_ID, it.USER_ID_DEFAULT)}"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:USER_TOKEN ${
+                    getSharedPrefString(
+                        it.USER_TOKEN,
+                        it.USER_TOKEN_DEFAULT
+                    )
+                }"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:USER_EMAIL ${
+                    getSharedPrefString(
+                        it.USER_EMAIL,
+                        it.USER_ID_DEFAULT
+                    )
+                }"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:CART_ID ${getSharedPrefString(it.CART_ID, it.CART_ID_DEFAULT)}"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:USER_DISPLAY_NAME ${
+                    getSharedPrefString(
+                        it.USER_DISPLAY_NAME,
+                        it.USER_DISPLAY_NAME_DEFAULT
+                    )
+                }"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:CURRENCY ${
+                    getSharedPrefString(
+                        it.CURRENCY,
+                        it.CURRENCY_DEFAULT
+                    )
+                }"
+            )
+        }
+
     }
 
 

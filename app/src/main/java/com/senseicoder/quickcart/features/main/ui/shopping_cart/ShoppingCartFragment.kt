@@ -36,8 +36,6 @@ import kotlinx.coroutines.launch
 class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     companion object {
         private const val TAG = "ShoppingCartFragment"
-        private const val HARD_CODED_CARD_ID =
-            "gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUo5TUoxMVdDOVJHTjlQVjdWRzZCRUo3Vw?key=6d25762dfc534d13b171a91f490f8804"
     }
 
     private lateinit var fragmentBinding: FragmentShoppingCartBinding
@@ -56,6 +54,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             )
         )[ShoppingCartViewModel::class.java]
     }
+    private val cardId =SharedPrefsService.getSharedPrefString(Constants.CART_ID,Constants.CART_ID_DEFAULT)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -186,7 +185,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             val new = old + item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
             Log.d("Filo", "onPlusClick: ${item.quantity}")
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
+            viewModel.updateQuantityOfProduct(cardId, item.linesId!!,item.quantity)
         }
     }
 
@@ -195,13 +194,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             val old = txtValueOfGrandTotal.text.toString().toDouble()
             val new = old - item.variantPrice!!.toDouble()
             txtValueOfGrandTotal.text = String.format(new.toString())
-            viewModel.updateQuantityOfProduct(HARD_CODED_CARD_ID, item.linesId!!,item.quantity)
+            viewModel.updateQuantityOfProduct(cardId, item.linesId!!,item.quantity)
         }
     }
 
     override fun onDeleteClick(item: ProductOfCart) {
         ConfirmationDialogFragment(DialogType.DEL_PRODUCT) {
-            viewModel.deleteFromCart(HARD_CODED_CARD_ID, item.id)
+            viewModel.deleteFromCart(cardId, item.id)
             lifecycleScope.launch {
                 viewModel.removeProductFromCart.collect {
                     when (it) {
@@ -219,7 +218,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                                 "Product deleted successfully",
                                 Snackbar.LENGTH_SHORT
                             ).show()
-                            viewModel.refresh(HARD_CODED_CARD_ID)
+                            viewModel.refresh(cardId)
                         }
 
                         is ApiState.Failure -> {
