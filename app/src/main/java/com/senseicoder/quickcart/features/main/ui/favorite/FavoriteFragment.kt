@@ -26,7 +26,10 @@ import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteVie
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FavoriteFragment : Fragment() {
 

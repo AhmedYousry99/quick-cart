@@ -79,6 +79,8 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/alexandria_medium"
                 android:text="Mobius OG"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -89,12 +91,16 @@
                 android:id="@+id/stockProductDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/in_stock"
-                android:textStyle="bold"
                 android:fontFamily="@font/alexandria_medium"
-                app:layout_constraintStart_toStartOf="@+id/titleProductDetails"
-                app:layout_constraintTop_toBottomOf="@+id/priceVarianceProductDetails" />
+                android:text="@string/in_stock"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/reviewCountProductDetails"
+                app:layout_constraintEnd_toEndOf="@+id/titleProductDetails"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/reviewCountProductDetails"
+                app:layout_constraintTop_toTopOf="@+id/reviewCountProductDetails" />
 
             <RatingBar
                 android:id="@+id/ratingBarProductDetails"
@@ -106,13 +112,15 @@
                 android:numStars="5"
                 android:rating="3.5"
                 app:layout_constraintStart_toStartOf="@+id/titleProductDetails"
-                app:layout_constraintTop_toBottomOf="@+id/stockProductDetails" />
+                app:layout_constraintTop_toBottomOf="@+id/priceVarianceProductDetails" />
 
             <TextView
                 android:id="@+id/reviewCountProductDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/ratingBarProductDetails"
                 app:layout_constraintStart_toEndOf="@+id/ratingBarProductDetails"
                 app:layout_constraintTop_toTopOf="@+id/ratingBarProductDetails" />
@@ -139,6 +147,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/decreaseQuantityBtnProductDetails"
                 app:layout_constraintEnd_toStartOf="@+id/increaseQuantityBtnProductDetails"
                 app:layout_constraintTop_toTopOf="@+id/decreaseQuantityBtnProductDetails"
@@ -158,18 +168,19 @@
                 app:icon="@drawable/ic_subtract"
                 app:iconGravity="textStart"
                 app:iconPadding="-3dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cartPrice"
                 app:layout_constraintEnd_toStartOf="@+id/currentSelectedQuantityProductDetails"
-                app:layout_constraintTop_toTopOf="@+id/ratingBarProductDetails" />
+                app:layout_constraintTop_toTopOf="@+id/cartPrice" />
 
             <View
                 android:id="@+id/divider6"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:background="?android:attr/listDivider"
                 app:layout_constraintEnd_toEndOf="@+id/increaseQuantityBtnProductDetails"
                 app:layout_constraintStart_toStartOf="@+id/ratingBarProductDetails"
-                app:layout_constraintTop_toBottomOf="@+id/ratingBarProductDetails" />
+                app:layout_constraintTop_toBottomOf="@+id/stockProductDetails" />
 
             <TextView
                 android:id="@+id/descriptionProductDetails"
@@ -178,6 +189,9 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/alexandria_medium"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu ultricies velit. Aenean ac nunc lacus. Curabitur vel sem nec tortor elementum maximus. Vivamus molestie, mi at lacinia pulvinar, arcu enim mattis felis, ut auctor nisl orci semper odio. In tortor purus, fringilla sed nisi quis, mattis tincidunt nibh. Praesent egestas arcu malesuada diam commodo pretium. Suspendisse lacus metus, venenatis ut mauris vitae, egestas condimentum lorem."
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="normal"
                 app:layout_constraintEnd_toEndOf="@+id/divider6"
                 app:layout_constraintStart_toStartOf="@+id/divider6"
                 app:layout_constraintTop_toBottomOf="@+id/divider6" />
@@ -187,8 +201,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/sizes_text"
                 android:fontFamily="@font/alexandria_medium"
+                android:text="@string/sizes_text"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/descriptionProductDetails"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionProductDetails" />
@@ -216,9 +232,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/colors_text"
-                android:textStyle="bold"
                 android:fontFamily="@font/alexandria_medium"
+                android:text="@string/colors_text"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/textView5"
                 app:layout_constraintTop_toBottomOf="@+id/sizesChipGroupProductDetails" />
 
@@ -229,7 +247,8 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/alexandria_medium"
                 android:text="@string/price_variance"
-                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="@+id/titleProductDetails"
                 app:layout_constraintTop_toBottomOf="@+id/titleProductDetails" />
 
@@ -237,7 +256,7 @@
                 android:id="@+id/colorsChipGroupProductDetails"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -253,25 +272,24 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/favoriteLayoutProductDetails"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView"
-                app:layout_constraintTop_toBottomOf="@+id/cartPrice"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
                 android:backgroundTint="@color/light_white"
                 android:enabled="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:paddingEnd="18dp"
-                app:rippleColor="@color/primary"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_favorite_border"
                 app:iconGravity="textStart"
                 app:iconSize="24dp"
                 app:iconTint="@color/red"
-                />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/cartPrice"
+                app:rippleColor="@color/primary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/addToCartBtnProductDetails"
@@ -295,11 +313,13 @@
                 android:id="@+id/cartPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/price_text"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/alexandria_medium"
+                android:text="@string/price_text"
                 android:textAlignment="center"
                 android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/colorsChipGroupProductDetails"
                 app:layout_constraintTop_toBottomOf="@+id/colorsChipGroupProductDetails" />
