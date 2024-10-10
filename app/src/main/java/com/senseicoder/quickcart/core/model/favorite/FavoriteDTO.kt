@@ -6,8 +6,9 @@ data class FavoriteDTO(
     @DocumentId
     val id: String = "",
     val quantityAvailable: String = "",
-    val currentlyNotInStock: Boolean = true,
-    val availableForSale: Boolean = false,
-    val image: String = "",
-    val price: Double = 0.0,
+    val image: List<String> = emptyList(),
+    val title: String = "",
+    val description: String = "",
+    val priceMinimum: String = "",
+    val priceMaximum: String = "",
 )

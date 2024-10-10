@@ -25,7 +25,7 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
     CartRepo {
     override suspend fun createCart(email: String)
             : Flow<String> {
-        return remoteDataSource.createCart(email).map { it.id }
+        return remoteDataSource.createCart(email).map { it.id }.timeout(15.seconds)
     }
 
     override fun getUserToken(): String {

@@ -1,9 +1,6 @@
 package com.senseicoder.quickcart.core.repos.cart
 
-import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
-import com.senseicoder.quickcart.core.wrappers.ApiState
-import com.storefront.CreateCartMutation
 import kotlinx.coroutines.flow.Flow
 
 interface CartRepo {

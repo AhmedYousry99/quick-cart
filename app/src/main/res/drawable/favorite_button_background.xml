@@ -6,14 +6,14 @@
     <item android:id="@android:id/mask">
         <shape android:shape="oval">
             <size android:width="48dp" android:height="48dp"/>
-            <solid android:color="@color/light_red"/> <!-- Optional: Mask color for the ripple -->
+            <solid android:color="@color/primary"/> <!-- Optional: Mask color for the ripple -->
         </shape>
     </item>
 
     <item>
         <shape android:shape="oval">
             <size android:width="48dp" android:height="48dp"/>
-            <solid android:color="@color/grey"/> <!-- Button background color -->
+            <solid android:color="@color/little_white"/> <!-- Button background color -->
         </shape>
     </item>
 </ripple>

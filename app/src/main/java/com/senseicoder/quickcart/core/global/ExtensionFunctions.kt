@@ -5,6 +5,7 @@ package com.senseicoder.quickcart.core.global
  * Extension functions and Binding Adapters.
  */
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Color
@@ -19,8 +20,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
-import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -59,6 +60,9 @@ fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
     }
 }
 
+fun String.withoutGIDPrefix(): String {
+    return substringAfterLast("/")
+}
 
 fun String.toColor(): Int {
     return when (this.lowercase()) {
@@ -242,35 +246,36 @@ fun Long.toDateTime(pattern: String): String {
 }
 
 
-/*fun Fragment.setupRefreshLayout(
+fun Fragment.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
     scrollUpChild: View? = null
 ) {
     refreshLayout.setColorSchemeColors(
         ContextCompat.getColor(requireActivity(), R.color.primary),
-        ContextCompat.getColor(requireActivity(), R.color.on_primary),
+        ContextCompat.getColor(requireActivity(), R.color.primary_faint),
         ContextCompat.getColor(requireActivity(), R.color.secondary)
     )
     // Set the scrolling view in the custom SwipeRefreshLayout.
     scrollUpChild?.let {
         refreshLayout.scrollUpChild = it
     }
-}*/
+}
 
-/*fun Activity.setupRefreshLayout(
+fun Activity.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
     scrollUpChild: View? = null
 ) {
     refreshLayout.setColorSchemeColors(
         ContextCompat.getColor(this@setupRefreshLayout, R.color.primary),
-        ContextCompat.getColor(this@setupRefreshLayout, R.color.on_primary),
+        ContextCompat.getColor(this@setupRefreshLayout, R.color.primary_faint),
         ContextCompat.getColor(this@setupRefreshLayout, R.color.secondary)
     )
     // Set the scrolling view in the custom SwipeRefreshLayout.
     scrollUpChild?.let {
         refreshLayout.scrollUpChild = it
     }
-}*/
+}
+
 fun main (){
     runBlocking{
         StorefrontHandlerImpl.getCustomerAddresses("33ee30c05ce560ce1ea3b312c46aa8cc").collect{
