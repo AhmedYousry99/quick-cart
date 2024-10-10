@@ -9,5 +9,7 @@ interface RemoteDataSource {
     suspend fun getUserByIdOrAddUser(customer: CustomerDTO): Flow<CustomerDTO>
     suspend fun getUserByEmail(customer: CustomerDTO): Flow<CustomerDTO>
     suspend fun addFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO>
+    suspend fun isFavorite(firebaseId: String, productId :String): Flow<Boolean>
     suspend fun removeFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO>
+    fun getFavorites(firebaseId: String): Flow<List<FavoriteDTO>>
 }

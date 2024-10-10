@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -238,6 +239,21 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
     override fun onStart() {
         super.onStart()
         (requireActivity() as MainActivity).showBottomNavBar()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (requireActivity() as MainActivity).apply{
+            if (findNavController().currentDestination!!.id == R.id.homeFragment
+                || findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
+        }
     }
 
     override fun onDestroyView() {

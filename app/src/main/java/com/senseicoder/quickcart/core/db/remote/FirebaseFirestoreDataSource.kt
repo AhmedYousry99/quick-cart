@@ -3,9 +3,11 @@ package com.senseicoder.quickcart.core.db.remote
 import android.util.Log
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.senseicoder.quickcart.core.global.withoutGIDPrefix
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.customer.CustomerKeys
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -69,8 +71,17 @@ object FirebaseFirestoreDataSource: RemoteDataSource{
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
 
         val userDocument = customersCollection.document(firebaseId)
-        userDocument.update("favorites", FieldValue.arrayUnion(favorite)).await()
+        userDocument.collection("favorites").document(favorite.id).set(favorite).await()
         emit(favorite)
+    }
+
+    override suspend fun isFavorite(firebaseId: String, productId: String) =flow<Boolean> {
+        val firestoreInstance = FirebaseFirestore.getInstance()
+        val document =
+            firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION).document(firebaseId).collection("favorites")
+                .document(productId.withoutGIDPrefix())
+                .get().await()
+        emit(document.exists())
     }
 
     override suspend fun removeFavorite(firebaseId: String, favorite: FavoriteDTO) =flow<FavoriteDTO> {
@@ -78,8 +89,18 @@ object FirebaseFirestoreDataSource: RemoteDataSource{
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
 
         val userDocument = customersCollection.document(firebaseId)
-        userDocument.update("favorites", FieldValue.arrayRemove(favorite)).await()
+        userDocument.collection("favorites").document(favorite.id).delete().await()
         emit(favorite)
+    }
+
+    override fun getFavorites(firebaseId: String) = flow{
+        val firestoreInstance = FirebaseFirestore.getInstance()
+        val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
+        try {
+            emit(customersCollection.document(firebaseId).collection("favorites").get().await().toObjects(FavoriteDTO::class.java))
+        }catch (e: Exception){
+            emit(emptyList())
+        }
     }
 
 

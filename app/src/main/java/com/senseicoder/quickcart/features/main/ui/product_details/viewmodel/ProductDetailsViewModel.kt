@@ -10,6 +10,7 @@ import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.repos.cart.CartRepo
+import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers

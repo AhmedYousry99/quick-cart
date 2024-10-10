@@ -149,11 +149,31 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         super.onStop()
         (requireActivity() as MainActivity).apply {
             toolbarVisibility(false)
+            if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
+                ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        (requireActivity() as MainActivity).apply {
+            if (findNavController().currentDestination!!.id == R.id.homeFragment
+                || findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
+        }
         findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
     }
 
