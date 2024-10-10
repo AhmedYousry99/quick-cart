@@ -85,6 +85,24 @@ object SharedPrefsService : SharedPrefs {
                     )
                 }"
             )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:FIREBASE_USER_ID ${
+                    getSharedPrefString(
+                        it.FIREBASE_USER_ID,
+                        it.FIREBASE_USER_ID_DEFAULT
+                    )
+                }"
+            )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:FIREBASE_USER_ID ${
+                    getSharedPrefString(
+                        it.USER_DISPLAY_NAME,
+                        it.USER_DISPLAY_NAME_DEFAULT
+                    )
+                }"
+            )
         }
 
     }

@@ -5,6 +5,7 @@ import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
 import com.senseicoder.quickcart.core.db.remote.RemoteDataSource
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
+import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
@@ -23,7 +24,7 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class CustomerRepoImpl private constructor(
     private val firebaseHandler: FirebaseHandler,
     private val storefrontHandler: StorefrontHandler,
@@ -36,9 +37,11 @@ class CustomerRepoImpl private constructor(
             email = email,
             password = password
         )){ dto, data ->
-            dto.copy(token = data.accessToken, expireAt = data.expiresAt )
+            dto.copy(token = data.accessToken.apply {
+                Log.d(TAG, "loginUsingNormalEmail: $this")
+            }, expireAt = data.expiresAt )
         }.flatMapConcat {
-            dbRemoteDataSource.getUserByEmail(it.email)
+            dbRemoteDataSource.getUserByEmail(it)
         }.timeout(15.seconds)
     }
 
@@ -157,6 +160,18 @@ class CustomerRepoImpl private constructor(
 
     override fun getCartId(): String {
         return sharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
+    }
+
+    override fun setFirebaseId(firebaseId: String) {
+        return sharedPrefsService.setSharedPrefString(Constants.FIREBASE_USER_ID, firebaseId)
+    }
+
+    override suspend fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+        return dbRemoteDataSource.addFavorite(email, favorite)
+    }
+
+    override suspend fun removeFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+        return dbRemoteDataSource.removeFavorite(email, favorite)
     }
 
     override fun setDisplayName(displayName: String) {
