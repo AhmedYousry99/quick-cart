@@ -39,6 +39,9 @@ object Constants {
     const val USER_ID = "userId"
     const val USER_ID_DEFAULT = "unknown"
 
+    const val FIREBASE_USER_ID = "firebaseUserId"
+    const val FIREBASE_USER_ID_DEFAULT = "unknown"
+
     const val CURRENCY = "currency"
     const val CURRENCY_DEFAULT = "EGP"
 }

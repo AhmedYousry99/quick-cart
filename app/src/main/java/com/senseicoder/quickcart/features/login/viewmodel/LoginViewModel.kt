@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,8 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 customerRepo.setEmail(it.email)
                 customerRepo.setDisplayName(it.displayName)
                 customerRepo.setCartId(it.cartId)
+                customerRepo.setFirebaseId(it.firebaseId)
+                SharedPrefsService.logAllSharedPref(TAG, "loginUsingNormalEmail")
                 withContext(Dispatchers.Main){
                     _loginState.value = ApiState.Success(it)
                 }
@@ -48,6 +51,7 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 customerRepo.setEmail(Constants.CART_ID_DEFAULT)
                 customerRepo.setDisplayName(Constants.USER_DISPLAY_NAME_DEFAULT)
                 customerRepo.setCartId(Constants.CART_ID_DEFAULT)
+                customerRepo.setFirebaseId(it.firebaseId)
                 withContext(Dispatchers.Main){
                     _loginState.value = ApiState.Success(it)
                 }
