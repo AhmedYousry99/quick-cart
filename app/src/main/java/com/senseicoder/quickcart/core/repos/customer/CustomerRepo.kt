@@ -1,6 +1,7 @@
 package com.senseicoder.quickcart.core.repos.customer
 
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
+import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import kotlinx.coroutines.flow.Flow
 
 interface CustomerRepo {
@@ -18,4 +19,7 @@ interface CustomerRepo {
     fun setDisplayName(displayName: String)
     fun setCartId(cartId: String)
     fun getCartId(): String
+    fun setFirebaseId(firebaseId: String)
+    suspend fun addFavorite(email:String, favorite: FavoriteDTO): Flow<FavoriteDTO>
+    suspend fun removeFavorite(email:String, favorite: FavoriteDTO): Flow<FavoriteDTO>
 }

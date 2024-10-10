@@ -23,8 +23,14 @@ object FirebaseHandlerImpl :FirebaseHandler{
         val lastNameEmpty = lastName.isBlank()
 
         val displayName = if(firstNameEmpty && lastNameEmpty) email else{
-            if(!firstNameEmpty) firstName else lastName
+            if(!firstNameEmpty && !lastNameEmpty)
+                "$firstName $lastName"
+            else if(!firstNameEmpty)
+                firstName
+            else
+                lastName
         }
+        Log.d(TAG, "signupUsingNormalEmail: $displayName")
         emit(
             CustomerDTO(
             displayName = task.user!!.displayName ?: displayName,

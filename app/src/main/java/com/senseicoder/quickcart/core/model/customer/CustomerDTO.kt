@@ -3,6 +3,7 @@ package com.senseicoder.quickcart.core.model.customer
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.DocumentSnapshot
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 
 data class CustomerDTO(
     val displayName: String,
@@ -17,7 +18,7 @@ data class CustomerDTO(
     val expireAt: Any? = null,
     val cartId: String = Constants.CART_ID_DEFAULT,
 ){
-
+    val favorites: List<FavoriteDTO> = emptyList()
     companion object{
         fun fromDocument(document: DocumentSnapshot): CustomerDTO {
             val tempDisplayName = document.getString(CustomerKeys.DISPLAY_NAME)
