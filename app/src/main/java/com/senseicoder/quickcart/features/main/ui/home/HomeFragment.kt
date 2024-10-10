@@ -1,3 +1,4 @@
+
 package com.senseicoder.quickcart.features.main.ui.home
 
 import android.os.Bundle
@@ -96,24 +97,26 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                     when (it) {
                         is ApiState.Loading -> {
                             if (networkConnectivity.isOnline()) {
+                                // Show shimmer and hide the recycler view during loading
                                 binding.brandRecycle.visibility = View.GONE
                                 binding.shimmerFrameLayout.visibility = View.VISIBLE
                                 binding.shimmerFrameLayout.startShimmer()
-                                binding.connectivity.visibility = View.VISIBLE
                                 binding.noConnectivity.visibility = View.GONE
-
                             } else {
+                                // Handle no connectivity state
                                 binding.connectivity.visibility = View.GONE
                                 binding.noConnectivity.visibility = View.VISIBLE
                             }
                         }
 
                         is ApiState.Success -> {
+                            // Hide shimmer and show the recycler view when data is loaded
                             binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
                             binding.shimmerFrameLayout.stopShimmer()
-                            brandAdapter =
-                                HomeBrandAdapter(requireContext(), this@HomeFragment)
+
+                            // Set up your adapter and layout manager
+                            brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
                             binding.brandRecycle.apply {
                                 adapter = brandAdapter
                                 brandAdapter.submitList(it.data)
@@ -131,9 +134,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
                     }
                 }
-
             }
         }
+
 
     }
 
@@ -153,7 +156,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
-                ){
+            ){
                 showBottomNavBar()
             }else{
                 hideBottomNavBar()
