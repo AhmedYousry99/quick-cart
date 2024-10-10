@@ -203,6 +203,7 @@ class ProductDetailsFragment : Fragment() {
                                         enableButtons()
                                         addToCartBtnProductDetails.isEnabled = false
                                         decreaseQuantityBtnProductDetails.isEnabled = false
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.black)))
                                     }
                                     else{
                                         stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
