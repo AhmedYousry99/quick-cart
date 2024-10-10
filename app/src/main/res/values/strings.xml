@@ -73,6 +73,11 @@
     <string name="total_tax">Total Tax</string>
     <string name="total_cost">Total Cost</string>
     <string name="no_orders">>Woohoo! It looks like you haven’t added any orders yet! Start shopping now and make your first order!</string>
+
+
+    <string name="address">Address</string>
+
+
     <string name="unknown">Something went wrong</string>
     <string name="price_variance">Price Variance:\u0020</string>
     <string name="remove_from_favorite_confirmation">Are you sure you want to delete this product from favorites?</string>
@@ -80,6 +85,7 @@
     <string name="favorite_removed_unsuccessfully">Failed to remove, please try again later</string>
     <string name="remove_from_favorite_confirmation_part_1">Are you sure you want to delete\u0020</string>
     <string name="remove_from_favorite_confirmation_part_2">\u0020from favorites ?</string>
+
 
 
 </resources>

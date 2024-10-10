@@ -8,6 +8,7 @@ import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
+import com.senseicoder.quickcart.core.entity.order.Address
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.entity.order.Order
 import com.senseicoder.quickcart.core.entity.product.Product
@@ -300,11 +301,21 @@ object StorefrontHandlerImpl : StorefrontHandler {
                                     )
                                 )
                             }
+                            // Map the billingAddress to Address object
+                            val address = billingAddress?.let { addr ->
+                                Address(
+                                    addr.address1 ?: "",
+                                    addr.address2 ?: "",
+                                    addr.city ?: "",
+                                    addr.country ?: ""
+                                )
+                            }
+
                             orders.add(
                                 Order(
                                     id,
                                     name,
-                                    billingAddress?.address1,
+                                    address = address,
                                     currentTotalPrice.amount.toString(),
                                     currentTotalPrice.currencyCode.toString(),
                                     currentSubtotalPrice.amount.toString(),

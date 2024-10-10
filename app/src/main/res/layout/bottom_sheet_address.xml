@@ -22,6 +22,7 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/primary"
             android:text="@string/submit_address"
+            android:fontFamily="@font/alexandria_medium"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -47,6 +48,7 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:text="@string/address_details"
+                android:fontFamily="@font/alexandria_medium"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@color/black"
                 android:textStyle="bold" />

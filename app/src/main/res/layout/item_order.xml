@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:elevation="10dp"
+    android:layout_margin="10dp"
     android:backgroundTint="#FAFAFA"
     app:cardCornerRadius="10dp"
     app:cardUseCompatPadding="true">
@@ -12,32 +13,35 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/orderConstrainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/image_product_order"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_margin="10dp"
-            tools:src="@drawable/bag"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="fitXY"/>
+            tools:src="@drawable/bag" />
 
         <TextView
             android:id="@+id/dateCreated"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            tools:text="1/10/2024"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/alexandria_medium"
-            android:textStyle="bold"
+            android:gravity="center"
             android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.403"
             app:layout_constraintStart_toEndOf="@+id/image_product_order"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"/>
+            tools:text="1/10/2024" />
 
         <TextView
             android:id="@+id/totalPrice"
@@ -58,8 +62,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.891"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.53"
+            app:layout_constraintStart_toEndOf="@+id/dateCreated"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/arrow_next" />
 

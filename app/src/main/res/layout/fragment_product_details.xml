@@ -92,6 +92,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/in_stock"
                 android:textStyle="bold"
+                android:fontFamily="@font/alexandria_medium"
                 app:layout_constraintStart_toStartOf="@+id/titleProductDetails"
                 app:layout_constraintTop_toBottomOf="@+id/priceVarianceProductDetails" />
 
@@ -187,6 +188,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/sizes_text"
+                android:fontFamily="@font/alexandria_medium"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/descriptionProductDetails"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionProductDetails" />
@@ -216,6 +218,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/colors_text"
                 android:textStyle="bold"
+                android:fontFamily="@font/alexandria_medium"
                 app:layout_constraintStart_toStartOf="@+id/textView5"
                 app:layout_constraintTop_toBottomOf="@+id/sizesChipGroupProductDetails" />
 
@@ -278,6 +281,7 @@
                 android:layout_marginEnd="20dp"
                 android:enabled="false"
                 android:text="Add To Cart"
+                android:fontFamily="@font/alexandria_medium"
                 android:textAllCaps="false"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_cart"
@@ -293,6 +297,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="@string/price_text"
+                android:fontFamily="@font/alexandria_medium"
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textStyle="bold"

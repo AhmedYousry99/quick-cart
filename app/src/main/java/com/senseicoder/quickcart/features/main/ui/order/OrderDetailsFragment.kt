@@ -97,12 +97,21 @@ class OrderDetailsFragment : Fragment() {
                             binding.subTotal.text = result.data[index].subTotalPriceAmount+"EGP"
                             binding.tax.text = result.data[index].totalTaxAmount+"EGP"
                             binding.orderId.text = result.data[index].name
-                            binding.address.text =
-                                result.data[index].address ?: "Maimi,Alexandria,Egypt"
-
                             binding.itemsCount.text =
-                                "${result.data[index].products.count()} items"
+                                "${result.data[index].products.count()} item"
 
+//                            binding.address.text =
+//                                result.data[index].address?: "Maimi,Alexandria,Egypt"
+
+                            // Set address, concatenating address1, city, and country
+                            val address = result.data[index].address
+                            val fullAddress = listOfNotNull(address?.address1, address?.city, address?.country).joinToString(", ")
+
+                            binding.address.text = if (fullAddress.isNotEmpty()) {
+                                fullAddress
+                            } else {
+                                "Maimi, Alexandria, Egypt"
+                            }
                             //getCurrentCurrency(
 //                                result.data[index].totalTaxAmount.toDouble(),
 //                                result.data[index].subTotalPriceAmount.toDouble(),
