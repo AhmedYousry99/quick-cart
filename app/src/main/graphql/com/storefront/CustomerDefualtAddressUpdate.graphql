@@ -1,10 +1,11 @@
 mutation CustomerDefaultAddressUpdate(
-    $customerAccessToken : String!,
-    $addressId : ID!
+    $customerAccessToken: String!
+    $addressId: ID!
 ) {
     customerDefaultAddressUpdate(
-        customerAccessToken: $customerAccessToken,
-        addressId: $addressId) {
+        customerAccessToken: $customerAccessToken
+        addressId: $addressId
+    ) {
         customerUserErrors {
             code
             field
@@ -32,6 +33,27 @@ mutation CustomerDefaultAddressUpdate(
                     provinceCode
                     zip
                 }
+            }
+            defaultAddress {
+                address1
+                address2
+                city
+                company
+                country
+                countryCode
+                countryCodeV2
+                firstName
+                formatted
+                formattedArea
+                id
+                lastName
+                latitude
+                longitude
+                name
+                phone
+                province
+                provinceCode
+                zip
             }
         }
     }

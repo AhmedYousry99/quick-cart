@@ -4,6 +4,9 @@ import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.network.RetrofitHelper.FormUrlEncodedConverterFactory
 import com.senseicoder.quickcart.core.network.RetrofitHelper.gson
+import com.senseicoder.quickcart.core.network.coupons.CouponsInterface
+import com.senseicoder.quickcart.core.network.currency.CurrencyInterface
+import com.senseicoder.quickcart.core.network.order.OrderInterface
 import com.senseicoder.quickcart.core.network.customer.CustomerAdminRetrofitInterface
 import com.senseicoder.quickcart.core.network.product.ProductsApiInterface
 import okhttp3.Interceptor
@@ -14,15 +17,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiService {
 
-    //TODO: change url and api key
-    private const val CURRENCY_BASE_URL = "https://api.getgeoapi.com/v2/currency/"
-    const val CURRENCY_API_KEY = "26c960f1a769e1deed38f42d0299e5c9d496a76a"
+    private const val CURRENCY_BASE_URL = "https://api.currencyapi.com/"
 
     val brandsApiService: ProductsApiInterface =
         AppRetrofit.retrofit.create(ProductsApiInterface::class.java)
 
     val customerApiService: CustomerAdminRetrofitInterface =
         AppRetrofit.retrofit.create(CustomerAdminRetrofitInterface::class.java)
+
+    val orderApiService: OrderInterface =
+        AppRetrofit.retrofit.create(OrderInterface::class.java)
+
+    val couponsService: CouponsInterface =
+        AppRetrofit.retrofit.create(CouponsInterface::class.java)
+
+    val currencyApiService: CurrencyInterface =
+        AppRetrofit.retrofitCurrency.create(CurrencyInterface::class.java)
+
+
 
     object AppRetrofit {
 

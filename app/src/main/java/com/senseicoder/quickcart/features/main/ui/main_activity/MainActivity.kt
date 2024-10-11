@@ -14,9 +14,13 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +28,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val mainViewModel : MainActivityViewModel by lazy{
-        ViewModelProvider(this)[MainActivityViewModel::class.java]
+        ViewModelProvider(this,
+            MainActivityViewModelFactory(CurrencyRepoImpl(CurrencyRemoteImpl))
+            )[MainActivityViewModel::class.java]
     }
 
     private val onDestinationChangedListener =

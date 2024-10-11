@@ -14,13 +14,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentCategoryBinding
 import com.senseicoder.quickcart.features.main.ui.category.viewmodel.CategoryViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -262,7 +264,12 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
     }
 
     override fun productClicked(id: Long) {
-        ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].setCurrentProductId(id.toString())
+        ViewModelProvider(requireActivity(),
+            MainActivityViewModelFactory(
+                CurrencyRepoImpl(
+                    CurrencyRemoteImpl
+                )
+            ))[MainActivityViewModel::class.java].setCurrentProductId(id.toString())
         findNavController().navigate(R.id.action_categoryFragment_to_productDetailsFragment)
     }
 

@@ -5,12 +5,20 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.databinding.RowOfAddressBinding
 
-class AddressAdapter(var list: List<AddressOfCustomer>, val listener :OnAddressClickListener) :
+class AddressAdapter(
+    var list: List<AddressOfCustomer>,
+    val listener: OnAddressClickListener
+) :
     RecyclerView.Adapter<AddressAdapter.ViewHolder>() {
     lateinit var binding: RowOfAddressBinding
+    companion object{
+        private const val TAG = "AddressAdapter"
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater =
@@ -25,14 +33,31 @@ class AddressAdapter(var list: List<AddressOfCustomer>, val listener :OnAddressC
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val current = list[position]
         holder.binding.apply {
+            if (position == 0) {
+                imgDefault.apply {
+                    setImageResource(R.drawable.ic_favorite_filled)
+                    setOnClickListener(null)
+                }
+                imgBtnDelete.apply {
+                    visibility = android.view.View.GONE
+                    setOnClickListener(null)
+                }
+            } else {
+                imgDefault.apply {
+                    setImageResource(R.drawable.ic_favorite_border)
+                    setOnClickListener {
+                        listener.onDefaultClick(current)
+                    }
+                }
+                imgBtnDelete.apply {
+                    visibility = android.view.View.VISIBLE
+                    setOnClickListener {
+                        listener.onDeleteClick(current)
+                    }
+                }
+            }
             txtFirstNameAndSecond.text = String.format("${current.firstName} ${current.lastName}")
             txtNameOFCountryAndCity.text = String.format("${current.city}, ${current.country}")
-            imgBtnDelete.setOnClickListener{
-                listener.onDeleteClick(current)
-            }
-            imgBtnEdit.setOnClickListener{
-                listener.onEditClick(current)
-            }
         }
     }
 

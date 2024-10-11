@@ -19,6 +19,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
+import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.model.toMailingAddressInput
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
@@ -37,12 +38,12 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     lateinit var binding: FragmentAddressBinding
     lateinit var bottomSheetDialog: BottomSheetDialog
     lateinit var bottomSheetBinding: BottomSheetAddressBinding
-    val geoCoder: Geocoder by lazy {
+    private val geoCoder: Geocoder by lazy {
         Geocoder(requireContext(), Locale.getDefault())
     }
     lateinit var addresses: List<Address>
     lateinit var address: Address
-    val mainViewModel: MainActivityViewModel by lazy {
+    private val mainViewModel: MainActivityViewModel by lazy {
         ViewModelProvider(requireActivity())[MainActivityViewModel::class.java]
     }
     val viewModel: AddressViewModel by lazy {
@@ -56,10 +57,8 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             )
         )[AddressViewModel::class.java]
     }
-    private val addressAdapter: AddressAdapter by lazy {
-        AddressAdapter(emptyList(), this)
-    }
-    var label: String? = null
+    private lateinit var addressAdapter: AddressAdapter
+    private var label: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,15 +67,14 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     ): View {
         binding = FragmentAddressBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getCustomerAddresses()
-        label =
-            Navigation.findNavController(requireView()).previousBackStackEntry?.destination?.label as String?
-        if (!label.isNullOrEmpty() && label.toString() == "MapsFragment") {
+        SharedPrefsService.logAllSharedPref(TAG, "onViewCreated")
+        label = arguments?.getString("label", null)
+        if (!label.isNullOrEmpty() && label == "MapsFragment") {
             shoBottomSheet()
         }
         binding.apply {
@@ -88,17 +86,21 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                     .navigate(R.id.action_addressFragment_to_mapsFragment)
             }
             lifecycleScope.launch {
-                viewModel.allAddresses.collect {
+                viewModel.allAddresses?.collect {
                     when (it) {
                         is ApiState.Loading -> {
                             ifLoading()
                         }
 
                         is ApiState.Success -> {
-                            if (it.data.isNotEmpty()) {
+                            val res = it.data.addresses.edges
+                            if (res.isNotEmpty()) {
                                 ifSuccessAndData()
-                                addressAdapter.updateList(it.data)
-                                rvAddress.adapter = addressAdapter
+                                addressAdapter = AddressAdapter(
+                                    sortDefault(res.fromEdges(), it.data.defaultAddress?.id ?: ""),
+                                    this@AddressFragment
+                                )
+                                binding.rvAddress.adapter = addressAdapter
                             } else {
                                 isSuccessAndNoData()
                             }
@@ -128,7 +130,6 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                 viewModel.deletedAddress.collect {
                     when (it) {
                         is ApiState.Success -> {
-                            viewModel.getCustomerAddresses()
                             Snackbar.make(requireView(), "Address deleted", Snackbar.LENGTH_LONG)
                                 .show()
                         }
@@ -153,6 +154,11 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         // TODO("Not yet implemented")
     }
 
+    override fun onDefaultClick(addressOfCustomer: AddressOfCustomer) {
+        addressAdapter.updateList(emptyList())
+        viewModel.updateDefaultAddress(addressOfCustomer.id)
+    }
+
     private fun shoBottomSheet() {
         bottomSheetBinding = BottomSheetAddressBinding.inflate(layoutInflater)
         bottomSheetBinding.apply {
@@ -166,7 +172,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
             bottomSheetDialog.setContentView(this.root)  // Use binding.root instead of dialogView
             bottomSheetDialog.show()
-            setListener(this)
+            resetError(this)
             setupBottomSheet(this)
         }
 
@@ -179,13 +185,6 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                 clearFocus(this)
                 if (checkFields(this)) {
                     viewModel.createAddress(readyAddressToSave())
-                    lifecycleScope.launch {
-                        viewModel.createdAddress.collect {
-                            Log.d(TAG, "setupBottomSheet: ${it}")
-                        }
-                    }
-
-                    viewModel.getCustomerAddresses()
                     bottomSheetDialog.dismiss()
                 } else {
                     addError(this)
@@ -205,7 +204,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         }
     }
 
-    private fun setListener(bottomBinding: BottomSheetAddressBinding) {
+    private fun resetError(bottomBinding: BottomSheetAddressBinding) {
         bottomBinding.apply {
             firstNameEditText.addTextChangedListener {
                 firstNameTextField.error = null
@@ -240,8 +239,8 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
     private fun addError(bottomBinding: BottomSheetAddressBinding) {
         bottomBinding.apply {
-            if (txtCityEditText.text.toString().isBlank() || txtVountryEditText.text.toString()
-                    .isBlank()
+            if (txtCityEditText.text.toString().isBlank() ||
+                txtVountryEditText.text.toString().isBlank()
             ) {
                 bottomSheetDialog.dismiss()
                 Snackbar.make(requireView(), "Please pick from map again", Snackbar.LENGTH_LONG)
@@ -265,8 +264,10 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
     private fun ifLoading() {
         binding.apply {
-            shimmerFrameLayout.visibility = View.VISIBLE
-            shimmerFrameLayout.startShimmer()
+            shimmerFrameLayout.apply {
+                visibility = View.VISIBLE
+                shimmerFrameLayout.startShimmer()
+            }
             dataGroup.visibility = View.GONE
             animationView.visibility = View.GONE
         }
@@ -276,8 +277,8 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         binding.apply {
             shimmerFrameLayout.visibility = View.GONE
             shimmerFrameLayout.stopShimmer()
-            dataGroup.visibility = View.VISIBLE
             animationView.visibility = View.GONE
+            dataGroup.visibility = View.VISIBLE
         }
     }
 
@@ -285,7 +286,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         binding.apply {
             shimmerFrameLayout.visibility = View.GONE
             shimmerFrameLayout.stopShimmer()
-            dataGroup.visibility = View.GONE
+            dataGroup.visibility = View.VISIBLE
             animationView.visibility = View.VISIBLE
         }
     }
@@ -332,6 +333,17 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         }
 
 
+    }
+
+    fun sortDefault(list: List<AddressOfCustomer>, id: String): List<AddressOfCustomer> {
+        val res: MutableList<AddressOfCustomer> = mutableListOf()
+        list.forEach {
+            if (it.id == id)
+                res.add(0, it)
+            else
+                res.add(it)
+        }
+        return res
     }
 
     companion object {

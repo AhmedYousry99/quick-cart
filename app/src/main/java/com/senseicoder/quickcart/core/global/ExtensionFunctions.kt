@@ -1,4 +1,3 @@
-
 package com.senseicoder.quickcart.core.global
 
 /**
@@ -18,16 +17,25 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
-import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.model.AddressOfCustomer
+import com.senseicoder.quickcart.core.model.CurrencySymbol
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
+import com.storefront.CustomerAddressesQuery
+import com.storefront.CustomerDefaultAddressUpdateMutation
+import com.storefront.GetCartDetailsQuery
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.math.RoundingMode
-import kotlinx.coroutines.runBlocking
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -131,21 +139,20 @@ fun Fragment.showErrorSnackbar(snackbarText: String, timeLength: Int = 4000) {
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toDateTime(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
-    return  formatter.format(this)
+    return formatter.format(this)
 }
 
-fun String?.isValidEmail(): Boolean{
+fun String?.isValidEmail(): Boolean {
     return !this.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(this.trim()).matches()
 }
 
-fun String?.isValidPassword(): Boolean{
+fun String?.isValidPassword(): Boolean {
     return !this.isNullOrBlank() && PasswordRegex.matches(this.trim())
 }
 
-fun String?.matchesPassword(password: String): Boolean{
+fun String?.matchesPassword(password: String): Boolean {
     return !this.isNullOrBlank() && this.trim() == password
 }
-
 
 
 /**
@@ -160,7 +167,7 @@ fun BroadcastReceiver.goAsync(
     coroutineScope.launch(dispatcher) {
         try {
             block()
-        }finally {
+        } finally {
             pendingResult.finish()
         }
     }
@@ -213,7 +220,8 @@ fun priceConversion(price : String, currency: Currency, conversionRate : Convers
 
 fun Double.toTwoDecimalPlaces(locale: Locale = Locale.US): String {
     val numberFormat = NumberFormat.getInstance(locale)
-    val parsedNumber = numberFormat.parse(this.toString())?.toDouble() ?: throw NumberFormatException("Cannot parse: $this")
+    val parsedNumber = numberFormat.parse(this.toString())?.toDouble()
+        ?: throw NumberFormatException("Cannot parse: $this")
     return String.format(locale, "%.2f", parsedNumber)
 }
 
@@ -236,7 +244,7 @@ fun Double.toTwoDecimalPlaces(): String {
 
 fun Long.toDateTime(pattern: String): String {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        java.time.format.DateTimeFormatter.ofPattern(pattern)
+        DateTimeFormatter.ofPattern(pattern)
             .format(Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")))
     } else {
         val sdf = SimpleDateFormat(pattern, Locale.US)
@@ -245,6 +253,35 @@ fun Long.toDateTime(pattern: String): String {
     }
 }
 
+
+fun GetCartDetailsQuery.DefaultAddress.toAddressOfCustomer(): AddressOfCustomer {
+    return AddressOfCustomer(
+        id = this.id,
+        firstName = this.firstName ?: "",
+        lastName = this.lastName ?: "",
+        address1 = this.address1 ?: "",
+        address2 = this.address2,
+        city = this.city ?: "",
+        country = this.country ?: "",
+        phone = this.phone ?: "",
+    )
+}
+
+
+fun (CustomerDefaultAddressUpdateMutation.Customer).toCustomerOfDefault(): CustomerAddressesQuery.Customer {
+    try {
+        return CustomerAddressesQuery.Customer(
+            addresses = this.addresses as (CustomerAddressesQuery.Addresses),
+            defaultAddress = this.defaultAddress as (CustomerAddressesQuery.DefaultAddress)
+        )
+    } catch (e: Exception) {
+        return CustomerAddressesQuery.Customer(
+            addresses = CustomerAddressesQuery.Addresses(edges = emptyList()),
+            defaultAddress = null
+        )
+    }
+
+}
 
 fun Fragment.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
@@ -275,13 +312,8 @@ fun Activity.setupRefreshLayout(
         refreshLayout.scrollUpChild = it
     }
 }
+data class myInt(val int: Int)
 
 fun main (){
-    runBlocking{
-        StorefrontHandlerImpl.getCustomerAddresses("33ee30c05ce560ce1ea3b312c46aa8cc").collect{
-            println()
-        }
-        val name = "ahmed yousry"
-        print(name.split(" "))
-    }
+
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
@@ -36,7 +37,7 @@ class MapsFragment : Fragment() {
             latLng = it
             googleMap.clear()
             googleMap.addMarker(MarkerOptions().position(it))
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 12f))
             mainViewModel.setLocation(it.latitude, it.longitude)
 
         }
@@ -51,6 +52,8 @@ class MapsFragment : Fragment() {
         binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,7 +70,7 @@ class MapsFragment : Fragment() {
                 DialogType.SAVE_ADDRESS
             ) {
                 Navigation.findNavController(it)
-                    .navigate(R.id.action_mapsFragment_to_addressFragment)
+                    .navigate(R.id.action_mapsFragment_to_addressFragment, bundleOf("label" to "MapsFragment"))
             }.show(childFragmentManager, "")
         }
 

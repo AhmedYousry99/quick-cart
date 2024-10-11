@@ -1,13 +1,15 @@
 package com.senseicoder.quickcart.core.repos.cart
 
+import com.apollographql.apollo.api.ApolloResponse
 import com.senseicoder.quickcart.core.model.ProductOfCart
+import com.storefront.GetCartDetailsQuery
 import kotlinx.coroutines.flow.Flow
 
 interface CartRepo {
     suspend fun createCart(email: String): Flow<String>
     fun getUserToken(): String
 
-    suspend fun getCartProducts(cartId: String): Flow<List<ProductOfCart>>
+    suspend fun getCartProducts(cartId: String): Flow<ApolloResponse<GetCartDetailsQuery.Data>>
     suspend fun removeProductFromCart(
         cartId: String,
         lineId: String
