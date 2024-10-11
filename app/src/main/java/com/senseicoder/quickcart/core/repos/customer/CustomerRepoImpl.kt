@@ -8,6 +8,7 @@ import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.interfaces.CustomerAdminDataSource
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 //import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
@@ -16,11 +17,11 @@ import com.senseicoder.quickcart.core.services.SharedPrefsService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.timeout
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
 
@@ -29,19 +30,26 @@ class CustomerRepoImpl private constructor(
     private val firebaseHandler: FirebaseHandler,
     private val storefrontHandler: StorefrontHandler,
     private val sharedPrefsService: SharedPrefs,
-    private val dbRemoteDataSource: RemoteDataSource
+    private val dbRemoteDataSource: RemoteDataSource,
+    private val customerAdminDataSource: CustomerAdminDataSource,
 ) : CustomerRepo {
 
     override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
-        return firebaseHandler.loginUsingNormalEmail(email, password).zip(storefrontHandler.loginUser(
+        return dbRemoteDataSource.getUserByEmail(CustomerDTO(email = email)).flatMapConcat {
+            customerAdminDataSource.getCustomerById(it)
+        }.map {
+            Log.d(TAG, "loginUsingNormalEmail: $it")
+            if(!it.isVerified){
+                throw Exception("email not verified, please verify it from your email")
+            }
+            it
+        }.combine(storefrontHandler.loginUser(
             email = email,
             password = password
         )){ dto, data ->
             dto.copy(token = data.accessToken.apply {
                 Log.d(TAG, "loginUsingNormalEmail: $this")
-            }, expireAt = data.expiresAt )
-        }.flatMapConcat {
-            dbRemoteDataSource.getUserByEmail(it)
+            }, expireAt = data.expiresAt)
         }.timeout(15.seconds)
     }
 
@@ -49,8 +57,17 @@ class CustomerRepoImpl private constructor(
         return firebaseHandler.loginUsingGuest().timeout(15.seconds)
     }
 
-    override fun signOut() {
+    override fun signOut(){
         firebaseHandler.signOut()
+        Constants.apply {
+            sharedPrefsService.setSharedPrefString(USER_ID_DEFAULT, USER_ID_DEFAULT)
+            sharedPrefsService.setSharedPrefString(USER_TOKEN_DEFAULT, USER_TOKEN_DEFAULT)
+            sharedPrefsService.setSharedPrefString(USER_EMAIL_DEFAULT, USER_EMAIL_DEFAULT)
+            sharedPrefsService.setSharedPrefString(CART_ID_DEFAULT, CART_ID_DEFAULT)
+            sharedPrefsService.setSharedPrefString(FIREBASE_USER_ID_DEFAULT, FIREBASE_USER_ID_DEFAULT)
+            sharedPrefsService.setSharedPrefString(USER_DISPLAY_NAME_DEFAULT, USER_DISPLAY_NAME_DEFAULT)
+            //TODO: add currency
+        }
     }
 
     /* override fun getCustomerUsingEmail(email: String): Flow<ApiState<CustomerDTO>> = flow {
@@ -78,7 +95,7 @@ class CustomerRepoImpl private constructor(
          }
      }*/
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    /*@OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun signupUsingEmailAndPassword(
         firstName: String,
         lastName: String,
@@ -107,6 +124,40 @@ class CustomerRepoImpl private constructor(
                 dbRemoteDataSource.getUserByIdOrAddUser(it)
             }
             .timeout(20.seconds)
+    }*/
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun signupUsingEmailAndPassword(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): Flow<CustomerDTO> {
+        return firebaseHandler.signupUsingNormalEmail(email, password, firstName, lastName).zip(
+            storefrontHandler.createCustomer(
+                email = email,
+                firstName = firstName,
+                lastName = lastName,
+                password = password
+            )
+        ) { dto, data ->
+            Log.d(TAG, "createCustomer: success")
+            dto.copy(id = data.id)
+        }.map {
+            customerAdminDataSource.createCustomer(email, password, firstName, lastName)
+            it
+        }
+            .flatMapConcat {
+                firebaseHandler.updateDisplayName(it)
+            }
+            .flatMapConcat {customer ->
+                storefrontHandler.createCart(customer.email).map {
+                    customer.copy(cartId = it.id)
+                }
+            }.flatMapConcat {
+                dbRemoteDataSource.getUserByIdOrAddUser(it)
+            }
+            .timeout(20.seconds)
     }
 
     companion object {
@@ -118,7 +169,8 @@ class CustomerRepoImpl private constructor(
             firebaseHandler: FirebaseHandler = FirebaseHandlerImpl,
             storefrontHandler: StorefrontHandler = StorefrontHandlerImpl,
             sharedPrefs: SharedPrefs = SharedPrefsService,
-            dbRemoteDataSource: RemoteDataSource = FirebaseFirestoreDataSource
+            dbRemoteDataSource: RemoteDataSource = FirebaseFirestoreDataSource,
+            customerAdminDataSource: CustomerAdminDataSource,
         ): CustomerRepoImpl {
             return instance ?: synchronized(this) {
                 val instance =
@@ -126,7 +178,8 @@ class CustomerRepoImpl private constructor(
                         firebaseHandler,
                         storefrontHandler,
                         sharedPrefs,
-                        dbRemoteDataSource
+                        dbRemoteDataSource,
+                        customerAdminDataSource
                     )
                 Companion.instance = instance
                 instance

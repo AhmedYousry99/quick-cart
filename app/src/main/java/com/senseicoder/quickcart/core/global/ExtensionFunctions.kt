@@ -281,5 +281,7 @@ fun main (){
         StorefrontHandlerImpl.getCustomerAddresses("33ee30c05ce560ce1ea3b312c46aa8cc").collect{
             println()
         }
+        val name = "ahmed yousry"
+        print(name.split(" "))
     }
 }

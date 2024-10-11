@@ -4,6 +4,7 @@ import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.network.RetrofitHelper.FormUrlEncodedConverterFactory
 import com.senseicoder.quickcart.core.network.RetrofitHelper.gson
+import com.senseicoder.quickcart.core.network.customer.CustomerAdminRetrofitInterface
 import com.senseicoder.quickcart.core.network.product.ProductsApiInterface
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -19,6 +20,9 @@ object ApiService {
 
     val brandsApiService: ProductsApiInterface =
         AppRetrofit.retrofit.create(ProductsApiInterface::class.java)
+
+    val customerApiService: CustomerAdminRetrofitInterface =
+        AppRetrofit.retrofit.create(CustomerAdminRetrofitInterface::class.java)
 
     object AppRetrofit {
 
