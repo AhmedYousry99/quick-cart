@@ -27,12 +27,22 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[MainActivityViewModel::class.java]
     }
 
+    private val onDestinationChangedListener =
+        NavController.OnDestinationChangedListener { controller, destination, arguments ->
+            if (!canNavigate(destination.id)){
+                controller.popBackStack()
+                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -63,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         binding.imageSearch.setOnClickListener{
             navController.navigate(R.id.searchFragment)
         }
+        navController.addOnDestinationChangedListener(onDestinationChangedListener)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -85,6 +96,13 @@ class MainActivity : AppCompatActivity() {
             binding.toolbar.visibility = View.VISIBLE
         else
             binding.toolbar.visibility = View.GONE
+    }
+
+    private fun canNavigate(destinationId: Int): Boolean {
+        if (destinationId == R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
+            return SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT
+        }
+        return true
     }
 
     companion object {

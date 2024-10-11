@@ -37,13 +37,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
 
-    private val onDestinationChangedListener =
-        NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            if (!canNavigate(destination.id)){
-                controller.popBackStack()
-                Toast.makeText(requireContext(), getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
-            }
-        }
+
 
     private val networkConnectivity by lazy {
         NetworkConnectivity.getInstance(requireActivity().application)
@@ -77,7 +71,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         binding.swipeRefresher.setColorSchemeResources(R.color.black)
 
-        findNavController().addOnDestinationChangedListener(onDestinationChangedListener)
 
         if (networkConnectivity.isOnline()) {
             binding.connectivity.visibility = View.VISIBLE
@@ -177,7 +170,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 hideBottomNavBar()
             }
         }
-        findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
+
     }
 
 
@@ -220,14 +213,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
 
         binding.swipeRefresher.isRefreshing = false
-    }
-
-    private fun canNavigate(destinationId: Int): Boolean {
-        if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
-            val isUserGuest = SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT
-            return !isUserGuest
-        }
-        return true
     }
 
 
