@@ -4,6 +4,7 @@ import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.model.DisplayBrand
 import com.senseicoder.quickcart.core.model.DisplayProduct
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
+import com.storefront.SearchQuery
 import kotlinx.coroutines.flow.Flow
 
 interface ProductsRepoInterface {
@@ -14,4 +15,6 @@ interface ProductsRepoInterface {
     suspend fun getCurrency(): String
 
     suspend fun getProductDetailsGraph(id: String): Flow<ProductDTO>
+
+    suspend fun getProductsByQuery(query: String): Flow<List<ProductDTO>>
 }
