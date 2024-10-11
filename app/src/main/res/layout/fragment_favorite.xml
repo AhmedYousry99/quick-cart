@@ -77,14 +77,14 @@
         app:lottie_rawRes="@raw/nointernet" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerViewContainer"
+        android:id="@+id/lottieAnimationView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         app:shimmer_auto_start="true"
         app:shimmer_duration="1500">
         <ScrollView
-            android:id="@+id/lottieAnimationView2"
+            android:id="@+id/lottieAnimationView23"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"

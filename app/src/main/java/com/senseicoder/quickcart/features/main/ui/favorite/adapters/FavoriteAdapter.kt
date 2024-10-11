@@ -82,7 +82,7 @@ class FavoritesAdapter(
             binding.titleFavoriteItem.text = favorite.title
             binding.descriptionFavoritePrice.text = favorite.description
             binding.priceFavoriteItem.text = price
-            Glide.with(binding.root.context).load(favorite.image.first())
+            Glide.with(binding.root.context).load(favorite.image.firstOrNull())
                 .apply(RequestOptions().placeholder(R.drawable.generic_placeholder).error(R.drawable.generic_placeholder))
                 .into(binding.imageViewFavoriteItem)
         }
