@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
@@ -45,12 +46,13 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo) : ViewModel(
         viewModelScope.launch{
             _currency.emit( ApiState.Loading)
             currencyRepo.getCurrencyRate(newCurrency).catch {
-                _currency.emit(value = ApiState.Failure(it.message.toString()))
+                _currency.emit(ApiState.Failure(it.message.toString()))
             }.collect {
+                Log.d(TAG, "getCurrencyRate: ${it.data}")
                 if (it.data.isEmpty())
-                    _currency.emit(value = ApiState.Failure("IS EMPTY"))
+                    _currency.emit(ApiState.Failure("IS EMPTY"))
                 else {
-                    _currency.emit(value = ApiState.Success(it))
+                    _currency.emit(ApiState.Success(it))
                 }
             }
         }

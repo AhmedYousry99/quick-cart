@@ -29,12 +29,12 @@ import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainA
 import kotlinx.coroutines.launch
 
 class CurrencyFragment : Fragment() {
-    companion object{
+    companion object {
         private const val TAG = "CurrencyFragment"
     }
-    private val buttons:MutableList<RadioButton> = mutableListOf()
+    private val buttons: MutableList<RadioButton> = mutableListOf()
     private lateinit var binding: FragmentCurrencyBinding
-     var code : String = SharedPrefsService.getSharedPrefString(
+    var code: String = SharedPrefsService.getSharedPrefString(
         Constants.CURRENCY,
         Constants.CURRENCY_DEFAULT
     )
@@ -62,13 +62,22 @@ class CurrencyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         code = SharedPrefsService.getSharedPrefString(
-        Constants.CURRENCY,
-        Constants.CURRENCY_DEFAULT
-        )
-        Log.d(TAG, "onViewCreated: ${SharedPrefsService.getSharedPrefString(
             Constants.CURRENCY,
             Constants.CURRENCY_DEFAULT
-        )}")
+        )
+        Log.d(
+            TAG, "onViewCreated: ${
+                SharedPrefsService.getSharedPrefString(
+                    Constants.CURRENCY,
+                    Constants.CURRENCY_DEFAULT
+                )
+            } - ${
+                SharedPrefsService.getSharedPrefFloat(
+                    Constants.PERCENTAGE_OF_CURRENCY_CHANGE,
+                    Constants.PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT
+                )
+            }"
+        )
         startCollect()
         binding.apply {
             imgBtnBack.setOnClickListener {
@@ -98,14 +107,14 @@ class CurrencyFragment : Fragment() {
                     }
                 )
             }
-            buttons.forEach{
-                if (it.text.toString().substring(0,4) == code){
+            buttons.forEach {
+                if (it.text.toString().substring(0, 4) == code) {
                     it.isChecked = true
                 }
             }
             rdGroup.setOnCheckedChangeListener { l, p ->
                 val rdBtnChecked = l.findViewById<RadioButton>(p)
-                buttons.forEach{
+                buttons.forEach {
                     it.isChecked = false
                 }
                 rdBtnChecked.isChecked = true
@@ -117,19 +126,23 @@ class CurrencyFragment : Fragment() {
 
     fun setChangeInCurrency(response: CurrencyResponse) {
         SharedPrefsService.apply {
-            Constants.apply {
-                setSharedPrefString(CURRENCY, code)
-                response.data.get(code)?.value?.toFloat()
-                    ?.let { setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE, it) }
-            }
+//            Constants.apply {
+//                Log.d(TAG, "setChangeInCurrency: $response")
+//                setSharedPrefString(CURRENCY, code)
+//                setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE,
+//                    response.data[code]!!.value.toFloat())
+//            }
         }
     }
-    private fun startCollect(){
+
+    private fun startCollect() {
         lifecycleScope.launch {
             mainViewmodel.currency.collect {
                 when (it) {
                     is ApiState.Success -> {
-                        setChangeInCurrency(it.data)
+                        val res = it.data
+                        Log.d(TAG, "startCollect: $res")
+                        setChangeInCurrency(res)
                         Snackbar.make(
                             requireView(),
                             "Success Changed Currency",

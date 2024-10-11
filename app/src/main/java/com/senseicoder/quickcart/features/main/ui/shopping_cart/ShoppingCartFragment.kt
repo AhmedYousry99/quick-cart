@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.dialogs.PaymentDialog
+import com.senseicoder.quickcart.core.dialogs.PaymentProccesDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
@@ -42,6 +43,7 @@ import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.BottomSheetPaymentBinding
 import com.senseicoder.quickcart.databinding.FragmentShoppingCartBinding
+import com.senseicoder.quickcart.databinding.PaymentProccessDialogBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
@@ -72,13 +74,14 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     private lateinit var bottomSheetBinding: BottomSheetPaymentBinding
     private var defaultAddress: AddressOfCustomer? = null
     private val sharedViewModel: MainActivityViewModel by lazy {
-        ViewModelProvider(requireActivity(),
+        ViewModelProvider(
+            requireActivity(),
             MainActivityViewModelFactory(
                 CurrencyRepoImpl(
                     CurrencyRemoteImpl
                 )
             )
-            )[MainActivityViewModel::class.java]
+        )[MainActivityViewModel::class.java]
     }
     private val viewModel: ShoppingCartViewModel by lazy {
         ViewModelProvider(
@@ -101,7 +104,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        SharedPrefsService.logAllSharedPref(TAG,"ONCREATE")
+        SharedPrefsService.logAllSharedPref(TAG, "ONCREATE")
         fragmentBinding = FragmentShoppingCartBinding.inflate(inflater, container, false)
         return fragmentBinding.root
     }
@@ -109,7 +112,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        PaymentDialog().show(childFragmentManager, "PaymentDialog")
+        fragmentBinding.animationView.setOnClickListener{
+        PaymentProccesDialog().show(childFragmentManager, "PaymentDialog")
+        }
         collectDefaultAddress()
         // TODO: get from view model
         viewModel.fetchCartProducts(
@@ -208,23 +213,20 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
 
     override fun onStop() {
         super.onStop()
+        customScope.cancel()
         (requireActivity() as MainActivity).apply {
             if (findNavController().currentDestination!!.id == R.id.homeFragment
                 || findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        customScope.cancel()
-    }
 
     private fun createDraftOrderForCash() {
         customScope.launch {
@@ -256,8 +258,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                                 )
                                 completeDraftOrderForCash(it.data.draft_order.id)
                             }
+
                             is ApiState.Failure -> {
-                                Log.d(TAG, "createDraftOrderForCash: failure ${it.msg}")}
+                                Log.d(TAG, "createDraftOrderForCash: failure ${it.msg}")
+                            }
 
                             else -> Log.d(TAG, "createDraftOrderForCash loading:")
                         }
@@ -265,14 +269,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                 }
             } else
                 Log.d(TAG, "createDraftOrderForCash: default add not found $defaultAddress")
-
         }
     }
 
     private fun completeDraftOrderForCash(id: Long) {
         customScope.launch {
             viewModel.apply {
-                customScope.launch{ completeDraftOrder(id) }.join()
+                customScope.launch { completeDraftOrder(id) }.join()
                 draftOrderCompletion.collect {
                     when (it) {
                         is ApiState.Success -> {
@@ -280,22 +283,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                                 freeCart()
                             }.join()
                             bottomSheetDialog.dismiss()
-                            Log.d(TAG, "completeDraftOrderForCash: success id : ${it.data.draft_order.id}")
-                            customScope.launch { sendInvoice(it.data.draft_order.id) }.join()
-                            sendInvoice.collect {
-                                when (it) {
-                                    is ApiState.Success -> {
-                                        Log.d(TAG, "completeDraftOrderForCash success ${it.data.draft_order}: ")
-                                    }
-
-                                    is ApiState.Loading -> {
-                                        Log.d(TAG, "completeDraftOrderForCash loading : ")
-                                    }
-                                    else -> Log.d(TAG, "completeDraftOrderForCash: error ${it}")
-                                }
-                            }
-
+                            Log.d(
+                                TAG,
+                                "completeDraftOrderForCash: success id : ${it.data.draft_order.id}"
+                            )
+                            sendInvoiceCollector(it.data.draft_order.id)
                         }
+
                         is ApiState.Loading -> Log.d(TAG, "completeDraftOrderForCash: loading ")
 
                         else -> {
@@ -309,6 +303,27 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         }
     }
 
+    private fun sendInvoiceCollector(id: Long) {
+        customScope.launch {
+            customScope.launch { viewModel.sendInvoice(id) }.join()
+            viewModel.sendInvoice.collect {
+                when (it) {
+                    is ApiState.Success -> {
+                        Log.d(
+                            TAG,
+                            "sendInvoiceCollector success invoice ${it.data.draft_order}: "
+                        )
+                    }
+
+                    is ApiState.Loading -> {
+                        Log.d(TAG, "sendInvoiceCollector  inloading : ")
+                    }
+
+                    else -> Log.d(TAG, "sendInvoiceCollector: error ${it}")
+                }
+            }
+        }
+    }
 
     private fun updateTotalPrice(list: List<ProductOfCart>?) {
         val res = Math.round(

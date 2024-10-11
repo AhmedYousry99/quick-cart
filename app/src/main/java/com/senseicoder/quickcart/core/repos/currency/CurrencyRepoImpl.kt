@@ -10,7 +10,7 @@ class CurrencyRepoImpl(private val currencyRemote: CurrencyRemote): CurrencyRepo
         return flow {
             currencyRemote.getCurrencyRate(newCurrency).collect {
                 val res = it
-                emit(it)
+                emit(res)
             }
         }
     }

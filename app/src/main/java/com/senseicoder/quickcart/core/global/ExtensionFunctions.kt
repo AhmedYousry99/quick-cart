@@ -17,10 +17,16 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.CurrencySymbol
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.GetCartDetailsQuery
@@ -310,7 +316,8 @@ data class myInt(val int: Int)
 
 fun main() {
     runBlocking {
-        println(text())
+//        println(text())
+        test2()
     }
 }
 suspend fun text():Map<String,CurrencySymbol>{
@@ -321,4 +328,8 @@ suspend fun text():Map<String,CurrencySymbol>{
         val symbol = value.substringAfter("symbol=").removeSurrounding("(", ")")
         key.trim() to CurrencySymbol(symbol.trim())
     }
+}
+suspend fun test2(){
+
+
 }
