@@ -23,9 +23,11 @@ import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.network.ApiService
 //import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.customer.CustomerAdminDataSourceImpl
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -75,7 +77,8 @@ class LoginFragment : Fragment() {
             CustomerRepoImpl.getInstance(
                 FirebaseHandlerImpl,
                 StorefrontHandlerImpl,
-                SharedPrefsService
+                SharedPrefsService,
+                customerAdminDataSource = CustomerAdminDataSourceImpl( ApiService.customerApiService)
             )
         )
 //        progressBar = CircularProgressIndicatorDialog(requireActivity())
@@ -104,7 +107,7 @@ class LoginFragment : Fragment() {
 
     private fun subscribeToObservables(){
         lifecycleScope.launch{
-            repeatOnLifecycle(Lifecycle.State.CREATED){
+            repeatOnLifecycle(Lifecycle.State.STARTED){
                 loginViewModel.loginState.collect{
                     when(it){
                         ApiState.Init ->{

@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
@@ -23,10 +24,12 @@ import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.matchesPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.network.ApiService
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 //import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.customer.CustomerAdminDataSourceImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSignupBinding
@@ -58,7 +61,11 @@ class SignupFragment : Fragment() {
             CustomerRepoImpl.getInstance(
                 FirebaseHandlerImpl,
                 StorefrontHandlerImpl,
-                SharedPrefsService
+                SharedPrefsService,
+                FirebaseFirestoreDataSource,
+                CustomerAdminDataSourceImpl(
+                    ApiService.customerApiService
+                )
             )
         )
         signupViewModel = ViewModelProvider(this, factory)[SignupViewModel::class]

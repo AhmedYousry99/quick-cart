@@ -1,4 +1,3 @@
-
 package com.senseicoder.quickcart.features.main.ui.home
 
 import android.content.ClipData
@@ -62,17 +61,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         R.drawable.coupon10bg
     )
 
-    private val onDestinationChangedListener =
-        NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            if (!canNavigate(destination.id)) {
-                controller.popBackStack()
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.permission_denied),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
 
     private val networkConnectivity by lazy {
         NetworkConnectivity.getInstance(requireActivity().application)
@@ -107,7 +95,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         binding.swipeRefresher.setColorSchemeResources(R.color.black)
 
-        findNavController().addOnDestinationChangedListener(onDestinationChangedListener)
 
         if (networkConnectivity.isOnline()) {
             binding.connectivity.visibility = View.VISIBLE
@@ -140,16 +127,17 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
 
                         is ApiState.Success -> {
-                            brandAdapter =HomeBrandAdapter(requireContext(), this@HomeFragment)
+                            brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
                             binding.brandRecycle.apply {
                                 brandAdapter.submitList(it.data)
                                 adapter = brandAdapter
-                                }
+                            }
                             delay(1000)
                             binding.shimmerFrameLayout.stopShimmer()
                             binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
-                            }
+                        }
+
                         else -> {
                             if (!networkConnectivity.isOnline()) {
                                 binding.connectivity.visibility = View.GONE
@@ -180,9 +168,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
@@ -195,14 +183,13 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
-        findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
-        handel.removeCallbacksAndMessages(null)
+
     }
 
 
@@ -287,17 +274,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         binding.swipeRefresher.isRefreshing = false
     }
 
-    private fun canNavigate(destinationId: Int): Boolean {
-        if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
-            val isUserGuest = SharedPrefsService.getSharedPrefString(
-                Constants.USER_ID,
-                Constants.USER_ID_DEFAULT
-            ) == Constants.USER_ID_DEFAULT
-            return !isUserGuest
-        }
-        return true
-    }
-
     private fun startRandomSwiping() {
         val swipeRunnable = object : Runnable {
             override fun run() {
@@ -314,6 +290,5 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         }
         handel.postDelayed(swipeRunnable, 2000)
-
     }
 }

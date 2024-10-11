@@ -6,8 +6,8 @@ import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 
 data class CustomerDTO(
-    val displayName: String,
-    val email: String,
+    val displayName: String = "unknown",
+    val email: String = "unknown",
     val password: String = INVALID_PASSWORD,
     val id: String = INVALID_ID,
     @DocumentId

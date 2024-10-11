@@ -153,7 +153,7 @@ class ProductDetailsFragment : Fragment() {
 
     private fun subscribeToObservables() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 productDetailsViewModel.product.collect { response->
                     binding.apply {
                         when (response) {
@@ -201,7 +201,7 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 productDetailsViewModel.selectedProduct.collectLatest { selectedProducts->
                     binding.apply {
                         when(selectedProducts){
@@ -328,7 +328,7 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 productDetailsViewModel.addingToCart.collect {
                     when(it){
                         ApiState.Init -> {
@@ -353,7 +353,7 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 favoriteViewModel.isFavorite.collect { response ->
                     binding.apply {
                         when(response){

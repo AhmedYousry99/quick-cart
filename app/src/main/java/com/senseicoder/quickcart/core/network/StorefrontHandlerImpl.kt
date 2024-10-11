@@ -79,7 +79,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
 
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.customerAccessTokenCreate != null && response.exception == null) {
-            emit(response.data!!.customerAccessTokenCreate!!.customerAccessToken!!)
+            emit(response.data!!.customerAccessTokenCreate!!.customerAccessToken  ?: throw Exception("invalid credentials"))
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
