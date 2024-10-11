@@ -59,10 +59,10 @@ class OrderFragment : Fragment() {
 
 
 
-
+        setUpOrdersAdapter()
         collectOrders()
 
-        setUpOrdersAdapter()
+
 
     }
 
@@ -73,19 +73,30 @@ class OrderFragment : Fragment() {
     }
 
     private fun setUpOrdersAdapter() {
-        ordersAdapter = OrderAdapter(
-            requireContext()
-        ) { index ->
-            val action =
-                OrderFragmentDirections.actionOrderFragmentToOrderDetailsFragment(index)
+        ordersAdapter = OrderAdapter(requireContext()) { index ->
+            val action = OrderFragmentDirections.actionOrderFragmentToOrderDetailsFragment(index)
             findNavController().navigate(action)
         }
-
-        ordersManager = LinearLayoutManager(requireContext())
-        ordersManager.orientation = LinearLayoutManager.VERTICAL
-        binding.ordersRV.layoutManager = ordersManager
+        binding.ordersRV.layoutManager = LinearLayoutManager(requireContext())
         binding.ordersRV.adapter = ordersAdapter
     }
+//    private fun setUpOrdersAdapter() {
+//        ordersAdapter = OrderAdapter(
+//            requireContext()
+//        ) { index ->
+//            val action =
+//                OrderFragmentDirections.actionOrderFragmentToOrderDetailsFragment(index)
+//            findNavController().navigate(action)
+//        }
+
+//        ordersManager = LinearLayoutManager(requireContext())
+//        ordersManager.orientation = LinearLayoutManager.VERTICAL
+//        binding.ordersRV.layoutManager = ordersManager
+//        binding.ordersRV.adapter = ordersAdapter
+//        binding.ordersRV.layoutManager = LinearLayoutManager(requireContext())
+//        binding.ordersRV.adapter = ordersAdapter
+//    }
+
 
 //    private fun collectOrders() {
 //        lifecycleScope.launch {
@@ -118,8 +129,8 @@ class OrderFragment : Fragment() {
 //    }
 private fun collectOrders() {
     lifecycleScope.launch {
-        viewModel.getCustomerOrders(repo.readUserToken())
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.getCustomerOrders("7beaf58f597b3ce62a552fc6b221ab4a") // Replace with token retrieval
             viewModel.apiState.collect { result ->
                 when (result) {
                     is ApiState.Loading -> {
@@ -144,7 +155,8 @@ private fun collectOrders() {
                             Log.d(TAG, "No orders found")
                         } else {
                             binding.noOrders.visibility = View.GONE
-                            ordersAdapter.submitList(result.data)
+                            ordersAdapter.submitList(result.data) // Submit the list to the adapter
+                            Log.d(TAG, "Orders submitted to adapter: ${result.data.size} orders")
                         }
                     }
                     is ApiState.Failure -> {
@@ -157,18 +169,19 @@ private fun collectOrders() {
                         Toast.makeText(requireContext(), result.msg, Toast.LENGTH_SHORT).show()
                         Log.e(TAG, "State: Failure, Error: ${result.msg}")
                     }
-                    is ApiState.Init -> {
+                    ApiState.Init -> {
                         // Handle initial state if needed
                         binding.shimmerFrameLayoutOrders.visibility = View.GONE
                         binding.noOrders.visibility = View.GONE
                         binding.ordersRV.visibility = View.GONE
                     }
+
+                    else -> {}
                 }
             }
         }
     }
 }
-
 
     private fun setUpViewModel() {
 //        repo = ShopifyRepositoryImpl(

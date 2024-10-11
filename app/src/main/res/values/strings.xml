@@ -59,7 +59,7 @@
     <string name="add_to_cart">Add To Cart</string>
     <string name="in_stock">In Stock:\u0020</string>
     <string name="products_amount_text">0</string>
-    <string name="price_text">Price:\u0020</string>
+    <string name="price_text">Total:\u0020</string>
     <string name="product_added_successfully">Product Added To Cart Successfully!</string>
     <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again Later</string>
     <string name="permission_denied">You must be logged in to access thees features.</string>
@@ -75,6 +75,20 @@
     <string name="no_orders">>Woohoo! It looks like you haven’t added any orders yet! Start shopping now and make your first order!</string>
 
 
+    <string name="address">Address</string>
+
+
+    <string name="unknown">Something went wrong</string>
+    <string name="price_variance">Price Variance:\u0020</string>
+    <string name="remove_from_favorite_confirmation">Are you sure you want to delete this product from favorites?</string>
+    <string name="favorite_removed_successfully">Removed Successfully</string>
+    <string name="favorite_removed_unsuccessfully">Failed to remove, please try again later</string>
+    <string name="remove_from_favorite_confirmation_part_1">Are you sure you want to delete\u0020</string>
+    <string name="remove_from_favorite_confirmation_part_2">\u0020from favorites ?</string>
+    <string name="searchbar_hint">Superstar</string>
+    <string name="query_hint">Adidas</string>
+    <string name="suggestion_list_error">Couldn\'t show suggestions</string>
+    <string name="available_sizes">Sizes:\u0020</string>
 
 
 </resources>

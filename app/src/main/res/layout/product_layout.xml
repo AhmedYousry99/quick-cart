@@ -34,16 +34,19 @@
 
         <TextView
             android:id="@+id/brandName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginTop="4dp"
-            android:lines="1"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/alexandria_medium"
+            android:maxLines="1"
             android:text="TextView"
             android:textColor="@color/black"
-            android:fontFamily="@font/alexandria_medium"
             android:textSize="14sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/brandImage" />
 
@@ -51,13 +54,14 @@
             android:id="@+id/price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="300 EGP"
-            android:textStyle="bold"
             android:fontFamily="@font/alexandria_medium"
+            android:text="300 EGP"
             android:textColor="@color/primary"
             android:textColorHint="@color/primary"
-            app:layout_constraintStart_toStartOf="@+id/brandName"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/brandName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

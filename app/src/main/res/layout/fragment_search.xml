@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    &lt;!&ndash; NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). &ndash;&gt;
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+        &lt;!&ndash; Screen content goes here. &ndash;&gt;
+    </ androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.search.SearchBar
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/searchbar_hint" />
+    </ com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.search.SearchView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/searchbar_hint"
+        app:layout_anchor="@id/search_bar">
+        &lt;!&ndash; Search suggestions/ results go here (ScrollView, RecyclerView, etc.). &ndash;&gt;
+    </ com.google.android.material.search.SearchView>
+</ androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:theme="@style/Widget.AppCompat.SearchView.ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/location_searchview_background"
+        android:inputType="text|textAutoComplete"
+        app:queryHint="@string/query_hint"
+        app:iconifiedByDefault="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_search"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        tools:listitem="@layout/search_item"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

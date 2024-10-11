@@ -18,13 +18,15 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
@@ -32,22 +34,20 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp">
 
-                <EditText
-                    android:id="@+id/searchView"
-                    android:layout_width="275dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:id="@+id/imageSearch"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/search_view"
-                    android:clickable="true"
-                    android:drawableStart="@drawable/search"
-                    android:focusable="true"
-                    android:imeOptions="actionSearch"
-                    android:padding="5dp"
-                    android:singleLine="true"
+                    android:src="@drawable/search"
                     app:layout_constraintBottom_toBottomOf="@+id/imageFavorite"
-                    app:layout_constraintEnd_toStartOf="@id/imageFavorite"
+                    app:layout_constraintEnd_toStartOf="@+id/imageFavorite"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,11 +55,9 @@
                     android:id="@+id/imageFavorite"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="30dp"
                     android:src="@drawable/favouritemain"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.921"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
 

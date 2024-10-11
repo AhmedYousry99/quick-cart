@@ -63,6 +63,12 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_loginFragment_to_homeFragment)
             navController.graph.setStartDestination(R.id.homeFragment)
         }
+        binding.imageFavorite.setOnClickListener{
+            navController.navigate(R.id.favoriteFragment)
+        }
+        binding.imageSearch.setOnClickListener{
+            navController.navigate(R.id.searchFragment)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

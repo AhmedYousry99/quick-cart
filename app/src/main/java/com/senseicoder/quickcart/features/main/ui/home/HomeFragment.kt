@@ -1,3 +1,4 @@
+
 package com.senseicoder.quickcart.features.main.ui.home
 
 import android.content.ClipData
@@ -126,13 +127,13 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                     when (it) {
                         is ApiState.Loading -> {
                             if (networkConnectivity.isOnline()) {
+                                // Show shimmer and hide the recycler view during loading
                                 binding.brandRecycle.visibility = View.GONE
                                 binding.shimmerFrameLayout.visibility = View.VISIBLE
                                 binding.shimmerFrameLayout.startShimmer()
-                                binding.connectivity.visibility = View.VISIBLE
                                 binding.noConnectivity.visibility = View.GONE
-
                             } else {
+                                // Handle no connectivity state
                                 binding.connectivity.visibility = View.GONE
                                 binding.noConnectivity.visibility = View.VISIBLE
                             }
@@ -157,9 +158,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
                     }
                 }
-
             }
         }
+
 
     }
 
@@ -175,11 +176,31 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         super.onStop()
         (requireActivity() as MainActivity).apply {
             toolbarVisibility(false)
+            if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        (requireActivity() as MainActivity).apply {
+            if (findNavController().currentDestination!!.id == R.id.homeFragment
+                || findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
+        }
         findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
         handel.removeCallbacksAndMessages(null)
     }

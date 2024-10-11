@@ -4,6 +4,7 @@ package com.senseicoder.quickcart.core.global
  * Extension functions and Binding Adapters.
  */
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Color
@@ -20,13 +21,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.CurrencySymbol
-import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.GetCartDetailsQuery
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
@@ -63,6 +62,9 @@ fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
     }
 }
 
+fun String.withoutGIDPrefix(): String {
+    return substringAfterLast("/")
+}
 
 fun String.toColor(): Int {
     return when (this.lowercase()) {
@@ -245,10 +247,6 @@ fun Long.toDateTime(pattern: String): String {
     }
 }
 
-fun String.withoutGIDPrefix(): String {
-    return substringAfterLast("/")
-}
-
 
 fun GetCartDetailsQuery.DefaultAddress.toAddressOfCustomer(): AddressOfCustomer {
     return AddressOfCustomer(
@@ -279,35 +277,35 @@ fun (CustomerDefaultAddressUpdateMutation.Customer).toCustomerOfDefault(): Custo
 
 }
 
-/*fun Fragment.setupRefreshLayout(
+fun Fragment.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
     scrollUpChild: View? = null
 ) {
     refreshLayout.setColorSchemeColors(
         ContextCompat.getColor(requireActivity(), R.color.primary),
-        ContextCompat.getColor(requireActivity(), R.color.on_primary),
+        ContextCompat.getColor(requireActivity(), R.color.primary_faint),
         ContextCompat.getColor(requireActivity(), R.color.secondary)
     )
     // Set the scrolling view in the custom SwipeRefreshLayout.
     scrollUpChild?.let {
         refreshLayout.scrollUpChild = it
     }
-}*/
+}
 
-/*fun Activity.setupRefreshLayout(
+fun Activity.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
     scrollUpChild: View? = null
 ) {
     refreshLayout.setColorSchemeColors(
         ContextCompat.getColor(this@setupRefreshLayout, R.color.primary),
-        ContextCompat.getColor(this@setupRefreshLayout, R.color.on_primary),
+        ContextCompat.getColor(this@setupRefreshLayout, R.color.primary_faint),
         ContextCompat.getColor(this@setupRefreshLayout, R.color.secondary)
     )
     // Set the scrolling view in the custom SwipeRefreshLayout.
     scrollUpChild?.let {
         refreshLayout.scrollUpChild = it
     }
-}*/
+}
 data class myInt(val int: Int)
 
 fun main() {

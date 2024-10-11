@@ -1,28 +1,55 @@
-query SearchProducts($query: String!) {
-    products(first: 10, query: $query) {
-        edges {
-            node {
-                id
-                title
+query Search($q:String! ) {
+    search(query: $q, first: 50) {
+        nodes {
+            ... on Product {
+                availableForSale
+                createdAt
                 description
-                images(first: 1) {
-                    edges {
-                        node {
-                            src
+                descriptionHtml
+                variants(first:50){
+                    nodes {
+                        image{
+                            width
+                            height
+                            url
+                        }
+                        price {
+                            currencyCode
+                            amount
+                        }
+                        selectedOptions {
+                            name
+                            value
                         }
                     }
                 }
-                variants(first: 1) {
-                    edges {
-                        node {
-                            priceV2 {
-                                amount
-                                currencyCode
-                            }
-                        }
+                priceRange {
+                    maxVariantPrice {
+                        amount
+                        currencyCode
+                    }
+                    minVariantPrice {
+                        amount
+                        currencyCode
                     }
                 }
+                images(first: 5){
+                    nodes {
+                        url
+                    }
+                }
+                featuredImage {
+                    url
+                }
+                handle
+                id
+                productType
+                title
+                totalInventory
+                updatedAt
+                vendor
             }
         }
+        totalCount
     }
 }

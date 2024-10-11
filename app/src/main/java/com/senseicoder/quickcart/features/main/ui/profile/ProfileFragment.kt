@@ -1,11 +1,13 @@
 package com.senseicoder.quickcart.features.main.ui.profile
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
@@ -27,9 +29,27 @@ class ProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as MainActivity).toolbarVisibility(false)
+        (requireActivity() as MainActivity).apply {
+            toolbarVisibility(false)
+            showBottomNavBar()
+        }
     }
 
+    override fun onStop() {
+        super.onStop()
+        (requireActivity() as MainActivity).apply{
+            Log.d(TAG, "onStop: ${binding.root.findNavController().currentDestination!!}")
+            if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,5 +83,9 @@ class ProfileFragment : Fragment() {
             }
 
         }
+    }
+
+    companion object{
+        private const val TAG = "ProfileFragment"
     }
 }

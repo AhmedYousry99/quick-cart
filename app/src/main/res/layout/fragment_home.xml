@@ -6,29 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".features.main.ui.home.HomeFragment">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefresher"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
-
-            <androidx.core.widget.NestedScrollView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                android:layout_height="match_parent">
 
 
                     <androidx.viewpager2.widget.ViewPager2
@@ -62,120 +60,109 @@
                         app:selectedDotColor="#FFC107"
                         tools:visibility="visible" />
 
+                <!-- Brand Label TextView -->
+                <TextView
+                    android:id="@+id/brandLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="36dp"
+                    android:fontFamily="@font/alexandria_medium"
+                    android:text="@string/brands"
+                    android:textColor="@color/primary"
+                    android:textSize="30sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dots_indicator" />
 
-                    <TextView
-                        android:id="@+id/brandLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="36dp"
-                        android:fontFamily="@font/alexandria_medium"
-                        android:text="@string/brands"
-                        android:textColor="@color/primary"
-                        android:textSize="30sp"
-                        android:visibility="visible"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/couponPager"
-                        tools:visibility="visible" />
+                <!-- Shimmer Frame Layout -->
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/brandLabel">
 
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/shimmerFrameLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="15dp"
-                        android:orientation="vertical"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/brandLabel">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                            <include layout="@layout/home_brand_shimmer_placeholder" />
-
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/brandRecycle"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:orientation="vertical"
-                        android:visibility="visible"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/brandLabel"
-                        app:spanCount="2"
-                        tools:listitem="@layout/item_brand"
-                        tools:visibility="visible" />
+                        android:orientation="vertical">
 
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/networkLottie"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="100dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:lottie_autoPlay="true"
-                        app:lottie_loop="true"
-                        app:lottie_rawRes="@raw/nointernet" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
+                        <include layout="@layout/home_brand_shimmer_placeholder" />
 
-                    <TextView
-                        android:id="@+id/noInternet"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="@string/noInternet"
-                        android:fontFamily="@font/alexandria_medium"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/networkLottie" />
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
-                    <androidx.constraintlayout.widget.Group
-                        android:id="@+id/connectivity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:constraint_referenced_ids="couponPager,dots_indicator,brandLabel,brandRecycle, shimmerFrameLayout"
-                        tools:visibility="visible" />
+                <!-- RecyclerView for Brands -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/brandRecycle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/brandLabel"
+                    tools:listitem="@layout/item_brand" />
 
-                    <androidx.constraintlayout.widget.Group
-                        android:id="@+id/noConnectivity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        app:constraint_referenced_ids="noInternet,networkLottie" />
+                <!-- Network error handling views -->
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/networkLottie"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/nointernet" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/noInternet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/noInternet"
+                    android:fontFamily="@font/alexandria_medium"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/networkLottie" />
 
-            </androidx.core.widget.NestedScrollView>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/connectivity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="couponPager,dots_indicator,brandLabel,brandRecycle,shimmerFrameLayout" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/noConnectivity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="noInternet,networkLottie" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

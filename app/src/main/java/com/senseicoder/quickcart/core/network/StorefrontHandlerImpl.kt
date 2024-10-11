@@ -8,6 +8,7 @@ import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
+import com.senseicoder.quickcart.core.entity.order.Address
 import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.entity.order.Order
 import com.senseicoder.quickcart.core.entity.product.Product
@@ -32,6 +33,7 @@ import com.storefront.GetProductByIdQuery
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
 import com.storefront.CustomerOrdersQuery
+import com.storefront.SearchQuery
 import com.storefront.type.CustomerCreateInput
 import com.storefront.type.MailingAddressInput
 
@@ -210,6 +212,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
         }
     }
 
+    override suspend fun getProductsByQuery(query: String) = flow {
+        val query = SearchQuery(query)
+        val response = apolloClient.query(query).execute()
+        if (response.data?.search?.nodes != null && response.exception == null) {
+            emit(response.data!!.search)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
     override suspend fun getCustomerAddresses(token: String): Flow<CustomerAddressesQuery.Customer> =
         flow {
             val query = CustomerAddressesQuery(token)
@@ -299,11 +311,21 @@ object StorefrontHandlerImpl : StorefrontHandler {
                                     )
                                 )
                             }
+                            // Map the billingAddress to Address object
+                            val address = billingAddress?.let { addr ->
+                                Address(
+                                    addr.address1 ?: "",
+                                    addr.address2 ?: "",
+                                    addr.city ?: "",
+                                    addr.country ?: ""
+                                )
+                            }
+
                             orders.add(
                                 Order(
                                     id,
                                     name,
-                                    billingAddress?.address1,
+                                    address = address,
                                     currentTotalPrice.amount.toString(),
                                     currentTotalPrice.currencyCode.toString(),
                                     currentSubtotalPrice.amount.toString(),

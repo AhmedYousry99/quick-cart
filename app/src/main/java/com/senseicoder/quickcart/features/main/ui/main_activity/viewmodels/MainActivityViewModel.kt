@@ -22,7 +22,10 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo) : ViewModel(
     val currentUser = _currentUser.asStateFlow()
 
     fun setCurrentProductId(id: String) {
-        _currentProductId.value = "${Constants.API.PRODUCT_ID_PREFIX}$id"
+        if(id.startsWith(Constants.API.PRODUCT_ID_PREFIX)){
+            _currentProductId.value = id
+        } else
+            _currentProductId.value = "${Constants.API.PRODUCT_ID_PREFIX}$id"
     }
 
     fun updateCurrentUser(customerDTO: CustomerDTO) {

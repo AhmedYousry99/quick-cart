@@ -7,64 +7,51 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.entity.order.Order
-import com.senseicoder.quickcart.databinding.ItemOrderBinding
+import com.senseicoder.quickcart.databinding.ItemOrderBinding // Import the generated binding class
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class OrderAdapter(
-    val context: Context,
-    private val listener: (index: Int) -> Unit,
-) : ListAdapter<Order, OrdersViewHolder>(
-    OrdersDiffUtil()
-) {
+    private val context: Context,
+    private val listener: (index: Int) -> Unit
+) : ListAdapter<Order, OrderViewHolder>(OrderDiffUtil()) {
 
-    private lateinit var binding: ItemOrderBinding
-    private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
-    private var currencyUnit: String = "EGP"
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrdersViewHolder {
-        binding = ItemOrderBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return OrdersViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
+        val binding = ItemOrderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return OrderViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: OrdersViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val current = getItem(position)
-        val convertedTotalPrice = convertedPrices["totalPrice${current.id}"] ?: current.totalPriceAmount.toDouble()
-        val convertedSubTotalPrice = convertedPrices["subTotalPrice${current.id}"] ?: current.subTotalPriceAmount.toDouble()
 
-        binding.totalPrice.text = String.format("%.2f %s - %d items", convertedTotalPrice, currencyUnit, current.products.size)
-        binding.dateCreated.text = formatToYearMonthDayHourMinuteAmPm(current.processedAt)
+        // Log current order details for debugging
+        Log.d("OrderAdapter", "Binding order ID: ${current.id}, Total Price: ${current.totalPriceAmount}, Currency: EGP")
 
+        // Bind data to the layout
+        holder.binding.totalPrice.text = String.format("%.2f EGP - %d item", current.totalPriceAmount.toDouble(), current.products.size)
+        holder.binding.dateCreated.text = formatToYearMonthDayHourMinuteAmPm(current.processedAt)
+        holder.binding.imageProductOrder.setImageResource(R.drawable.bag)
 
-        binding.orderConstrainLayout.setOnClickListener {
+        // Handle item click
+        holder.binding.orderConstrainLayout.setOnClickListener {
             listener.invoke(position)
-            Log.i("TAG", "onBindViewHolder: id current " + current.id)
+            Log.i("TAG", "Order clicked: ${current.id}")
         }
 
-        binding.details.setOnClickListener {
+        // Handle details click
+        holder.binding.details.setOnClickListener {
             listener.invoke(position)
-            Log.i("TAG", "onBindViewHolder: id current " + current.id)
+            Log.i("TAG", "Details clicked for order: ${current.id}")
         }
-    }
-
-    fun updateCurrentCurrency(rate: Double, unit: String) {
-        currencyUnit = unit
-        currentList.forEach { order ->
-            convertedPrices["totalPrice${order.id}"] = order.totalPriceAmount.toDouble() * rate
-            convertedPrices["subTotalPrice${order.id}"] = order.subTotalPriceAmount.toDouble() * rate
-        }
-        notifyDataSetChanged()
     }
 }
 
-class OrdersViewHolder(val layout: ItemOrderBinding) : RecyclerView.ViewHolder(layout.root)
-class OrdersDiffUtil : DiffUtil.ItemCallback<Order>() {
+class OrderViewHolder(val binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root)
+
+class OrderDiffUtil : DiffUtil.ItemCallback<Order>() {
     override fun areItemsTheSame(oldItem: Order, newItem: Order): Boolean {
         return oldItem.id == newItem.id
     }
@@ -73,6 +60,7 @@ class OrdersDiffUtil : DiffUtil.ItemCallback<Order>() {
         return oldItem == newItem
     }
 }
+
 fun formatToYearMonthDayHourMinuteAmPm(dateString: String): String {
     val zonedDateTime = ZonedDateTime.parse(dateString)
     val cairoTime = zonedDateTime.withZoneSameInstant(ZoneId.of("Africa/Cairo"))

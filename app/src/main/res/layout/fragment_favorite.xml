@@ -1,13 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.main.ui.favorite.FavoriteFragment">
+    tools:context=".features.main.ui.favorite.FavoriteFragment" >
 
-    <TextView
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/emptyFavoriteGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="networkLottie3" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/loadingFavoriteGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="lottieAnimationView2" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/noInternetFavoriteGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="noInternet2,networkLottie2" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayoutFavorite"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favoriteRecycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            tools:listitem="@layout/favorite_item" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/noInternet2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="@string/noInternet"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/networkLottie2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/networkLottie2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/nointernet" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/lottieAnimationView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:shimmer_auto_start="true"
+        app:shimmer_duration="1500">
+        <ScrollView
+            android:id="@+id/lottieAnimationView23"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:orientation="vertical"
+                android:padding="16dp">
+                <include layout="@layout/favorites_shimmer"/>
+                <include layout="@layout/favorites_shimmer"/>
+                <include layout="@layout/favorites_shimmer"/>
+                <include layout="@layout/favorites_shimmer"/>
+                <include layout="@layout/favorites_shimmer"/>
+                <include layout="@layout/favorites_shimmer"/>
+            </LinearLayout>
+        </ScrollView>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/networkLottie3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/emptyanimation" />
+</androidx.constraintlayout.widget.ConstraintLayout>
