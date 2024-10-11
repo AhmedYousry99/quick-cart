@@ -20,6 +20,7 @@ import kotlinx.coroutines.FlowPreview
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.transform
 import kotlin.time.Duration.Companion.seconds
@@ -56,6 +57,10 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
                 Log.d(TAG, "getProductDetailsGraph: new item:\n$it")
             })
         }.timeout(15.seconds)
+    }
+
+    override suspend fun getProductsByQuery(query: String): Flow<List<ProductDTO>> {
+        return storefrontHandler.getProductsByQuery(query).map { it.nodes.map { node -> node.onProduct!!.mapQueryProductToProductDTO(it.totalCount) } }.timeout(15.seconds)
     }
 
     override suspend fun getAllProduct(): Flow<List<DisplayProduct>> {

@@ -85,7 +85,10 @@
     <string name="favorite_removed_unsuccessfully">Failed to remove, please try again later</string>
     <string name="remove_from_favorite_confirmation_part_1">Are you sure you want to delete\u0020</string>
     <string name="remove_from_favorite_confirmation_part_2">\u0020from favorites ?</string>
-
+    <string name="searchbar_hint">Superstar</string>
+    <string name="query_hint">Adidas</string>
+    <string name="suggestion_list_error">Couldn\'t show suggestions</string>
+    <string name="available_sizes">Sizes:\u0020</string>
 
 
 </resources>

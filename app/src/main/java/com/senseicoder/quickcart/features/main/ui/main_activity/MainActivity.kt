@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity() {
         binding.imageFavorite.setOnClickListener{
             navController.navigate(R.id.favoriteFragment)
         }
+        binding.imageSearch.setOnClickListener{
+            navController.navigate(R.id.searchFragment)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

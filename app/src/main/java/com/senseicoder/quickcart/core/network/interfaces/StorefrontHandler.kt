@@ -15,6 +15,7 @@ import com.storefront.GetProductByIdQuery
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.RemoveProductFromCartMutation
+import com.storefront.SearchQuery
 import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 
@@ -68,4 +69,6 @@ interface StorefrontHandler {
         quantity: Int,
         variantId: String
     ): Flow<AddProductToCartMutation.CartLinesAdd>
+
+    suspend fun getProductsByQuery(query: String): Flow<SearchQuery.Search>
 }

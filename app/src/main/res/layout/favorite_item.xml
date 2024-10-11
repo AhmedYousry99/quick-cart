@@ -44,7 +44,9 @@
             android:maxLines="1"
             android:text="Mobius OG"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/priceFavoriteItem"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/cardView2"
             app:layout_constraintTop_toTopOf="@+id/cardView2" />
 
@@ -52,9 +54,9 @@
             android:id="@+id/priceFavoriteItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:fontFamily="@font/alexandria_medium"
             android:text="$1200"
+            app:layout_constraintBottom_toTopOf="@+id/descriptionFavoritePrice"
             app:layout_constraintStart_toStartOf="@+id/titleFavoriteItem"
             app:layout_constraintTop_toBottomOf="@+id/titleFavoriteItem" />
 
@@ -68,16 +70,16 @@
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu ultricies velit. Aenean ac nunc lacus. Curabitur vel sem nec tortor elementum maximus. Vivamus molestie, mi at lacinia pulvinar, arcu enim mattis felis, ut auctor nisl orci semper odio. In tortor purus, fringilla sed nisi quis, mattis tincidunt nibh. Praesent egestas arcu malesuada diam commodo pretium. Suspendisse lacus metus, venenatis ut mauris vitae, egestas condimentum lorem."
             app:layout_constraintBottom_toBottomOf="@+id/cardView2"
             app:layout_constraintEnd_toStartOf="@+id/deleteFavoriteItem"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/priceFavoriteItem"
             app:layout_constraintTop_toBottomOf="@+id/priceFavoriteItem" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deleteFavoriteItem"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:backgroundTint="@color/very_light_red"
             android:enabled="true"
             android:insetTop="0dp"
@@ -88,9 +90,9 @@
             app:iconGravity="textStart"
             app:iconSize="24dp"
             app:iconTint="@color/red"
-            app:rippleColor="@color/red"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:rippleColor="@color/red" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

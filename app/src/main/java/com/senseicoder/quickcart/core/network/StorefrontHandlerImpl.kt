@@ -33,6 +33,7 @@ import com.storefront.GetProductByIdQuery
 import com.storefront.RemoveProductFromCartMutation
 import com.storefront.type.CartLineUpdateInput
 import com.storefront.CustomerOrdersQuery
+import com.storefront.SearchQuery
 import com.storefront.type.CustomerCreateInput
 import com.storefront.type.MailingAddressInput
 
@@ -206,6 +207,16 @@ object StorefrontHandlerImpl : StorefrontHandler {
         val response = apolloClient.query(query).execute()
         if (response.data?.product != null && response.exception == null) {
             emit(response.data?.product)
+        } else {
+            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+        }
+    }
+
+    override suspend fun getProductsByQuery(query: String) = flow {
+        val query = SearchQuery(query)
+        val response = apolloClient.query(query).execute()
+        if (response.data?.search?.nodes != null && response.exception == null) {
+            emit(response.data!!.search)
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }

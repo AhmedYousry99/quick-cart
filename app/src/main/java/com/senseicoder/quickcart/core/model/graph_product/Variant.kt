@@ -1,10 +1,10 @@
 package com.senseicoder.quickcart.core.model.graph_product
 
 data class Variant(
-    val id: String,
-    val quantityAvailable: String,
-    val currentlyNotInStock: Boolean,
-    val availableForSale: Boolean,
+    val id: String = "0",
+    val quantityAvailable: String = "0",
+    val currentlyNotInStock: Boolean = false,
+    val availableForSale: Boolean = false,
     val image: FeaturedImage,
     val price: Price,
     val selectedOptions: List<SelectedOption>
