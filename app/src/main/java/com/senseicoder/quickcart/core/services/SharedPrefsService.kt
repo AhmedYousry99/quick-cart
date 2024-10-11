@@ -29,6 +29,9 @@ object SharedPrefsService : SharedPrefs {
         editor.apply()
     }
 
+    override fun getSharedPrefFloat(key: String, value: Float): Float {
+        return sharedPrefs.getFloat(key, value)
+    }
 
     override fun getSharedPrefString(key: String, defaultValue: String): String {
         return sharedPrefs.getString(key, defaultValue)!!

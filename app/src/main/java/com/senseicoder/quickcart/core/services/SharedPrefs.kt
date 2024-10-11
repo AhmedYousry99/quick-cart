@@ -5,6 +5,8 @@ interface SharedPrefs {
 
     fun setSharedPrefFloat(key: String, value: Float)
 
+    fun getSharedPrefFloat(key: String, value: Float): Float
+
     fun getSharedPrefString(key: String, defaultValue : String) : String
 
     fun setSharedPrefBoolean(key: String, value: Boolean)
