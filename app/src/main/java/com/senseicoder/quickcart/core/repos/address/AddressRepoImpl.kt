@@ -7,6 +7,7 @@ import com.senseicoder.quickcart.core.model.fromNodes
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
 import com.storefront.CustomerAddressesQuery
+import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -57,11 +58,11 @@ class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : A
         }
     }
 
-    override suspend fun updateDefaultAddress(id: String): Flow<List<AddressOfCustomer>> {
+    override suspend fun updateDefaultAddress(id: String): Flow<CustomerDefaultAddressUpdateMutation.CustomerDefaultAddressUpdate> {
         updateToken()
         return flow {
-            remote.updateDefaultAddress(token,id).collect{
-                emit(it.fromNodes())
+            remote.updateDefaultAddress(token,id)?.collect{
+                emit(it)
             }
         }
     }

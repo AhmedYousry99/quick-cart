@@ -21,6 +21,16 @@ data class AddressOfCustomer(
     }
 }
 
+fun AddressOfCustomer.toAddress():Address{
+    return Address(
+        address1 = address1,
+        city = city,
+        province = country,
+        zip = country,
+        country = country
+    )
+}
+
 fun AddressOfCustomer.toMailingAddressInput(): MailingAddressInput {
     Log.d(AddressOfCustomer.TAG, "toMailingAddressInput:${country}")
     return MailingAddressInput(

@@ -2,6 +2,7 @@ package com.senseicoder.quickcart.core.repos.address
 
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.storefront.CustomerAddressesQuery
+import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +17,7 @@ interface AddressRepo {
         customerAddress: MailingAddressInput
     ): Flow<String?>
 
-    suspend fun updateDefaultAddress(id :String): Flow<List<AddressOfCustomer>>
+    suspend fun updateDefaultAddress(id :String): Flow<CustomerDefaultAddressUpdateMutation.CustomerDefaultAddressUpdate>?
 
     fun updateToken()
 }
