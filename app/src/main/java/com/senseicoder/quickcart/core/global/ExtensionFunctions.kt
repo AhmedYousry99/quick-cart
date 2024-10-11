@@ -1,4 +1,3 @@
-
 package com.senseicoder.quickcart.core.global
 
 /**
@@ -19,14 +18,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
-import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
+import com.senseicoder.quickcart.core.model.AddressOfCustomer
+import com.senseicoder.quickcart.core.model.CurrencySymbol
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.storefront.CustomerAddressesQuery
+import com.storefront.CustomerDefaultAddressUpdateMutation
+import com.storefront.GetCartDetailsQuery
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.math.RoundingMode
-import kotlinx.coroutines.runBlocking
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -127,21 +131,20 @@ fun Fragment.showErrorSnackbar(snackbarText: String, timeLength: Int = 4000) {
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toDateTime(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
-    return  formatter.format(this)
+    return formatter.format(this)
 }
 
-fun String?.isValidEmail(): Boolean{
+fun String?.isValidEmail(): Boolean {
     return !this.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(this.trim()).matches()
 }
 
-fun String?.isValidPassword(): Boolean{
+fun String?.isValidPassword(): Boolean {
     return !this.isNullOrBlank() && PasswordRegex.matches(this.trim())
 }
 
-fun String?.matchesPassword(password: String): Boolean{
+fun String?.matchesPassword(password: String): Boolean {
     return !this.isNullOrBlank() && this.trim() == password
 }
-
 
 
 /**
@@ -156,7 +159,7 @@ fun BroadcastReceiver.goAsync(
     coroutineScope.launch(dispatcher) {
         try {
             block()
-        }finally {
+        } finally {
             pendingResult.finish()
         }
     }
@@ -209,7 +212,8 @@ fun priceConversion(price : String, currency: Currency, conversionRate : Convers
 
 fun Double.toTwoDecimalPlaces(locale: Locale = Locale.US): String {
     val numberFormat = NumberFormat.getInstance(locale)
-    val parsedNumber = numberFormat.parse(this.toString())?.toDouble() ?: throw NumberFormatException("Cannot parse: $this")
+    val parsedNumber = numberFormat.parse(this.toString())?.toDouble()
+        ?: throw NumberFormatException("Cannot parse: $this")
     return String.format(locale, "%.2f", parsedNumber)
 }
 
@@ -232,7 +236,7 @@ fun Double.toTwoDecimalPlaces(): String {
 
 fun Long.toDateTime(pattern: String): String {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        java.time.format.DateTimeFormatter.ofPattern(pattern)
+        DateTimeFormatter.ofPattern(pattern)
             .format(Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")))
     } else {
         val sdf = SimpleDateFormat(pattern, Locale.US)
@@ -241,6 +245,39 @@ fun Long.toDateTime(pattern: String): String {
     }
 }
 
+fun String.withoutGIDPrefix(): String {
+    return substringAfterLast("/")
+}
+
+
+fun GetCartDetailsQuery.DefaultAddress.toAddressOfCustomer(): AddressOfCustomer {
+    return AddressOfCustomer(
+        id = this.id,
+        firstName = this.firstName ?: "",
+        lastName = this.lastName ?: "",
+        address1 = this.address1 ?: "",
+        address2 = this.address2,
+        city = this.city ?: "",
+        country = this.country ?: "",
+        phone = this.phone ?: "",
+    )
+}
+
+
+fun (CustomerDefaultAddressUpdateMutation.Customer).toCustomerOfDefault(): CustomerAddressesQuery.Customer {
+    try {
+        return CustomerAddressesQuery.Customer(
+            addresses = this.addresses as (CustomerAddressesQuery.Addresses),
+            defaultAddress = this.defaultAddress as (CustomerAddressesQuery.DefaultAddress)
+        )
+    } catch (e: Exception) {
+        return CustomerAddressesQuery.Customer(
+            addresses = CustomerAddressesQuery.Addresses(edges = emptyList()),
+            defaultAddress = null
+        )
+    }
+
+}
 
 /*fun Fragment.setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
@@ -271,10 +308,19 @@ fun Long.toDateTime(pattern: String): String {
         refreshLayout.scrollUpChild = it
     }
 }*/
-fun main (){
-    runBlocking{
-        StorefrontHandlerImpl.getCustomerAddresses("33ee30c05ce560ce1ea3b312c46aa8cc").collect{
-            println()
-        }
+data class myInt(val int: Int)
+
+fun main() {
+    runBlocking {
+        println(text())
+    }
+}
+suspend fun text():Map<String,CurrencySymbol>{
+    val input :String = "{AED=CurrencySymbol(symbol=AED), AFN=CurrencySymbol(symbol=Af), ALL=CurrencySymbol(symbol=ALL), AMD=CurrencySymbol(symbol=AMD), ANG=CurrencySymbol(symbol=�), AOA=CurrencySymbol(symbol=Kz), ARS=CurrencySymbol(symbol=AR\$), AUD=CurrencySymbol(symbol=AU\$), AWG=CurrencySymbol(symbol=Afl.), AZN=CurrencySymbol(symbol=man.), BAM=CurrencySymbol(symbol=KM), BBD=CurrencySymbol(symbol=Bds\$), BDT=CurrencySymbol(symbol=Tk), BGN=CurrencySymbol(symbol=BGN), BHD=CurrencySymbol(symbol=BD), BIF=CurrencySymbol(symbol=FBu), BMD=CurrencySymbol(symbol=BD\$), BND=CurrencySymbol(symbol=BN\$), BOB=CurrencySymbol(symbol=Bs), BRL=CurrencySymbol(symbol=R\$), BSD=CurrencySymbol(symbol=B\$), BTN=CurrencySymbol(symbol=Nu.), BWP=CurrencySymbol(symbol=BWP), BYN=CurrencySymbol(symbol=Br), BYR=CurrencySymbol(symbol=BYR), BZD=CurrencySymbol(symbol=BZ\$), CAD=CurrencySymbol(symbol=CA\$), CDF=CurrencySymbol(symbol=CDF), CHF=CurrencySymbol(symbol=CHF), CLF=CurrencySymbol(symbol=UF), CLP=CurrencySymbol(symbol=CL\$), CNY=CurrencySymbol(symbol=CN�), COP=CurrencySymbol(symbol=CO\$), CRC=CurrencySymbol(symbol=?), CUC=CurrencySymbol(symbol=CUC\$), CUP=CurrencySymbol(symbol=\$MN), CVE=CurrencySymbol(symbol=CV\$), CZK=CurrencySymbol(symbol=K?), DJF=CurrencySymbol(symbol=Fdj), DKK=CurrencySymbol(symbol=Dkr), DOP=CurrencySymbol(symbol=RD\$), DZD=CurrencySymbol(symbol=DA), EGP=CurrencySymbol(symbol=EGP), ERN=CurrencySymbol(symbol=Nfk), ETB=CurrencySymbol(symbol=Br), EUR=CurrencySymbol(symbol=�), FJD=CurrencySymbol(symbol=FJ\$), FKP=CurrencySymbol(symbol=FK�), GBP=CurrencySymbol(symbol=�), GEL=CurrencySymbol(symbol=GEL), GGP=CurrencySymbol(symbol=�), GHS=CurrencySymbol(symbol=GH?), GIP=CurrencySymbol(symbol=�), GMD=CurrencySymbol(symbol=D), GNF=CurrencySymbol(symbol=FG), GTQ=CurrencySymbol(symbol=GTQ), GYD=CurrencySymbol(symbol=G\$), HKD=CurrencySymbol(symbol=HK\$), HNL=CurrencySymbol(symbol=HNL), HRK=CurrencySymbol(symbol=kn), HTG=CurrencySymbol(symbol=G), HUF=CurrencySymbol(symbol=Ft), IDR=CurrencySymbol(symbol=Rp), ILS=CurrencySymbol(symbol=?), IMP=CurrencySymbol(symbol=�), INR=CurrencySymbol(symbol=Rs), IQD=CurrencySymbol(symbol=IQD), IRR=CurrencySymbol(symbol=IRR), ISK=CurrencySymbol(symbol=Ikr), JEP=CurrencySymbol(symbol=�), JMD=CurrencySymbol(symbol=J\$), JOD=CurrencySymbol(symbol=JD), JPY=CurrencySymbol(symbol=�), KES=CurrencySymbol(symbol=Ksh), KGS=CurrencySymbol(symbol=KGS), KHR=CurrencySymbol(symbol=KHR), KMF=CurrencySymbol(symbol=CF), KPW=CurrencySymbol(symbol=?), KRW=CurrencySymbol(symbol=?), KWD=CurrencySymbol(symbol=KD), KYD=CurrencySymbol(symbol=CI\$), KZT=CurrencySymbol(symbol=KZT), LAK=CurrencySymbol(symbol=?N), LBP=CurrencySymbol(symbol=LB�), LKR=CurrencySymbol(symbol=SLRs), LRD=CurrencySymbol(symbol=LD\$), LSL=CurrencySymbol(symbol=L), LTL=CurrencySymbol(symbol=Lt), LVL=CurrencySymbol(symbol=Ls), LYD=CurrencySymbol(symbol=LD), MAD=CurrencySymbol(symbol=MAD), MDL=CurrencySymbol(symbol=MDL), MGA=CurrencySymbol(symbol=MGA), MKD=CurrencySymbol(symbol=MKD), MMK=CurrencySymbol(symbol=MMK), MNT=CurrencySymbol(symbol=?), MOP=CurrencySymbol(symbol=MOP\$), MRO=CurrencySymbol(symbol=UM), MUR=CurrencySymbol(symbol=MURs), MVR=CurrencySymbol(symbol=MRf), MWK=CurrencySymbol(symbol=MK), MXN=CurrencySymbol(symbol=MX\$), MYR=CurrencySymbol(symbol=RM), MZN=CurrencySymbol(symbol=MTn), NAD=CurrencySymbol(symbol=N\$), NGN=CurrencySymbol(symbol=?), NIO=CurrencySymbol(symbol=C\$), NOK=CurrencySymbol(symbol=Nkr), NPR=CurrencySymbol(symbol=NPRs), NZD=CurrencySymbol(symbol=NZ\$), OMR=CurrencySymbol(symbol=OMR), PAB=CurrencySymbol(symbol=B/.), PEN=CurrencySymbol(symbol=S/.), PGK=CurrencySymbol(symbol=K), PHP=CurrencySymbol(symbol=?), PKR=CurrencySymbol(symbol=PKRs), PLN=CurrencySymbol(symbol=z?), PYG=CurrencySymbol(symbol=?), QAR=CurrencySymbol(symbol=QR), RON=CurrencySymbol(symbol=RON), RSD=CurrencySymbol(symbol=din.), RUB=CurrencySymbol(symbol=RUB), RWF=CurrencySymbol(symbol=RWF), SAR=CurrencySymbol(symbol=SR), SBD=CurrencySymbol(symbol=SI\$), SCR=CurrencySymbol(symbol=SRe), SDG=CurrencySymbol(symbol=SDG), SEK=CurrencySymbol(symbol=Skr), SGD=CurrencySymbol(symbol=S\$), SHP=CurrencySymbol(symbol=�), SLL=CurrencySymbol(symbol=Le), SOS=CurrencySymbol(symbol=Ssh), SRD=CurrencySymbol(symbol=\$), STD=CurrencySymbol(symbol=Db), SVC=CurrencySymbol(symbol=?), SYP=CurrencySymbol(symbol=SY�), SZL=CurrencySymbol(symbol=L), THB=CurrencySymbol(symbol=?), TJS=CurrencySymbol(symbol=TJS), TMT=CurrencySymbol(symbol=T), TND=CurrencySymbol(symbol=DT), TOP=CurrencySymbol(symbol=T\$), TRY=CurrencySymbol(symbol=TL), TTD=CurrencySymbol(symbol=TT\$), TWD=CurrencySymbol(symbol=NT\$), TZS=CurrencySymbol(symbol=TSh), UAH=CurrencySymbol(symbol=?), UGX=CurrencySymbol(symbol=USh), USD=CurrencySymbol(symbol=\$), UYU=CurrencySymbol(symbol=\$U), UZS=CurrencySymbol(symbol=UZS), VEF=CurrencySymbol(symbol=Bs.F.), VND=CurrencySymbol(symbol=?), VUV=CurrencySymbol(symbol=VUV), WST=CurrencySymbol(symbol=WS\$), XAF=CurrencySymbol(symbol=FCFA), XAG=CurrencySymbol(symbol=XAG), XAU=CurrencySymbol(symbol=XAU), XCD=CurrencySymbol(symbol=EC\$), XDR=CurrencySymbol(symbol=SDR), XOF=CurrencySymbol(symbol=CFA), XPF=CurrencySymbol(symbol=CFP), YER=CurrencySymbol(symbol=YR), ZAR=CurrencySymbol(symbol=R), ZMK=CurrencySymbol(symbol=ZK), ZMW=CurrencySymbol(symbol=ZK), ZWL=CurrencySymbol(symbol=ZWL), XPT=CurrencySymbol(symbol=XPT), XPD=CurrencySymbol(symbol=XPD), BTC=CurrencySymbol(symbol=?), ETH=CurrencySymbol(symbol=?), BNB=CurrencySymbol(symbol=BNB), XRP=CurrencySymbol(symbol=XRP), SOL=CurrencySymbol(symbol=SOL), DOT=CurrencySymbol(symbol=DOT), AVAX=CurrencySymbol(symbol=AVAX), MATIC=CurrencySymbol(symbol=MATIC), LTC=CurrencySymbol(symbol=?), ADA=CurrencySymbol(symbol=ADA), USDT=CurrencySymbol(symbol=USDT), USDC=CurrencySymbol(symbol=USDC), DAI=CurrencySymbol(symbol=DAI), ARB=CurrencySymbol(symbol=ARB), OP=CurrencySymbol(symbol=OP), VES=CurrencySymbol(symbol=Bs.S.), STN=CurrencySymbol(symbol=STN), MRU=CurrencySymbol(symbol=MRU)}"
+    val entries = input.removeSurrounding("{", "}").split(", ")
+    return entries.associate { entry ->
+        val (key, value) = entry.split("=")
+        val symbol = value.substringAfter("symbol=").removeSurrounding("(", ")")
+        key.trim() to CurrencySymbol(symbol.trim())
     }
 }

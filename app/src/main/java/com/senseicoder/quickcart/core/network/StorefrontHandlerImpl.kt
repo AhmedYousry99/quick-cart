@@ -138,11 +138,11 @@ object StorefrontHandlerImpl : StorefrontHandler {
         }
     }
 
-    override suspend fun getProductsCart(cartId: String): Flow<List<ProductOfCart>?> = flow {
+    override suspend fun getProductsCart(cartId: String): Flow<ApolloResponse<GetCartDetailsQuery.Data>> = flow {
         val query = GetCartDetailsQuery(cartId)
         val response = apolloClient.query(query).execute()
         if (response.data != null && response.exception == null)
-            emit(response.data?.cart?.lines?.edges?.fromEdges())
+            emit(response)
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
@@ -210,12 +210,12 @@ object StorefrontHandlerImpl : StorefrontHandler {
         }
     }
 
-    override suspend fun getCustomerAddresses(token: String): Flow<CustomerAddressesQuery.Customer?> =
+    override suspend fun getCustomerAddresses(token: String): Flow<CustomerAddressesQuery.Customer> =
         flow {
             val query = CustomerAddressesQuery(token)
             val response = apolloClient.query(query).execute()
             if (response.data?.customer != null)
-                emit(response.data!!.customer)
+                emit(response.data?.customer!!)
             else
                 throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
@@ -249,13 +249,12 @@ object StorefrontHandlerImpl : StorefrontHandler {
     override suspend fun updateDefaultAddress(
         token: String,
         id: String
-    ): Flow<List<CustomerDefaultAddressUpdateMutation.Node>?> = flow {
+    ): Flow<CustomerDefaultAddressUpdateMutation.CustomerDefaultAddressUpdate> = flow {
         val mutation = CustomerDefaultAddressUpdateMutation(token, id)
         val response = apolloClient.mutation(mutation).execute()
         if (response.data?.customerDefaultAddressUpdate != null && response.exception == null)
             emit(
-                response.data!!.customerDefaultAddressUpdate?.customer?.addresses?.nodes
-                    ?: emptyList()
+                response.data?.customerDefaultAddressUpdate!!
             )
         else
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)

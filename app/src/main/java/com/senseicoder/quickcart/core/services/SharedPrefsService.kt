@@ -18,12 +18,17 @@ object SharedPrefsService : SharedPrefs {
             Context.MODE_PRIVATE
         )
     }
-
     override fun setSharedPrefString(key: String, value: String) {
         val editor = sharedPrefs.edit()
         editor.putString(key, value)
         editor.apply()
     }
+    override fun setSharedPrefFloat(key: String, value: Float) {
+        val editor = sharedPrefs.edit()
+        editor.putFloat(key, value)
+        editor.apply()
+    }
+
 
     override fun getSharedPrefString(key: String, defaultValue: String): String {
         return sharedPrefs.getString(key, defaultValue)!!

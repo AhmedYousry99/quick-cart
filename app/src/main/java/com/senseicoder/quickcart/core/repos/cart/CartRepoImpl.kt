@@ -1,17 +1,14 @@
 package com.senseicoder.quickcart.core.repos.cart
 
+import com.apollographql.apollo.api.ApolloResponse
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.ProductOfCart
-import com.senseicoder.quickcart.core.model.fromEdges
-import com.senseicoder.quickcart.core.model.mapCartLineToProductOfCart
 import com.senseicoder.quickcart.core.model.mapCartLinesAddProductOfCart
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
-import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
-import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefs
 import com.senseicoder.quickcart.core.services.SharedPrefsService
-import com.storefront.CreateCartMutation
+import com.storefront.GetCartDetailsQuery
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,7 +18,8 @@ import kotlinx.coroutines.flow.transform
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val sharedPref: SharedPrefs) :
+class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val sharedPref: SharedPrefs
+) :
     CartRepo {
     override suspend fun createCart(email: String)
             : Flow<String> {
@@ -57,10 +55,10 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
         }
     }
 
-    override suspend fun getCartProducts(cartId: String): Flow<List<ProductOfCart>> =
+    override suspend fun getCartProducts(cartId: String): Flow<ApolloResponse<GetCartDetailsQuery.Data>> =
         flow {
             remoteDataSource.getProductsCart(cartId).collect {
-                emit(it ?: emptyList())
+                emit(it)
             }
         }
 

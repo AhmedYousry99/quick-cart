@@ -8,10 +8,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductsRepoInterface {
     suspend fun getAllBrand() : Flow<List<DisplayBrand>>
+
     suspend fun getAllProductInBrand(brand: String) : Flow<List<DisplayProduct>>
+
     suspend fun getProductDetails(id: Long): Flow<ProductDetails>
+
     suspend fun getAllProduct() : Flow<List<DisplayProduct>>
+
     suspend fun getCurrency(): String
 
     suspend fun getProductDetailsGraph(id: String): Flow<ProductDTO>
+
+
 }

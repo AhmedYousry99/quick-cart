@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.FragmentProfileBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 
@@ -49,6 +51,17 @@ class ProfileFragment : Fragment() {
                     //TODO: logout
                 }.show(childFragmentManager, null)
             }
+        }
+    }
+    private fun setUserInfo(){
+        binding.apply {
+            SharedPrefsService.apply {
+                Constants.apply {
+                    "HI!\n${getSharedPrefString(USER_DISPLAY_NAME, USER_DISPLAY_NAME_DEFAULT)}".also { txtNameOfPerson.text = it }
+                    txtEmailOfPerson.text = getSharedPrefString(USER_EMAIL, USER_EMAIL_DEFAULT)
+                }
+            }
+
         }
     }
 }

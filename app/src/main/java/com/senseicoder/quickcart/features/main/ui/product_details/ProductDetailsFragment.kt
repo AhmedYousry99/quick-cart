@@ -31,19 +31,21 @@ import com.senseicoder.quickcart.core.global.lightenColor
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.toColor
 import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
-import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.ReviewDTO
 import com.senseicoder.quickcart.core.model.graph_product.OptionValues
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentProductDetailsBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.product_details.adapters.ProductDetailsPagerAdapter
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModel
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModelFactory
@@ -117,7 +119,16 @@ class ProductDetailsFragment : Fragment() {
         )
         viewModel = ViewModelProvider(this, factory)[ProductDetailsViewModel::class.java]
         subscribeToObservables()
-        viewModel.getProductDetails(ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentProductId.value)
+        viewModel.getProductDetails(
+            ViewModelProvider(
+                requireActivity(),
+                MainActivityViewModelFactory(
+                    CurrencyRepoImpl(
+                        CurrencyRemoteImpl
+                    )
+                )
+            )[MainActivityViewModel::class.java].currentProductId.value
+        )
         handler = Handler(Looper.getMainLooper())
     }
 
@@ -128,14 +139,15 @@ class ProductDetailsFragment : Fragment() {
 
     private fun subscribeToObservables() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.product.collect { response->
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.product.collect { response ->
                     binding.apply {
                         when (response) {
                             ApiState.Loading, ApiState.Init -> {
                                 showLoadingGroup()
                                 successProductDetails.visibility = View.GONE
                             }
+
                             is ApiState.Success -> {
                                 hideLoadingGroup()
                                 successProductDetails.visibility = View.VISIBLE
@@ -143,13 +155,21 @@ class ProductDetailsFragment : Fragment() {
                                 binding.apply {
                                     titleProductDetails.text = product.title
                                     descriptionProductDetails.text = product.description
-                                    stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
+                                    stockProductDetails.text =
+                                        "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
                                     currentSelectedQuantityProductDetails.text = "0"
                                     currency = product.currency
-                                    cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
+                                    cartPrice.text =
+                                        "${getString(R.string.price_text)}0.0 $currency"
                                     reviewCountProductDetails.text = "${reviews.size} Reviews"
-                                    updateSizesGroup(product.variants, product.options.first { it.name == "Size" }.values)
-                                    updateColorsGroup(product.variants, product.options.first { it.name == "Color" }.values)
+                                    updateSizesGroup(
+                                        product.variants,
+                                        product.options.first { it.name == "Size" }.values
+                                    )
+                                    updateColorsGroup(
+                                        product.variants,
+                                        product.options.first { it.name == "Color" }.values
+                                    )
                                     // Initialize the adapter
                                     pagerAdapter = ProductDetailsPagerAdapter(
                                         product.images
@@ -163,6 +183,7 @@ class ProductDetailsFragment : Fragment() {
                                     startAutoSwipe()
                                 }
                             }
+
                             is ApiState.Failure -> {
                                 hideLoadingGroup()
                                 this@ProductDetailsFragment.showSnackbar(response.msg)
@@ -173,35 +194,36 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.selectedProduct.collectLatest { selectedProducts->
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedProduct.collectLatest { selectedProducts ->
                     binding.apply {
-                        when(selectedProducts){
+                        when (selectedProducts) {
                             ProductDetailsViewModel.ProductState.Init -> {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
+
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
                                 selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()
-                                Log.d(TAG, "subscribeToObservables: MultiSelected\n${selectedProducts.data.first}")
+                                Log.d(
+                                    TAG,
+                                    "subscribeToObservables: MultiSelected\n${selectedProducts.data.first}"
+                                )
                                 variant.let {
-                                    if(variant.quantityAvailable.toInt() != 0)
-                                    {
+                                    if (variant.quantityAvailable.toInt() != 0) {
                                         enableButtons()
                                         addToCartBtnProductDetails.isEnabled = false
                                         decreaseQuantityBtnProductDetails.isEnabled = false
                                     }
-                                    else{
-                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
-                                    }
-                                    stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${it.quantityAvailable}"
+                                    stockProductDetails.text =
+                                        "${requireContext().getString(R.string.in_stock)}${it.quantityAvailable}"
                                     currentSelectedQuantityProductDetails.text = "0"
                                     cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
                                     /*pagerAdapter.updateList(listOf(variant.image))
                                     binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)*/
-                                    increaseQuantityBtnProductDetails.setOnClickListener{ _->
+                                    increaseQuantityBtnProductDetails.setOnClickListener { _ ->
                                         selectedAmount++
-                                        if(selectedAmount == variant.quantityAvailable.toInt()){
+                                        if (selectedAmount == variant.quantityAvailable.toInt()) {
                                             increaseQuantityBtnProductDetails.isEnabled = false
                                         }
                                         decreaseQuantityBtnProductDetails.isEnabled = true
@@ -210,9 +232,9 @@ class ProductDetailsFragment : Fragment() {
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
                                         cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
                                     }
-                                    decreaseQuantityBtnProductDetails.setOnClickListener{ _->
+                                    decreaseQuantityBtnProductDetails.setOnClickListener { _ ->
                                         selectedAmount--
-                                        if(selectedAmount == 0){
+                                        if (selectedAmount == 0) {
                                             decreaseQuantityBtnProductDetails.isEnabled = false
                                             addToCartBtnProductDetails.isEnabled = false
                                         }
@@ -222,18 +244,17 @@ class ProductDetailsFragment : Fragment() {
                                         cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
                                     }
                                     addToCartBtnProductDetails.setOnClickListener {
-                                        if(NetworkUtils.isConnected(requireContext())){
-                                            if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
+                                        if (NetworkUtils.isConnected(requireContext())) {
+                                            if (SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT) {
                                                 viewModel.addProductToCart(selectedAmount, selectedProducts.data.first, ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentUser.value)
-                                            }else{
+                                            } else {
                                                 Toast.makeText(
                                                     requireContext(),
                                                     getString(R.string.permission_denied),
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }
-                                            }else{
-                                                showSnackbar(getString(R.string.no_internet_connection))
+                                        } else { showSnackbar(getString(R.string.no_internet_connection))
                                         }
                                     }
                                     // Link the ViewPager2 with the DotsIndicator
@@ -242,7 +263,7 @@ class ProductDetailsFragment : Fragment() {
                             }
                             is ProductDetailsViewModel.ProductState.SingleSelected -> {
                                 Log.d(TAG, "subscribeToObservables: SingleSelected, ${selectedProducts.data.second}\n${selectedProducts.data.first}")
-                                when(selectedProducts.data.second){
+                                when (selectedProducts.data.second) {
                                     ProductDetailsViewModel.SelectedBy.Color -> {
                                         updateSizesGroup(selectedProducts.data.first, (viewModel.product.value as ApiState.Success).data.options.first { it.name == "Size" }.values)
                                     }
@@ -258,13 +279,12 @@ class ProductDetailsFragment : Fragment() {
                                 currentSelectedQuantityProductDetails.text = "0"
                                 cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
                                 pagerAdapter.updateList((viewModel.product.value as ApiState.Success<ProductDTO>).data.images)
-                                when(selectedProducts.data.second){
+                                when (selectedProducts.data.second) {
                                     ProductDetailsViewModel.SelectedBy.Color -> {
                                         updateColorsGroup(selectedProducts.data.first, (viewModel.product.value as ApiState.Success).data.options.first { it.name == "Color" }.values)
                                     }
                                     ProductDetailsViewModel.SelectedBy.Size -> {
-                                        updateSizesGroup(selectedProducts.data.first, (viewModel.product.value as ApiState.Success).data.options.first { it.name == "Size" }.values)
-                                    }
+                                        updateSizesGroup(selectedProducts.data.first, (viewModel.product.value as ApiState.Success).data.options.first { it.name == "Size" }.values) }
                                 }
                             }
 
@@ -298,9 +318,9 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.addingToCart.collect {
-                    when(it){
+                    when (it) {
                         ApiState.Init -> {
 
                         }
@@ -324,7 +344,7 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
-    private fun disableButtons(){
+    private fun disableButtons() {
         binding.apply {
             addToCartBtnProductDetails.isEnabled = false
             increaseQuantityBtnProductDetails.isEnabled = false
@@ -332,7 +352,7 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
-    private fun enableButtons(){
+    private fun enableButtons() {
         binding.apply {
             addToCartBtnProductDetails.isEnabled = true
             increaseQuantityBtnProductDetails.isEnabled = true
@@ -340,12 +360,12 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
-    private fun updateColorsGroup(variants: List<Variant>, optionValues: List<OptionValues>){
-        if(binding.colorsChipGroupProductDetails.isNotEmpty()){
+    private fun updateColorsGroup(variants: List<Variant>, optionValues: List<OptionValues>) {
+        if (binding.colorsChipGroupProductDetails.isNotEmpty()) {
             binding.colorsChipGroupProductDetails.removeAllViews()
         }
-        for(optionValue in optionValues){
-            addChipToColorsGroup(optionValue, variants.filter { variant -> variant.selectedOptions.firstOrNull{it.name == "Color"} != null })
+        for (optionValue in optionValues) {
+            addChipToColorsGroup(optionValue, variants.filter { variant -> variant.selectedOptions.firstOrNull { it.name == "Color" } != null })
         }
     }
 
@@ -354,7 +374,7 @@ class ProductDetailsFragment : Fragment() {
             binding.sizesChipGroupProductDetails.removeAllViews()
         }
         for (optionValue in optionValues) {
-            addChipToSizesGroup(optionValue, variants.filter { variant -> variant.selectedOptions.firstOrNull{it.name == "Size"} != null })
+            addChipToSizesGroup(optionValue, variants.filter { variant -> variant.selectedOptions.firstOrNull { it.name == "Size" } != null })
         }
     }
 
@@ -376,7 +396,7 @@ class ProductDetailsFragment : Fragment() {
             setOnCheckedChangeListener { chip, isChecked ->
                 Log.d(TAG, "setOnCheckedChangeListener: $isChecked")
                 isChipIconVisible = isChecked
-                if(chip.isPressed){
+                if (chip.isPressed) {
                     val chipId = binding.sizesChipGroupProductDetails.checkedChipId
                     disableAllChipGroups()
                     viewModel.setCurrentSelectedProduct(
@@ -407,7 +427,7 @@ class ProductDetailsFragment : Fragment() {
             setOnCheckedChangeListener { chip, isChecked ->
                 Log.d(TAG, "setOnCheckedChangeListener: $isChecked")
                 isChipIconVisible = isChecked
-                if(chip.isPressed){
+                if (chip.isPressed) {
                     val chipId = binding.colorsChipGroupProductDetails.checkedChipId
                     disableAllChipGroups()
                     viewModel.setCurrentSelectedProduct(
@@ -456,36 +476,36 @@ class ProductDetailsFragment : Fragment() {
 //        binding.addToCartBtnProductDetails.text = spannable
     }
 
-    private fun disableAllChipGroups(){
+    private fun disableAllChipGroups() {
         disableChipGroup(binding.sizesChipGroupProductDetails)
         disableChipGroup(binding.colorsChipGroupProductDetails)
     }
 
-    private fun enableAllChipGroups(){
+    private fun enableAllChipGroups() {
         enableChipGroup(binding.sizesChipGroupProductDetails)
         enableChipGroup(binding.colorsChipGroupProductDetails)
     }
 
-    private fun enableChipGroup(chipGroup: ChipGroup){
+    private fun enableChipGroup(chipGroup: ChipGroup) {
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as Chip
             chip.isEnabled = true
         }
     }
 
-    private fun disableChipGroup(chipGroup: ChipGroup){
+    private fun disableChipGroup(chipGroup: ChipGroup) {
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as Chip
             chip.isEnabled = false
         }
     }
 
-    private fun hideLoadingGroup(){
+    private fun hideLoadingGroup() {
         binding.shimmerProductDetails.stopShimmer()
         binding.loadingProductDetails.visibility = View.GONE
     }
 
-    private fun showLoadingGroup(){
+    private fun showLoadingGroup() {
         binding.shimmerProductDetails.startShimmer()
         binding.loadingProductDetails.visibility = View.VISIBLE
     }

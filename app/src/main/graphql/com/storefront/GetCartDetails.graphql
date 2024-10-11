@@ -14,16 +14,13 @@ query GetCartDetails($cartId: ID!) {
                             price {
                                 amount
                             }
-                            selectedOptions {
-                                name
-                                value
-                            }
                             product {
                                 id
                                 title
                                 featuredImage {
                                     url
                                 }
+                                availableForSale
                             }
                         }
                     }
@@ -46,30 +43,25 @@ query GetCartDetails($cartId: ID!) {
                 phone
                 tags
                 updatedAt
-                addresses(first: 10) {
-                    edges {
-                        cursor
-                    }
-                    nodes {
-                        address1
-                        address2
-                        city
-                        company
-                        country
-                        countryCodeV2
-                        firstName
-                        formatted
-                        formattedArea
-                        id
-                        lastName
-                        latitude
-                        longitude
-                        name
-                        phone
-                        province
-                        provinceCode
-                        zip
-                    }
+                defaultAddress {
+                    address1
+                    address2
+                    city
+                    company
+                    country
+                    countryCodeV2
+                    firstName
+                    formatted
+                    formattedArea
+                    id
+                    lastName
+                    latitude
+                    longitude
+                    name
+                    phone
+                    province
+                    provinceCode
+                    zip
                 }
             }
         }
