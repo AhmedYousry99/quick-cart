@@ -1,4 +1,3 @@
-
 package com.senseicoder.quickcart.features.main.ui.home
 
 import android.content.ClipData
@@ -61,7 +60,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         R.drawable.twinty_five,
         R.drawable.coupon10bg
     )
-
 
 
     private val networkConnectivity by lazy {
@@ -129,16 +127,17 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
 
                         is ApiState.Success -> {
-                            brandAdapter =HomeBrandAdapter(requireContext(), this@HomeFragment)
+                            brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
                             binding.brandRecycle.apply {
                                 brandAdapter.submitList(it.data)
                                 adapter = brandAdapter
-                                }
+                            }
                             delay(1000)
                             binding.shimmerFrameLayout.stopShimmer()
                             binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
-                            }
+                        }
+
                         else -> {
                             if (!networkConnectivity.isOnline()) {
                                 binding.connectivity.visibility = View.GONE
@@ -169,9 +168,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
@@ -184,9 +183,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
@@ -249,6 +248,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         // Initialize the adapter
 
     }
+
     override fun brandClicked(brand: String) {
         if (networkConnectivity.isOnline()) {
             val action = HomeFragmentDirections.actionHomeFragmentToBrandFragment(brand)
@@ -274,9 +274,21 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         binding.swipeRefresher.isRefreshing = false
     }
 
+    private fun startRandomSwiping() {
+        val swipeRunnable = object : Runnable {
+            override fun run() {
+                val current = binding.couponPager.currentItem
+                val count = couponPagerAdapter.itemCount
+//                Log.d(TAG, "run: ${count}")
+                var next = current + if (Random.nextBoolean()) 1 else -1
+                if (next < 0) next = count - 1
+                else if (next >= count) next = 0
+                binding.couponPager.currentItem = next
+                handel.postDelayed(this, 4000L)
+
+            }
 
         }
         handel.postDelayed(swipeRunnable, 2000)
-
     }
 }
