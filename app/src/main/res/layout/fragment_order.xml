@@ -33,7 +33,6 @@
             android:gravity="center"
             android:fontFamily="@font/alexandria_medium"
             android:textStyle="bold"
-            android:textColor="@color/black"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
     </LinearLayout>
 

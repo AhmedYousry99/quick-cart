@@ -1,7 +1,13 @@
 
 package com.senseicoder.quickcart.features.main.ui.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,32 +22,55 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.MyDialog
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.model.CouponsForDisplay
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
 import com.senseicoder.quickcart.features.main.ui.home.viewmodel.HomeViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextBoolean
 
 class HomeFragment : Fragment(), OnItemBrandClicked {
 
-    private lateinit var _binding: FragmentHomeBinding
-    private val binding get() = _binding
+    companion object {
+        private const val TAG = "HomeFragment"
+    }
+
+    private lateinit var binding: FragmentHomeBinding
 
     private lateinit var brandAdapter: HomeBrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
+    val handel: Handler by lazy {
+        Handler(Looper.getMainLooper())
+    }
+    val couponImages = listOf(
+        R.drawable.twinty,
+        R.drawable.rondom_one,
+        R.drawable.fiften,
+        R.drawable.twinty_five,
+        R.drawable.coupon10bg
+    )
 
     private val onDestinationChangedListener =
         NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            if (!canNavigate(destination.id)){
+            if (!canNavigate(destination.id)) {
                 controller.popBackStack()
-                Toast.makeText(requireContext(), getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.permission_denied),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -58,12 +87,13 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         homeViewModel =
             ViewModelProvider(this)[HomeViewModel::class.java]
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        homeViewModel.fetchCoupons()
         brandAdapter = HomeBrandAdapter(requireContext(), this)
 
         // Set up RecyclerView
@@ -110,22 +140,16 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
 
                         is ApiState.Success -> {
-                            // Hide shimmer and show the recycler view when data is loaded
+                            brandAdapter =HomeBrandAdapter(requireContext(), this@HomeFragment)
+                            binding.brandRecycle.apply {
+                                brandAdapter.submitList(it.data)
+                                adapter = brandAdapter
+                                }
+                            delay(1000)
+                            binding.shimmerFrameLayout.stopShimmer()
                             binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
-                            binding.shimmerFrameLayout.stopShimmer()
-
-                            // Set up your adapter and layout manager
-                            brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
-                            binding.brandRecycle.apply {
-                                adapter = brandAdapter
-                                brandAdapter.submitList(it.data)
-                                layoutManager = GridLayoutManager(context, 2).apply {
-                                    orientation = RecyclerView.VERTICAL
-                                }
                             }
-                        }
-
                         else -> {
                             if (!networkConnectivity.isOnline()) {
                                 binding.connectivity.visibility = View.GONE
@@ -178,25 +202,66 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
             }
         }
         findNavController().removeOnDestinationChangedListener(onDestinationChangedListener)
+        handel.removeCallbacksAndMessages(null)
     }
 
 
     private fun setupCouponViewPager() {
+        lifecycleScope.launch {
+            homeViewModel.coupons.collect {
+                when (it) {
+                    is ApiState.Success -> {
+                        val coupons = it.data.price_rules
+                        val displayCoupons =
+                            coupons.zip(couponImages) { coupon, image ->
+                                CouponsForDisplay(coupon, image)
+                            }
+                        couponPagerAdapter = CouponPagerAdapter(displayCoupons) { item ->
+                            homeViewModel.getCouponsDetails(item.id.toString())
+                            lifecycleScope.launch {
+                                homeViewModel.couponsDetails.collect {
+                                    when (it) {
+                                        is ApiState.Success -> {
+                                            Log.d(TAG, "setupCouponViewPager SUCCESS: ${it.data}")
+                                            val discountCode =
+                                                it.data.discount_codes.firstOrNull()?.code ?: ""
+                                            val clipboard =
+                                                requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                            val clip =
+                                                ClipData.newPlainText("Discount Code", discountCode)
+                                            clipboard.setPrimaryClip(clip)
+                                            Snackbar.make(
+                                                requireView(),
+                                                "Coupon code copied to clipboard",
+                                                Snackbar.LENGTH_LONG
+                                            ).show()
+                                        }
 
-        val couponImages = listOf(
-            R.drawable.coupon10bg,
-            R.drawable.coupon20bg
-        )
+                                        is ApiState.Failure -> {
+                                            Log.d(TAG, "setupCouponViewPager FAIL: ${it.msg}")
+                                        }
+
+                                        else -> Log.d(TAG, "setupCouponViewPager ELSE: ${it}")
+                                    }
+                                }
+                            }
+                        }
+                        binding.couponPager.adapter = couponPagerAdapter
+                        startRandomSwiping()
+                        binding.dotsIndicator.setViewPager2(binding.couponPager)
+                    }
+
+                    is ApiState.Failure -> Log.d(TAG, "setupCouponViewPager: ${it.msg}")
+                    else -> Log.d(TAG, "setupCouponViewPager: LOADING")
+                }
+            }
+        }
+
 
         // Initialize the adapter
-        couponPagerAdapter = CouponPagerAdapter(couponImages)
 
-        // Set the adapter to ViewPager2
-        binding.couponPager.adapter = couponPagerAdapter
-
-        // Link the ViewPager2 with the DotsIndicator
-        binding.dotsIndicator.setViewPager2(binding.couponPager)
     }
+
     override fun brandClicked(brand: String) {
         if (networkConnectivity.isOnline()) {
             val action = HomeFragmentDirections.actionHomeFragmentToBrandFragment(brand)
@@ -224,11 +289,31 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     private fun canNavigate(destinationId: Int): Boolean {
         if (destinationId != R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
-            val isUserGuest = SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) == Constants.USER_ID_DEFAULT
+            val isUserGuest = SharedPrefsService.getSharedPrefString(
+                Constants.USER_ID,
+                Constants.USER_ID_DEFAULT
+            ) == Constants.USER_ID_DEFAULT
             return !isUserGuest
         }
         return true
     }
 
+    private fun startRandomSwiping() {
+        val swipeRunnable = object : Runnable {
+            override fun run() {
+                val current = binding.couponPager.currentItem
+                val count = couponPagerAdapter.itemCount
+//                Log.d(TAG, "run: ${count}")
+                var next = current + if (Random.nextBoolean()) 1 else -1
+                if (next < 0) next = count - 1
+                else if (next >= count) next = 0
+                binding.couponPager.currentItem = next
+                handel.postDelayed(this, 4000L)
 
+            }
+
+        }
+        handel.postDelayed(swipeRunnable, 2000)
+
+    }
 }

@@ -37,8 +37,10 @@ import com.senseicoder.quickcart.core.model.graph_product.OptionValues
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
+import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepoImpl
+import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -47,6 +49,7 @@ import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteVie
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
+import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.product_details.adapters.ProductDetailsPagerAdapter
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModel
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModelFactory
@@ -130,6 +133,16 @@ class ProductDetailsFragment : Fragment() {
         productDetailsViewModel.getProductDetails(ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentProductId.value)
         favoriteViewModel.checkIfFavorite(firebaseUserId,ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentProductId.value)
         subscribeToObservables()
+        productDetailsViewModel.getProductDetails(
+            ViewModelProvider(
+                requireActivity(),
+                MainActivityViewModelFactory(
+                    CurrencyRepoImpl(
+                        CurrencyRemoteImpl
+                    )
+                )
+            )[MainActivityViewModel::class.java].currentProductId.value
+        )
         handler = Handler(Looper.getMainLooper())
     }
 
@@ -148,6 +161,7 @@ class ProductDetailsFragment : Fragment() {
                                 showLoadingGroup()
                                 successProductDetails.visibility = View.GONE
                             }
+
                             is ApiState.Success -> {
                                 hideLoadingGroup()
                                 successProductDetails.visibility = View.VISIBLE
@@ -176,6 +190,7 @@ class ProductDetailsFragment : Fragment() {
                                     startAutoSwipe()
                                 }
                             }
+
                             is ApiState.Failure -> {
                                 hideLoadingGroup()
                                 this@ProductDetailsFragment.showSnackbar(response.msg)
@@ -193,6 +208,7 @@ class ProductDetailsFragment : Fragment() {
                             ProductDetailsViewModel.ProductState.Init -> {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
+
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
                                 selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()

@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.core.model
 
+import com.senseicoder.quickcart.core.global.withoutGIDPrefix
 import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.GetCartDetailsQuery
@@ -14,9 +15,9 @@ class ProductOfCart(
     val variantId: String,
     val variantTitle: String? = null,
     val variantPrice: String? = null,
-    val linesId:String? =  null
-){
-    companion object{
+    val linesId: String? = null
+) {
+    companion object {
         fun fromEdges(edges: List<CartLinesUpdateMutation.Edge>?): List<ProductOfCart> {
             val cartProducts = mutableListOf<ProductOfCart>()
             edges?.forEach { edge ->
@@ -49,8 +50,18 @@ class ProductOfCart(
         }
     }
 }
+
+fun ProductOfCart.toLineItem(): LineItem {
+    return LineItem(
+        title = this.productTitle ?: "",
+        variant_id = this.variantId.withoutGIDPrefix().toLong(),
+        quantity = this.quantity,
+        price = this.variantPrice ?: ""
+    )
+}
+
 @JvmName("fromGetCartDetailsQueryEdges")
-fun List<GetCartDetailsQuery.Edge>?.fromEdges():List<ProductOfCart> {
+fun List<GetCartDetailsQuery.Edge>?.fromEdges(): List<ProductOfCart> {
     val cartProducts = mutableListOf<ProductOfCart>()
     this?.forEach { edge ->
         val node = edge.node
@@ -82,7 +93,7 @@ fun List<GetCartDetailsQuery.Edge>?.fromEdges():List<ProductOfCart> {
     return cartProducts
 }
 
-fun  List<CartLinesUpdateMutation.Edge>?.fromEdges():List<ProductOfCart> {
+fun List<CartLinesUpdateMutation.Edge>?.fromEdges(): List<ProductOfCart> {
     val cartProducts = mutableListOf<ProductOfCart>()
     this?.forEach { edge ->
         val node = edge.node
@@ -115,7 +126,7 @@ fun  List<CartLinesUpdateMutation.Edge>?.fromEdges():List<ProductOfCart> {
 
 fun AddProductToCartMutation.Node.mapCartLinesAddProductOfCart(): ProductOfCart {
     val productVariant = this.merchandise.onProductVariant
-        val product = productVariant?.product
+    val product = productVariant?.product
 
     return ProductOfCart(
         id = this.id,
@@ -142,7 +153,7 @@ fun GetCartDetailsQuery.Node.mapCartLineToProductOfCart(): ProductOfCart {
         productImageUrl = product?.featuredImage?.url.toString(), // First product image URL if available
         variantId = productVariant?.id ?: "", // Variant ID
         variantTitle = productVariant?.title ?: "", // Variant title
-        variantPrice = productVariant?.price?.amount.toString() ,// Variant price as string
+        variantPrice = productVariant?.price?.amount.toString(),// Variant price as string
         linesId = productVariant?.id ?: ""
 
     )
