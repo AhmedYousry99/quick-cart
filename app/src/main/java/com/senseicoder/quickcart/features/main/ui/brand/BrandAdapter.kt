@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.brand
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -75,6 +76,7 @@ fun ImageView.setImageFromUrl(url : String){
         .into(this)
 }
 
+@SuppressLint("DefaultLocale")
 fun TextView.setPrice(context: Context, price: Double) {
     val cManager = CurrencyManager(CurrencySharedPref.sharedPreferences)
     val pair = cManager.getCurrencyPair()  // Fetch the currency code and rate

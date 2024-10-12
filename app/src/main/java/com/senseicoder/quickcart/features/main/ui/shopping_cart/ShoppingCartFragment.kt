@@ -1,34 +1,39 @@
 package com.senseicoder.quickcart.features.main.ui.shopping_cart
 
-import android.icu.util.LocaleData
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
-import com.senseicoder.quickcart.core.dialogs.PaymentProccesDialog
+import com.senseicoder.quickcart.core.dialogs.PaymentProcessesDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.global.trimCurrencySymbol
+import com.senseicoder.quickcart.core.global.updateCurrency
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.Customer
+import com.senseicoder.quickcart.core.model.DiscountCodesDTO
 import com.senseicoder.quickcart.core.model.DraftOrder
 import com.senseicoder.quickcart.core.model.DraftOrderReqRes
+import com.senseicoder.quickcart.core.model.PriceRule
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.toAddress
-import com.senseicoder.quickcart.core.model.toAddressOfCustomer
+import com.senseicoder.quickcart.core.model.toApplied_Discount
+import com.senseicoder.quickcart.core.model.toDiscountCodeDto
 import com.senseicoder.quickcart.core.model.toLineItem
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
@@ -52,26 +57,28 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.util.Locale
-import kotlin.math.log
 
-class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
+class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
     companion object {
         private const val TAG = "ShoppingCartFragment"
     }
 
     private val customScope = CoroutineScope(Dispatchers.Main)
+    lateinit var draftOrder: DraftOrder
     private lateinit var fragmentBinding: FragmentShoppingCartBinding
     private lateinit var fetchedList: List<ProductOfCart>
+    lateinit var couponsList: List<PriceRule>
     private lateinit var adapter: CartAdapter
     lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var bottomSheetBinding: BottomSheetPaymentBinding
     private var defaultAddress: AddressOfCustomer? = null
+    private lateinit var currencyData: Triple<String?, String?, Float?>
     private val sharedViewModel: MainActivityViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
@@ -95,8 +102,34 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             )
         )[ShoppingCartViewModel::class.java]
     }
+    lateinit var couponToUse: DiscountCodesDTO
     private val cardId =
         SharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
+    private var paymentProcess = PaymentProcessesDialog(this)
+
+    fun collectCouponsList() {
+        lifecycleScope.launch {
+            viewModel.couponDetails.first {
+                when (it) {
+                    is ApiState.Success -> {
+                        couponsList = it.data.price_rules
+                        Log.d(TAG, "collectCouponsList: ${it.data}")
+                        true
+                    }
+
+                    else -> {
+                        Log.d(TAG, "collectCouponsList: ${it}")
+                        false
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        collectCouponsList()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -111,10 +144,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fragmentBinding.animationView.setOnClickListener{
-        PaymentProccesDialog().show(childFragmentManager, "PaymentDialog")
-        }
+        viewModel.fetchCoupons()
         collectDefaultAddress()
+        createOrderCollector()
+        completeDraftOrderForCashCollector()
+        currencyData = SharedPrefsService.getCurrencyData()
         // TODO: get from view model
         viewModel.fetchCartProducts(
             SharedPrefsService.getSharedPrefString(
@@ -159,6 +193,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                             // TODO HANDLE OTHER ANIMATION FOR ERROR
                             animationView.visibility = View.VISIBLE
                             dataGroup.visibility = View.GONE
+                            shimmerFrameLayout.visibility = View.GONE
+                            shimmerFrameLayout.stopShimmer()
+                            Snackbar.make(requireView(), it.msg, Snackbar.LENGTH_SHORT).show()
                         }
 
                         is ApiState.Init -> {
@@ -180,19 +217,12 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             viewModel.updating.debounce(500).collect {
                 when (it) {
                     is ApiState.Success -> {
-                        Snackbar.make(
-                            fragmentBinding.root,
-                            "Product updated successfully",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        Log.d(TAG, "onViewCreated: ${it.data.toString()}")
+
                     }
 
                     is ApiState.Failure -> {
-                        Snackbar.make(
-                            fragmentBinding.root,
-                            "Something went wrong",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        Log.d(TAG, "onViewCreated: ${it.msg}")
                     }
 
                     else -> {}
@@ -226,55 +256,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         }
     }
 
-
-    private fun createDraftOrderForCash() {
-        customScope.launch {
-            val lines = fetchedList.map {
-                it.toLineItem()
-            }
-            val email = SharedPrefsService.getSharedPrefString(
-                Constants.USER_EMAIL,
-                Constants.USER_EMAIL_DEFAULT
-            )
-            if (defaultAddress != null) {
-                val draft = DraftOrder(
-                    email,
-                    LocalDateTime.now().nano.toLong(),
-                    lines,
-                    Customer(email),
-                    defaultAddress!!.toAddress(),
-                    defaultAddress!!.toAddress()
-                )
-                val request = DraftOrderReqRes(draft)
-                viewModel.apply {
-                    createDraftOrder(request)
-                    draftOrderCreation.collect {
-                        when (it) {
-                            is ApiState.Success -> {
-                                Log.d(
-                                    TAG,
-                                    "createDraftOrderForCash Success: ${it.data}"
-                                )
-                                completeDraftOrderForCash(it.data.draft_order.id)
-                            }
-
-                            is ApiState.Failure -> {
-                                Log.d(TAG, "createDraftOrderForCash: failure ${it.msg}")
-                            }
-
-                            else -> Log.d(TAG, "createDraftOrderForCash loading:")
-                        }
-                    }
-                }
-            } else
-                Log.d(TAG, "createDraftOrderForCash: default add not found $defaultAddress")
-        }
-    }
-
-    private fun completeDraftOrderForCash(id: Long) {
+    private fun completeDraftOrderForCashCollector() {
         customScope.launch {
             viewModel.apply {
-                customScope.launch { completeDraftOrder(id) }.join()
                 draftOrderCompletion.collect {
                     when (it) {
                         is ApiState.Success -> {
@@ -286,12 +270,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
                                 TAG,
                                 "completeDraftOrderForCash: success id : ${it.data.draft_order.id}"
                             )
-                            sendInvoiceCollector(it.data.draft_order.id)
+                            paymentProcess.stepThree()
                         }
 
                         is ApiState.Loading -> Log.d(TAG, "completeDraftOrderForCash: loading ")
 
                         else -> {
+                            paymentProcess.errorOccur(2)
                             Log.d(TAG, "completeDraftOrderForCash: error  ${it}")
                         }
 
@@ -302,33 +287,104 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         }
     }
 
-    private fun sendInvoiceCollector(id: Long) {
+    private fun createOrderCollector() {
         customScope.launch {
-            customScope.launch { viewModel.sendInvoice(id) }.join()
-            viewModel.sendInvoice.collect {
-                when (it) {
-                    is ApiState.Success -> {
-                        Log.d(
-                            TAG,
-                            "sendInvoiceCollector success invoice ${it.data.draft_order}: "
-                        )
-                    }
+            viewModel.apply {
+                draftOrderCreation.collect {
+                    when (it) {
+                        is ApiState.Success -> {
+                            Log.d(
+                                TAG,
+                                "createDraftOrderForCash Success: ${it.data}"
+                            )
+                            delay(1000)
+                            paymentProcess.stepTwo()
+                            viewModel.completeDraftOrder(it.data.draft_order.id)
+                        }
 
-                    is ApiState.Loading -> {
-                        Log.d(TAG, "sendInvoiceCollector  inloading : ")
-                    }
+                        is ApiState.Failure -> {
+                            Log.d(TAG, "createDraftOrderForCash: failure ${it.msg}")
+                            paymentProcess.errorOccur(1)
+                        }
 
-                    else -> Log.d(TAG, "sendInvoiceCollector: error ${it}")
+                        else -> Log.d(TAG, "createDraftOrderForCash loading:")
+                    }
                 }
             }
         }
     }
 
+    private fun createDraftOrderForCash() {
+        customScope.launch {
+            val lines = fetchedList.map {
+                it.toLineItem()
+            }
+            val email = SharedPrefsService.getSharedPrefString(
+                Constants.USER_EMAIL,
+                Constants.USER_EMAIL_DEFAULT
+            )
+            if (defaultAddress != null) {
+                if (bottomSheetBinding.txtValueOfDiscount.text.toString().trimCurrencySymbol()
+                        .replace("-", "").toDouble() > 0.0
+                ) {
+                    draftOrder = DraftOrder(
+                        email,
+                        LocalDateTime.now().nano.toLong(),
+                        lines,
+                        Customer(email),
+                        defaultAddress!!.toAddress(),
+                        defaultAddress!!.toAddress(),
+                        couponToUse.toApplied_Discount()
+                    )
+                } else
+                    draftOrder = DraftOrder(
+                        email,
+                        LocalDateTime.now().nano.toLong(),
+                        lines,
+                        Customer(email),
+                        defaultAddress!!.toAddress(),
+                        defaultAddress!!.toAddress()
+                    )
+
+                val request = DraftOrderReqRes(draftOrder)
+                viewModel.createDraftOrder(request)
+            } else
+                Log.d(TAG, "createDraftOrderForCash: default add not found $defaultAddress")
+        }
+    }
+
+
+    /* private fun sendInvoiceCollector(id: Long) {
+         customScope.launch {
+             customScope.launch { viewModel.sendInvoice(id) }.join()
+             viewModel.sendInvoice.collect {
+                 when (it) {
+                     is ApiState.Success -> {
+                         Log.d(
+                             TAG,
+                             "sendInvoiceCollector success invoice ${it.data?.draft_order}: "
+                         )
+                     }
+
+                     is ApiState.Loading -> {
+                         Log.d(TAG, "sendInvoiceCollector  inloading : ")
+                     }
+
+                     else -> Log.d(TAG, "sendInvoiceCollector: error ${it}")
+                 }
+             }
+         }
+     }*/
+
     private fun updateTotalPrice(list: List<ProductOfCart>?) {
         val res = Math.round(
             (list?.sumOf { it.variantPrice!!.toDouble() * it.quantity })?.times(100.0) ?: 0.00
         ) / 100.0
-        fragmentBinding.txtValueOfGrandTotal.text = String.format(res.toString())
+        fragmentBinding.txtValueOfGrandTotal.text = String.format(
+            "${
+                res.toString().updateCurrency(currencyData.third)
+            } ${currencyData.second}"
+        )
     }
 
     private suspend fun freeCart() {
@@ -362,6 +418,56 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
         bottomSheetDialog.show()
         functionalityWhenBtnCompleteParchesClicked(bottomSheetBinding)
         setPrices(bottomSheetBinding)
+        if (defaultAddress == null) {
+            bottomSheetBinding.apply {
+                btnCompletePurches.isEnabled = false
+                btnAddAddress.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        Navigation.findNavController(this@ShoppingCartFragment.requireView())
+                            .navigate(
+                                R.id.action_shoppingCartFragment_to_addressFragment,
+                                bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_ADD)
+                            )
+                        bottomSheetDialog.dismiss()
+                    }
+                }
+            }
+        } else {
+            bottomSheetBinding.apply {
+                groupAddressData.visibility = View.VISIBLE
+                btnAddAddress.visibility = View.GONE
+                txtValueOfAddress.text =
+                    String.format("${defaultAddress?.firstName} ${defaultAddress?.lastName}\n${defaultAddress?.country} ${defaultAddress?.city}")
+                imgEditDefaultAddress.setOnClickListener {
+                    Navigation.findNavController(this@ShoppingCartFragment.requireView()).navigate(
+                        R.id.action_shoppingCartFragment_to_addressFragment,
+                        bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_EDIT)
+                    )
+                    bottomSheetDialog.dismiss()
+                }
+            }
+        }
+    }
+
+
+    @SuppressLint("DefaultLocale")
+    private fun setDiscount() {
+        bottomSheetBinding.apply {
+            Log.d(TAG, "setDiscount: ${couponToUse}")
+            val oldAfter = txtValueOfBeforeDiscount.text.toString().trimCurrencySymbol().toDouble()
+            Log.d(TAG, "setDiscount: $oldAfter")
+            val percentage = (couponToUse.value.replace("-", "")).toDouble()
+            Log.d(TAG, "setDiscount: $percentage")
+            val newAfter = (oldAfter - (oldAfter * (percentage / 100)))
+            Log.d(TAG, "setDiscount: $newAfter")
+            "${
+                String.format(
+                    "%.2f",
+                    newAfter
+                )
+            } ${currencyData.second}".also { txtValueOFAfterDiscount.text = it }
+        }
     }
 
     private fun setPrices(binding: BottomSheetPaymentBinding) {
@@ -370,24 +476,35 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             txtValueOfDiscount.text = String.format(0.0.toString())
             txtValueOFAfterDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
             btnAddCoupon.setOnClickListener {
-                //TODO HERE CHECK IF VALID COUPON
-                if (false) {
-                    Snackbar.make(this.root.rootView, "Valid Coupon", Toast.LENGTH_SHORT).show()
-                    //TODO ADD DISCOUNT TO PRICE
-                    //TODO AND TOTAL AFTER DISCOUNT UPDATE
-                } else
-                    Snackbar.make(this.root.rootView, "Invalid Coupon", Toast.LENGTH_SHORT).show()
+                val userInputCoupons = editTxtCoupon.text.trim()
+                val isCouponValid = couponsList.any { it.title == userInputCoupons.toString() }
+                if (isCouponValid) {
+                    Toast.makeText(requireContext(), "Coupon is valid", Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "setPrices: ${userInputCoupons}")
+                    couponToUse = couponsList.first { it.title == userInputCoupons.toString() }
+                        .toDiscountCodeDto()
+                    editTxtCoupon.text.clear()
+                    "${this@ShoppingCartFragment.couponToUse.value} %".also { txtValueOfDiscount.text = it }
+                    setDiscount()
+                } else {
+                    Toast.makeText(requireContext(), "Coupon is not valid", Toast.LENGTH_SHORT)
+                        .show()
+                    txtValueOfDiscount.text = String.format(0.0.toString())
+                    txtValueOFAfterDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
+                }
             }
-
         }
     }
+
 
     private fun functionalityWhenBtnCompleteParchesClicked(binding: BottomSheetPaymentBinding) {
         binding.apply {
             btnCompletePurches.setOnClickListener {
                 if (radBtnCash.isChecked) {
-                    Toast.makeText(requireContext(), "Cash", Toast.LENGTH_SHORT).show()
-                    createDraftOrderForCash()
+                    lifecycleScope.launch{ paymentProcess.show(childFragmentManager, null) }.invokeOnCompletion {
+                        Toast.makeText(requireContext(), "Cash", Toast.LENGTH_SHORT).show()
+                        createDraftOrderForCash()
+                    }
                 } else if (radBtnCard.isChecked) {
                     Toast.makeText(requireContext(), "Card", Toast.LENGTH_SHORT).show()
                 } else
@@ -435,22 +552,34 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
     }
 
 
+    @SuppressLint("DefaultLocale")
     override fun onPlusClick(item: ProductOfCart) {
         fragmentBinding.apply {
-            val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old + item.variantPrice!!.toDouble()
-            txtValueOfGrandTotal.text = String.format(new.toString())
+            val old = txtValueOfGrandTotal.text.toString().trimCurrencySymbol().toDouble()
+            val new = old + item.variantPrice?.updateCurrency(currencyData.third)!!
+            "${
+                String.format(
+                    " % .2f",
+                    new
+                )
+            } ${currencyData.second}".also { txtValueOfGrandTotal.text = it }
             Log.d("Filo", "onPlusClick: ${item.quantity}")
             viewModel.updateQuantityOfProduct(cardId, item.linesId!!, item.quantity)
         }
     }
 
 
+    @SuppressLint("DefaultLocale")
     override fun onMinusClick(item: ProductOfCart) {
         fragmentBinding.apply {
-            val old = txtValueOfGrandTotal.text.toString().toDouble()
-            val new = old - item.variantPrice!!.toDouble()
-            txtValueOfGrandTotal.text = String.format(new.toString())
+            val old = txtValueOfGrandTotal.text.toString().trimCurrencySymbol().toDouble()
+            val new = old - item.variantPrice?.updateCurrency(currencyData.third)!!
+            "${
+                String.format(
+                    " % .2f",
+                    new
+                )
+            } ${currencyData.second}".also { txtValueOfGrandTotal.text = it }
             viewModel.updateQuantityOfProduct(cardId, item.linesId!!, item.quantity)
         }
     }
@@ -461,29 +590,24 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListner {
             lifecycleScope.launch {
                 viewModel.removeProductFromCart.collect {
                     when (it) {
-                        is ApiState.Loading -> {
-                        }
-
-                        is ApiState.Init -> {
-
-                        }
-
                         is ApiState.Success -> {
-//                            viewModel.fetchCartProducts(HARD_CODED_CARD_ID)
                             Snackbar.make(
                                 fragmentBinding.root,
                                 "Product deleted successfully",
                                 Snackbar.LENGTH_SHORT
                             ).show()
-                            viewModel.refresh(cardId)
                         }
 
-                        is ApiState.Failure -> {
+                        else -> {
                         }
                     }
                 }
             }
         }.show(childFragmentManager, "ConfirmationDialogFragment")
+    }
+
+    override fun paymentProcessDialog(binding: PaymentProccessDialogBinding) {
+        TODO("Not yet implemented")
     }
 
 }

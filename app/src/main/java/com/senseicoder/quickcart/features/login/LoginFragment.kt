@@ -16,9 +16,11 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
+import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
@@ -168,7 +170,10 @@ class LoginFragment : Fragment() {
                 validateFields()
             }
             continueAsAGuestButton.setOnClickListener {
-                confirmationDialog.showDialog()
+                ConfirmationDialogFragment(DialogType.GUEST_MODE){
+                    loginViewModel.signupAsGuest()
+                }.show(parentFragmentManager, "guest_mode")
+//                confirmationDialog.showDialog()
             }
             loginText.setOnClickListener{
 //                findNavController().navigate(R.id.action_loginFragment_to_signupFragment)

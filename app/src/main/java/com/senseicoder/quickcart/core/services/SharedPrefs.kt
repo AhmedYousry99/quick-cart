@@ -14,4 +14,6 @@ interface SharedPrefs {
     fun getSharedPrefBoolean(key: String, defaultValue : Boolean) : Boolean
 
     fun logAllSharedPref(tag:String ,nameOfFunction:String)
+
+    fun getCurrencyData():Triple<String?,String?,Float?>
 }

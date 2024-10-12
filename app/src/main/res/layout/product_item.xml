@@ -1,34 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardProduct"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cardProduct"
-    app:cardBackgroundColor="#F5F6F8"
+    app:cardBackgroundColor="#EDEDED"
     app:cardCornerRadius="15dp"
     app:cardElevation="8dp"
     app:cardMaxElevation="8dp"
     app:cardUseCompatPadding="true"
-    app:strokeColor="#F5F6F8"
-    app:strokeWidth="1.5dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintTop_toTopOf="parent"
+    app:strokeColor="#F5F6F8"
+    app:strokeWidth="1.5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#FCF5FD">
 
         <ImageView
             android:id="@+id/imageProduct"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_launcher_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -41,8 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="3dp"
-            android:visibility="gone"
             android:src="@drawable/favourite"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,38 +48,38 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:paddingBottom="5dp"
             android:layout_marginBottom="5dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/alexandria_medium"
-
             android:ellipsize="end"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center"
             android:maxLines="2"
+
+            android:paddingBottom="5dp"
+            android:textColor="@color/black"
 
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/imageProduct"
             app:layout_constraintStart_toStartOf="@+id/imageProduct"
-            app:layout_constraintTop_toBottomOf="@+id/imageProduct"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/imageProduct" />
 
         <TextView
             android:id="@+id/priceProduct"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/alexandria_medium"
             android:gravity="center"
             android:paddingBottom="5dp"
-            android:layout_marginBottom="5dp"
             android:textColor="@color/black"
-            android:fontFamily="@font/alexandria_medium"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/imageProduct"
             app:layout_constraintStart_toStartOf="@+id/imageProduct"
-            app:layout_constraintTop_toBottomOf="@+id/nameProduct"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/nameProduct" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

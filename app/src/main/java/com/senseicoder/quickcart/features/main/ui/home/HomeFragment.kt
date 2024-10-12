@@ -163,7 +163,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     override fun onStop() {
         super.onStop()
         (requireActivity() as MainActivity).apply {
-            toolbarVisibility(false)
+
             if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
@@ -174,6 +174,16 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 hideBottomNavBar()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (requireActivity() as MainActivity).toolbarVisibility(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).toolbarVisibility(true)
     }
 
     override fun onDestroy() {
@@ -204,33 +214,19 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                                 CouponsForDisplay(coupon, image)
                             }
                         couponPagerAdapter = CouponPagerAdapter(displayCoupons) { item ->
-                            homeViewModel.getCouponsDetails(item.id.toString())
+
                             lifecycleScope.launch {
-                                homeViewModel.couponsDetails.collect {
-                                    when (it) {
-                                        is ApiState.Success -> {
-                                            Log.d(TAG, "setupCouponViewPager SUCCESS: ${it.data}")
-                                            val discountCode =
-                                                it.data.discount_codes.firstOrNull()?.code ?: ""
-                                            val clipboard =
-                                                requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                            val clip =
-                                                ClipData.newPlainText("Discount Code", discountCode)
-                                            clipboard.setPrimaryClip(clip)
-                                            Snackbar.make(
-                                                requireView(),
-                                                "Coupon code copied to clipboard",
-                                                Snackbar.LENGTH_LONG
-                                            ).show()
-                                        }
-
-                                        is ApiState.Failure -> {
-                                            Log.d(TAG, "setupCouponViewPager FAIL: ${it.msg}")
-                                        }
-
-                                        else -> Log.d(TAG, "setupCouponViewPager ELSE: ${it}")
-                                    }
-                                }
+                                val discountCode = item.title
+                                val clipboard =
+                                    requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip =
+                                    ClipData.newPlainText("Discount Code", discountCode)
+                                clipboard.setPrimaryClip(clip)
+                                Snackbar.make(
+                                    requireView(),
+                                    "Coupon code copied to clipboard",
+                                    Snackbar.LENGTH_LONG
+                                ).show()
                             }
                         }
                         binding.couponPager.adapter = couponPagerAdapter
@@ -280,15 +276,13 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 val current = binding.couponPager.currentItem
                 val count = couponPagerAdapter.itemCount
 //                Log.d(TAG, "run: ${count}")
-                var next = current + if (Random.nextBoolean()) 1 else -1
+                var next = current + if (nextBoolean()) 1 else -1
                 if (next < 0) next = count - 1
                 else if (next >= count) next = 0
                 binding.couponPager.currentItem = next
                 handel.postDelayed(this, 4000L)
-
             }
-
         }
-        handel.postDelayed(swipeRunnable, 2000)
+        handel.postDelayed(swipeRunnable, 4000)
     }
 }
