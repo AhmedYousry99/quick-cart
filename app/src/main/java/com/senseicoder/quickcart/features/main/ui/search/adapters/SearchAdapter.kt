@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart.features.main.ui.search.test_classes
+package com.senseicoder.quickcart.features.main.ui.search.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +11,6 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.services.SharedPrefsService
-import com.senseicoder.quickcart.databinding.FavoriteItemBinding
 import com.senseicoder.quickcart.databinding.SearchFooterLayoutBinding
 import com.senseicoder.quickcart.databinding.SearchItemBinding
 
@@ -25,7 +24,9 @@ class FavoritesDiffUtil : DiffUtil.ItemCallback<ProductDTO>() {
     }
 }
 
-class SearchAdapter(val function: (id: String) -> Unit) : ListAdapter<ProductDTO, RecyclerView.ViewHolder>(FavoritesDiffUtil()) {
+class SearchAdapter(val function: (id: String) -> Unit) : ListAdapter<ProductDTO, RecyclerView.ViewHolder>(
+    FavoritesDiffUtil()
+) {
 
     private var isLoadingAdded = false
 

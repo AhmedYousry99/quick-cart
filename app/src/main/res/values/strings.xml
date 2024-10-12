@@ -89,6 +89,7 @@
     <string name="query_hint">Adidas</string>
     <string name="suggestion_list_error">Couldn\'t show suggestions</string>
     <string name="available_sizes">Sizes:\u0020</string>
+    <string name="search_empty">There\'s no products with that name</string>
 
 
 </resources>
