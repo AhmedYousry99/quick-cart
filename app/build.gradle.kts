@@ -30,6 +30,7 @@ android {
         buildConfigField ("String","shopify_api_key","\"${properties.getProperty("shopify_api_key")}\"")
         buildConfigField ("String","shopify_secret_key","\"${properties.getProperty("shopify_secret_key")}\"")
         buildConfigField ("String","shopify_store_front_api_access_token","\"${properties.getProperty("shopify_store_front_api_access_token")}\"")
+        buildConfigField ("String","currency_api_key","\"${properties.getProperty("currency_api_key")}\"")
     }
 
     buildTypes {
