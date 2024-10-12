@@ -15,7 +15,9 @@ class ProductOfCart(
     val variantId: String,
     val variantTitle: String? = null,
     val variantPrice: String? = null,
-    val linesId: String? = null
+    val linesId: String? = null,
+    val  size:String? = null,
+    val stoke : String? = null
 ) {
     companion object {
         fun fromEdges(edges: List<CartLinesUpdateMutation.Edge>?): List<ProductOfCart> {
@@ -85,7 +87,9 @@ fun List<GetCartDetailsQuery.Edge>?.fromEdges(): List<ProductOfCart> {
                     variantId = variantId,
                     variantTitle = variantTitle,
                     variantPrice = variantPrice.toString(),
-                    linesId = node.id
+                    linesId = node.id,
+                    size = node.merchandise.onProductVariant.title.split("[/]").first(),
+                    stoke = node.merchandise.onProductVariant.quantityAvailable.toString()
                 )
             )
         }

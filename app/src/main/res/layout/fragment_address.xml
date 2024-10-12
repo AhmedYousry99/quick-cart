@@ -69,13 +69,14 @@
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerFrameLayout"
         android:layout_width="411dp"
-        android:layout_height="636dp"
+        android:layout_height="0dp"
         android:layout_gravity="center"
+        android:layout_marginTop="32dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+        app:layout_constraintTop_toTopOf="parent">
 
         <include layout="@layout/cart_shimmer_placeholder" />
 

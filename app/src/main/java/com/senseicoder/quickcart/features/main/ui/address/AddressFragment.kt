@@ -8,15 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.fromEdges
@@ -35,6 +38,8 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class AddressFragment : Fragment(), OnAddressClickListener {
+    var flagToPopUp = false
+    var flagToPopUFromEdit = false
     lateinit var binding: FragmentAddressBinding
     lateinit var bottomSheetDialog: BottomSheetDialog
     lateinit var bottomSheetBinding: BottomSheetAddressBinding
@@ -73,47 +78,73 @@ class AddressFragment : Fragment(), OnAddressClickListener {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getCustomerAddresses()
         SharedPrefsService.logAllSharedPref(TAG, "onViewCreated")
-        label = arguments?.getString("label", null)
-        if (!label.isNullOrEmpty() && label == "MapsFragment") {
-            shoBottomSheet()
+        label = arguments?.getString(Constants.LABEL, null)
+        if (!label.isNullOrEmpty()) {
+            if (label == Constants.MAPS_FRAGMENT || label == Constants.CART_FRAGMENT_TO_CHECKOUT || label == Constants.FROM_ADD) {
+                shoBottomSheet()
+            } else if (label.equals(Constants.CART_FRAGMENT_TO_ADD))
+                findNavController().navigate(
+                    R.id.action_addressFragment_to_mapsFragment,
+                    bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_CHECKOUT)
+                )
         }
+
         binding.apply {
             imgBtnBack.setOnClickListener {
                 Navigation.findNavController(it).popBackStack()
             }
             floatBtnAddAddress.setOnClickListener {
-                Navigation.findNavController(it)
-                    .navigate(R.id.action_addressFragment_to_mapsFragment)
+                if (label.equals(Constants.CART_FRAGMENT_TO_EDIT))
+                    Navigation.findNavController(it)
+                        .navigate(
+                            R.id.action_addressFragment_to_mapsFragment,
+                            bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_EDIT)
+                        )
+                else
+                    Navigation.findNavController(it)
+                        .navigate(R.id.action_addressFragment_to_mapsFragment)
             }
-            lifecycleScope.launch {
-                viewModel.allAddresses?.collect {
-                    when (it) {
-                        is ApiState.Loading -> {
-                            ifLoading()
-                        }
+        }
+        collector()
+    }
 
-                        is ApiState.Success -> {
-                            val res = it.data.addresses.edges
-                            if (res.isNotEmpty()) {
-                                ifSuccessAndData()
-                                addressAdapter = AddressAdapter(
-                                    sortDefault(res.fromEdges(), it.data.defaultAddress?.id ?: ""),
-                                    this@AddressFragment
-                                )
-                                binding.rvAddress.adapter = addressAdapter
-                            } else {
-                                isSuccessAndNoData()
-                            }
-                        }
+    private fun collector() {
+        lifecycleScope.launch {
+            viewModel.allAddresses?.collect {
+                when (it) {
+                    is ApiState.Loading -> {
+                        ifLoading()
+                    }
 
-                        else -> {
+                    is ApiState.Success -> {
+                        val res = it.data.addresses.edges
+                        if (res.isNotEmpty()) {
+                            ifSuccessAndData()
+                            addressAdapter = AddressAdapter(
+                                sortDefault(res.fromEdges(), it.data.defaultAddress?.id ?: ""),
+                                this@AddressFragment
+                            )
+                            binding.rvAddress.adapter = addressAdapter
+                            if (label.equals(Constants.CART_FRAGMENT_TO_ADD) || label.equals(
+                                    Constants.CART_FRAGMENT_TO_CHECKOUT
+                                ) ||
+                                flagToPopUp
+                            ) findNavController().popBackStack()
+
+                            if (label.equals(Constants.FROM_ADD))
+                                flagToPopUFromEdit = true
+                        } else {
                             isSuccessAndNoData()
-                            Snackbar.make(
-                                requireView(),
-                                "Something went wrong",
-                                Snackbar.LENGTH_LONG
-                            ).show()
                         }
+                    }
+
+                    else -> {
+                        isSuccessAndNoData()
+                        Snackbar.make(
+                            requireView(),
+                            "Something went wrong",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -157,16 +188,19 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     override fun onDefaultClick(addressOfCustomer: AddressOfCustomer) {
         addressAdapter.updateList(emptyList())
         viewModel.updateDefaultAddress(addressOfCustomer.id)
+         if (label.equals(Constants.CART_FRAGMENT_TO_ADD) ||
+            label.equals(Constants.CART_FRAGMENT_TO_CHECKOUT) ||
+            label.equals(Constants.FROM_ADD)||
+            label.equals(Constants.CART_FRAGMENT_TO_EDIT))
+            flagToPopUp = true
     }
 
     private fun shoBottomSheet() {
         bottomSheetBinding = BottomSheetAddressBinding.inflate(layoutInflater)
         bottomSheetBinding.apply {
-            if (label.equals("MapsFragment")) {
-                lifecycleScope.launch {
-                    mainViewModel.location.collect {
-                        geocodeLocation(it.first, it.second)
-                    }
+            lifecycleScope.launch {
+                mainViewModel.location.collect {
+                    geocodeLocation(it.first, it.second)
                 }
             }
             bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -174,6 +208,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             bottomSheetDialog.show()
             resetError(this)
             setupBottomSheet(this)
+
         }
 
 

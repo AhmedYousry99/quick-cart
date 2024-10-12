@@ -20,7 +20,7 @@ class OrderRepoImpl (
 
 
     override suspend fun readUserToken(): String {
-       return sharedPreferences.getSharedPrefString(Constants.USER_TOKEN,"")
+       return sharedPreferences.getSharedPrefString(Constants.USER_TOKEN,Constants.USER_TOKEN_DEFAULT)
     }
 
 }

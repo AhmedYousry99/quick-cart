@@ -61,16 +61,17 @@
             android:layout_height="wrap_content"
 
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:background="@drawable/ripple_red"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBtnAddOne"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnAddOne"
             app:srcCompat="@drawable/ic_delete" />
 
         <ImageButton
             android:id="@+id/imgBtnMinusOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/ripple_red"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -123,6 +124,18 @@
             app:layout_constraintBottom_toBottomOf="@+id/textView2"
             app:layout_constraintStart_toEndOf="@+id/textView2"
             app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+        <TextView
+            android:id="@+id/valueOfAvailable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="@+id/imgBtnAddOne"
+            app:layout_constraintEnd_toStartOf="@+id/imgBtnDeleteFromChart"
+            app:layout_constraintStart_toEndOf="@+id/imgBtnAddOne"
+            app:layout_constraintTop_toTopOf="@+id/imgBtnAddOne" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
