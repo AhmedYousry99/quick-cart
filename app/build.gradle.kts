@@ -247,6 +247,11 @@ dependencies {
 
     testImplementation ("org.robolectric:robolectric:4.9")
 
+    testImplementation ("app.cash.turbine:turbine:0.12.1")
+
+
+
+
 
 
 

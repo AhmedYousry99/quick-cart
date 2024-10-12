@@ -1,4 +1,4 @@
-package com.senseicoder.quickcart
+package com.senseicoder.quickcart.order
 
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.features.main.ui.order.viewmodel.OrderViewModel
@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import com.senseicoder.quickcart.FakeOrderRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers

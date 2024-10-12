@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
+import com.senseicoder.quickcart.core.repos.product.ProductsRepoInterface
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchViewModel(private val repository: ProductsRepo) : ViewModel() {
+class SearchViewModel(private val repository: ProductsRepoInterface = ProductsRepo()) : ViewModel() {
 
     private val _searchResults = MutableStateFlow<ApiState<List<ProductDTO>>>(ApiState.Init)
     val searchResults = _searchResults.asStateFlow()

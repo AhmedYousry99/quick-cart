@@ -130,7 +130,9 @@ class OrderFragment : Fragment() {
 private fun collectOrders() {
     lifecycleScope.launch {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.getCustomerOrders("7beaf58f597b3ce62a552fc6b221ab4a") // Replace with token retrieval
+           // viewModel.getCustomerOrders("7beaf58f597b3ce62a552fc6b221ab4a")
+            // Replace with token retrieval
+            viewModel.getCustomerOrders(repo.readUserToken())
             viewModel.apiState.collect { result ->
                 when (result) {
                     is ApiState.Loading -> {
