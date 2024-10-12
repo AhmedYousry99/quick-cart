@@ -76,8 +76,8 @@ class CategoryViewModelTest {
         val state = viewModel.products.value
         if (state is ApiState.Success) {
             val expectedProducts = listOf(
-                DisplayProduct(1, "Shoe 1", "SHOES", "tag1,tag2", "description", "100.00"),
-                DisplayProduct(2, "Shoe 2", "SHOES", "tag1,tag2", "description", "150.00")
+                DisplayProduct(1, "Shoe 1", "SHOES", "Shoe 1", "description", "100.00"),
+                DisplayProduct(2, "Shoe 2", "SHOES", "Shoe 2", "description", "150.00")
             )
             assertEquals(expectedProducts, state.data) // Assert the result
         } else {
