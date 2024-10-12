@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioGroup.LayoutParams
 import androidx.fragment.app.DialogFragment
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.enums.DialogType
@@ -17,7 +18,7 @@ class ConfirmationDialogFragment(val code: DialogType, val function: ()->Unit) :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentConfirmationDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -25,14 +26,15 @@ class ConfirmationDialogFragment(val code: DialogType, val function: ()->Unit) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
         binding.apply {
             when (code) {
                 DialogType.DEL_ADDRESS -> {
                     setDialogDetails(
-                        "Delete Address",
+                        getString(R.string.delete_address),
                         R.drawable.ic_delete,
-                        "Are you sure you will deleted this address",
-                        "Delete"
+                       getString( R.string.delete_address_message),
+                        getString(R.string.delete)
                     )
                 }
 
@@ -61,6 +63,25 @@ class ConfirmationDialogFragment(val code: DialogType, val function: ()->Unit) :
                         "Are you sure you will add this address",
                         "ADD"
                     )
+                }
+                DialogType.DEL_FAV -> {
+                    setDialogDetails(
+                        getString(R.string.remove_from_favorite),
+                        R.drawable.ic_delete,
+                        getString(R.string.remove_from_favorite_confirmation),
+                        getString(R.string.dialog_on_confirm_default))
+
+                }
+                DialogType.GUEST_MODE ->{
+                    setDialogDetails(
+                        getString(R.string.guest_mode),
+                        R.drawable.baseline_person_24,
+                        getString(R.string.you_wont_have_access_to_features),
+                        getString(R.string.continue_as_guest))
+                    binding.apply {
+                        btnOk.setBackgroundResource(R.drawable.button_selector_default)
+                        btnCancel.setBackgroundResource(R.drawable.button_selector_logout)
+                    }
                 }
 
             }
