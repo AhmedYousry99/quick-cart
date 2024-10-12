@@ -34,6 +34,14 @@ object Constants {
             const val CART = "Cart_data"
         }
     }
+    const val LABEL = "label"
+    const val LABEL_DEFAULT = "unknown"
+    const val MAPS_FRAGMENT = "mapsFragment"
+    const val CART_FRAGMENT_TO_EDIT = "cartFragmentToEdit"
+    const val CART_FRAGMENT_TO_ADD = "cartFragmentToAdd"
+    const val CART_FRAGMENT_TO_CHECKOUT = "cartFragmentToCheckout"
+    const val FROM_ADD = "fromAdd"
+
 
     const val CART_ID: String = "cartId"
     const val CART_ID_DEFAULT: String = "unknown"

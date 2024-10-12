@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp">
+    android:layout_marginEnd="4dp"
+    android:background="#EEEEEE">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#EFEFEF"
         android:elevation="10dp"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -8,7 +8,8 @@ data class DraftOrder(
     val line_items: List<LineItem>,
     val customer: Customer,
     val billing_address: Address,
-    val shipping_address: Address
+    val shipping_address: Address,
+    val applied_discounts: Applied_Discount? =null
 )
 
 data class LineItem(
@@ -28,4 +29,9 @@ data class Address(
     val province: String,
     val zip: String = "321",
     val country: String = "Egypt"
+)
+data class Applied_Discount(
+    val title: String,
+    val value: String,
+    val value_type: String
 )

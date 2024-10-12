@@ -108,7 +108,7 @@ class CurrencyFragment : Fragment() {
                 )
             }
             buttons.forEach {
-                if (it.text.toString().substring(0, 4) == code) {
+                if (it.text.toString().substring(0, 3) == code) {
                     it.isChecked = true
                 }
             }
@@ -118,7 +118,7 @@ class CurrencyFragment : Fragment() {
                     it.isChecked = false
                 }
                 rdBtnChecked.isChecked = true
-                code = rdBtnChecked.text.toString().substring(0, 4)
+                code = rdBtnChecked.text.toString().substring(0, 3)
                 mainViewmodel.getCurrencyRate(code)
             }
         }
@@ -126,12 +126,12 @@ class CurrencyFragment : Fragment() {
 
     fun setChangeInCurrency(response: CurrencyResponse) {
         SharedPrefsService.apply {
-//            Constants.apply {
-//                Log.d(TAG, "setChangeInCurrency: $response")
-//                setSharedPrefString(CURRENCY, code)
-//                setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE,
-//                    response.data[code]!!.value.toFloat())
-//            }
+            Constants.apply {
+                Log.d(TAG, "setChangeInCurrency: $response")
+                setSharedPrefString(CURRENCY, code)
+                setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE,
+                    response.data[code]!!.value.toFloat())
+            }
         }
     }
 

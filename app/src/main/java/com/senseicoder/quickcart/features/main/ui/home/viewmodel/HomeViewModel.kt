@@ -53,7 +53,6 @@ class HomeViewModel(
 
     fun fetchCoupons() {
         viewModelScope.launch {
-
             couponsRepo.fetchCoupons().catch { e ->
                 _coupons.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect { data ->
@@ -62,17 +61,4 @@ class HomeViewModel(
 
         }
     }
-
-    private val _couponsDetails: MutableStateFlow<ApiState<DiscountCodesResponse>> = MutableStateFlow(ApiState.Loading)
-    val couponsDetails: MutableStateFlow<ApiState<DiscountCodesResponse>> = _couponsDetails
-    fun getCouponsDetails(id: String) {
-        viewModelScope.launch {
-            couponsRepo.checkCouponDetails(id).catch { e ->
-                _couponsDetails.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
-            }.collect { data ->
-                _couponsDetails.value = ApiState.Success(data)
-            }
-        }
-    }
-
 }

@@ -114,6 +114,24 @@ object SharedPrefsService : SharedPrefs {
         }
 
     }
+    fun setDataForLogout(){
+        setSharedPrefString(Constants.CURRENCY, Constants.CURRENCY_DEFAULT)
+        setSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT)
+        setSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT)
+        setSharedPrefString(Constants.USER_EMAIL, Constants.USER_ID_DEFAULT)
+        setSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
+        setSharedPrefString(Constants.FIREBASE_USER_ID, Constants.FIREBASE_USER_ID_DEFAULT)
+        setSharedPrefString(Constants.USER_DISPLAY_NAME, Constants.USER_DISPLAY_NAME_DEFAULT)
+        setSharedPrefFloat(Constants.PERCENTAGE_OF_CURRENCY_CHANGE,Constants.PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT)
+
+    }
+
+    override fun getCurrencyData(): Triple<String?, String?, Float?> {
+        val code = getSharedPrefString(Constants.CURRENCY, Constants.CURRENCY_DEFAULT)
+        val symbol = Constants.Currency.currencyMap[code]
+        val rete = getSharedPrefFloat(Constants.PERCENTAGE_OF_CURRENCY_CHANGE, Constants.PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT)
+        return Triple(code,symbol,rete)
+    }
 
 
     private const val TAG = "CustomerRepoImpl"
