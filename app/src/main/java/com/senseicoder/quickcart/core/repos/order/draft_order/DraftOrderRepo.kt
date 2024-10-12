@@ -13,7 +13,7 @@ interface DraftOrderRepo {
 
     suspend fun completeDraftOrder(draftOrderId: Long): Flow<Response<DraftOrderReqRes>>
 
-    suspend fun sendInvoice(draftOrderId: Long): Flow<Response<DraftOrderReqRes>>
+    suspend fun sendInvoice(draftOrderId: Long): Flow<DraftOrderReqRes?>
 
     suspend fun getCustomerAddresses(): Flow<CustomerAddressesQuery.Customer?>
 

@@ -23,6 +23,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.CurrencySymbol
+import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
@@ -154,7 +155,13 @@ fun String?.matchesPassword(password: String): Boolean {
     return !this.isNullOrBlank() && this.trim() == password
 }
 
+fun String.updateCurrency(percentage:Float?):Float{
 
+    return  Math.round((this.toFloat()* percentage!!) * 100F)/100F
+}
+fun String.trimCurrencySymbol():String{
+    return this.replace(Regex("[^\\d.-]"), "")
+}
 /**
  * Run work asynchronously from a [BroadcastReceiver].
  */
@@ -315,5 +322,14 @@ fun Activity.setupRefreshLayout(
 data class myInt(val int: Int)
 
 fun main (){
-
+runBlocking {
+    var x ="38.91 CA$".trimCurrencySymbol().trim()
+    println(x)
+    x ="38.91 $".trimCurrencySymbol().trim()
+    println(x)
+     x ="38.91 LE".trimCurrencySymbol().trim()
+    println(x)
+     x ="38.91 EUR".trimCurrencySymbol().trim()
+    println(x)
+}
 }

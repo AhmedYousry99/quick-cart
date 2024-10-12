@@ -103,7 +103,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
             )
         ).execute()
         if (response.data?.customerCreate != null && response.exception == null) {
-            emit(response.data!!.customerCreate!!.customer!!)
+            emit(response.data!!.customerCreate!!.customer ?: throw Exception("SignUp Failed"))
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }

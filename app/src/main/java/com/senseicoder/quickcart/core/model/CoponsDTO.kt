@@ -51,6 +51,26 @@ data class PriceRule(
     val title: String,
     val admin_graphql_api_id: String
 )
+fun PriceRule.toDiscountCodeDto(): DiscountCodesDTO {
+    return DiscountCodesDTO(
+        id = this.id,
+        title = this.title,
+        value = this.value,
+        valueType = this.value_type
+    )
+}
+data class DiscountCodesDTO(
+    val id: Long,
+    val title : String,
+    val value :String,
+    val valueType : String
+)
+fun DiscountCodesDTO.toApplied_Discount(): Applied_Discount {
+    return Applied_Discount(
+        title = this.title,
+        value = this.value,
+        value_type = this.valueType)
+}
 
 data class PrerequisiteToEntitlementQuantityRatio(
     val prerequisite_quantity: Any?,

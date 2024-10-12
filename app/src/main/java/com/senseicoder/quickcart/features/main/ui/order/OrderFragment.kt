@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.entity.order.Order
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.repos.order.OrderRepo
 import com.senseicoder.quickcart.core.repos.order.OrderRepoImpl
@@ -130,9 +131,13 @@ class OrderFragment : Fragment() {
 private fun collectOrders() {
     lifecycleScope.launch {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
            // viewModel.getCustomerOrders("7beaf58f597b3ce62a552fc6b221ab4a")
             // Replace with token retrieval
             viewModel.getCustomerOrders(repo.readUserToken())
+
+            viewModel.getCustomerOrders(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN,Constants.USER_TOKEN_DEFAULT)) // Replace with token retrieval
+
             viewModel.apiState.collect { result ->
                 when (result) {
                     is ApiState.Loading -> {

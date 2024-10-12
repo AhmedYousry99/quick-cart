@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_shoppingCartFragment_to_productDetailsFragment"
             app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -137,7 +140,7 @@
         <action
             android:id="@+id/action_mapsFragment_to_addressFragment"
             app:destination="@id/addressFragment"
-            app:popUpTo="@id/mapsFragment"
+            app:popUpTo="@id/addressFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
