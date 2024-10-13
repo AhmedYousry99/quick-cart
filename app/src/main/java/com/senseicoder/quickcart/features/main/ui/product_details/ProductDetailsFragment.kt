@@ -392,6 +392,8 @@ class ProductDetailsFragment : Fragment() {
 
                         }
                         is ApiState.Success -> {
+                            enableButtons()
+                            enableAllChipGroups()
                             this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
                         }
                         is ApiState.Failure -> {

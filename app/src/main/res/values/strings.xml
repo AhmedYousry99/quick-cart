@@ -105,6 +105,7 @@
     <string name="adding_to_cart">Adding to cart...</string>
     <string name="adding_to_favorite">Adding To Favorites...</string>
     <string name="added_to_favorite">Product Added To Favorites Successfully</string>
+    <string name="reviews_title">Reviews</string>
 
 
 </resources>
