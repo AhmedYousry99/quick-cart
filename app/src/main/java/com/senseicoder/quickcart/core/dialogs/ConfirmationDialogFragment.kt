@@ -73,7 +73,7 @@ class ConfirmationDialogFragment(val code: DialogType, val function: (()->Unit)?
                         getString(R.string.remove_from_favorite),
                         R.drawable.ic_delete,
                         getString(R.string.remove_from_favorite_confirmation),
-                        getString(R.string.dialog_on_confirm_default))
+                        getString(R.string.delete))
 
                 }
                 DialogType.GUEST_MODE ->{
