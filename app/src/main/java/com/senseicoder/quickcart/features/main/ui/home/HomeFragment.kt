@@ -9,27 +9,22 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.MyDialog
-import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.CouponsForDisplay
-import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
@@ -38,8 +33,6 @@ import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
-import kotlin.random.Random.Default.nextBoolean
 
 class HomeFragment : Fragment(), OnItemBrandClicked {
 
@@ -56,7 +49,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private val swipeInterval: Long = 3000 // 3 seconds
     private var currentPage = 0
     private lateinit var handler: Handler
-    private val productDetailsPager2AnimationRunnable: Runnable = object : Runnable {
+    private val HomePager2AnimationRunnable: Runnable = object : Runnable {
         override fun run() {
             val totalPages = binding.couponPager.adapter?.itemCount ?: 0
 
@@ -84,6 +77,11 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     private val networkConnectivity by lazy {
         NetworkConnectivity.getInstance(requireActivity().application)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        handler = Handler(Looper.getMainLooper())
     }
 
     override fun onCreateView(
@@ -168,8 +166,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 }
             }
         }
-        handler = Handler(Looper.getMainLooper())
-        setupPagerListener()
+
     }
 
     override fun onStart() {
@@ -200,32 +197,41 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         super.onResume()
         (requireActivity() as MainActivity).toolbarVisibility(true)
         if(homeViewModel.coupons.value !is ApiState.Success)
-            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+            handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
     }
 
     override fun onPause() {
         super.onPause()
         (requireActivity() as MainActivity).toolbarVisibility(false)
-        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+        handler.removeCallbacks(HomePager2AnimationRunnable)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setupPagerListener(){
-        binding.couponPager.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    // The pager is currently being pressed
-                    handler.removeCallbacks(productDetailsPager2AnimationRunnable)
-                    true // Indicate that the touch event has been consumed
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
-                    // The pager is currently released
-                    true // Indicate that the touch event has been consumed
-                }
-                else -> false // Let the ViewPager handle other touch events
+        binding.couponPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            private var isUserInteracting = false
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentPage = position
             }
-        }
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                when (state) {
+                    ViewPager2.SCROLL_STATE_DRAGGING -> {
+                        // The user started interacting with the pager (scrolling)
+                        isUserInteracting = true
+                        handler.removeCallbacks(HomePager2AnimationRunnable)
+                    }
+                    ViewPager2.SCROLL_STATE_IDLE -> {
+                        if (isUserInteracting) {
+                            // The pager has stopped after user interaction
+                            Log.d(TAG, "onPageScrollStateChanged: ")
+                            handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
+                            isUserInteracting = false
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -272,12 +278,16 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                             }
                         }
                         binding.couponPager.adapter = couponPagerAdapter
-                        startRandomSwiping()
-                        binding.dotsIndicator.setViewPager2(binding.couponPager)
+                        binding.dotsIndicator.attachTo(binding.couponPager)
+                        startSwipingAnimation()
+                        setupPagerListener()
                     }
 
                     is ApiState.Failure -> Log.d(TAG, "setupCouponViewPager: ${it.msg}")
-                    else -> Log.d(TAG, "setupCouponViewPager: LOADING")
+                    else -> {
+                        Log.d(TAG, "setupCouponViewPager: LOADING")
+                        handler.removeCallbacks(HomePager2AnimationRunnable)
+                    }
                 }
             }
         }
@@ -312,8 +322,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         binding.swipeRefresher.isRefreshing = false
     }
 
-    private fun startRandomSwiping() {
-        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
-        handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+
+    private fun startSwipingAnimation() {
+        handler.removeCallbacks(HomePager2AnimationRunnable)
+        handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
     }
 }

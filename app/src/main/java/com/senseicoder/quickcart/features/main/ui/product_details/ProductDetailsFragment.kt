@@ -422,25 +422,6 @@ class ProductDetailsFragment : Fragment() {
         return price
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupPagerListener(){
-        binding.productDetailsImagesPager.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    // The pager is currently being pressed
-                    handler.removeCallbacks(productDetailsPager2AnimationRunnable)
-                    true // Indicate that the touch event has been consumed
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
-                    // The pager is currently released
-                    true // Indicate that the touch event has been consumed
-                }
-                else -> false // Let the ViewPager handle other touch events
-            }
-        }
-    }
-
     private fun setupFavoriteOnClickListener(data: Boolean) {
         if(NetworkUtils.isConnected(requireContext())){
             if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
