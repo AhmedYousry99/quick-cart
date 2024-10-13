@@ -385,8 +385,6 @@ class ProductDetailsFragment : Fragment() {
                         }
                         is ApiState.Success -> {
                             this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
-                            delay(1.5.seconds)
-                            findNavController().navigateUp()
                         }
                         is ApiState.Failure -> {
                             enableButtons()
@@ -567,38 +565,6 @@ class ProductDetailsFragment : Fragment() {
         chipGroup.addView(chip)
     }
 
-    private fun updateButtonText(price: String) {
-        // Button title
-        val buttonText = "Add To Cart"
-
-        // Combine title and price into a single string
-        val fullText = "$buttonText    |   $$price"
-
-        // Create a SpannableString
-        val spannable = SpannableString(fullText)
-
-        // Set spans for the price
-        val priceStart = fullText.indexOf("$") // Find the start index of the price
-        val priceEnd = fullText.length // End of the string
-
-        // Style the price (change color to yellow and make it bold)
-        spannable.setSpan(
-            ForegroundColorSpan(requireContext().getColor(R.color.primary)), // Change color to yellow
-            priceStart,
-            priceEnd,
-            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        spannable.setSpan(
-            StyleSpan(Typeface.BOLD), // Make the price bold
-            priceStart,
-            priceEnd,
-            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        // Set the spannable text to the MaterialButton
-//        binding.addToCartBtnProductDetails.text = spannable
-    }
 
     private fun disableAllChipGroups(){
         disableChipGroup(binding.sizesChipGroupProductDetails)
