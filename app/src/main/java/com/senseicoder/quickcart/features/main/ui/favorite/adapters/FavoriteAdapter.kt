@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.FavoriteItemBinding
@@ -68,12 +69,12 @@ class FavoritesAdapter(
             val price = favorite.let {
                 Log.d(TAG, "bind: minimum: ${it.priceMinimum}, maximum: ${it.priceMaximum}\n priceMinimumEmpty: $priceMinimumEmpty, priceMaximumEmpty: $priceMaximumEmpty")
                 if ((!priceMinimumEmpty && !priceMaximumEmpty) && (it.priceMinimum != it.priceMaximum)) {
-                    "${it.priceMinimum} - ${it.priceMaximum} $currency"
+                    "${it.priceMinimum.toTwoDecimalPlaces()} - ${it.priceMaximum.toTwoDecimalPlaces()} $currency"
                 }else{
                     if(!priceMinimumEmpty){
-                        "${it.priceMinimum} $currency"
+                        "${it.priceMinimum.toTwoDecimalPlaces()} $currency"
                     }else if (!priceMaximumEmpty){
-                        "${it.priceMaximum} $currency"
+                        "${it.priceMaximum.toTwoDecimalPlaces()} $currency"
                     }else{
                         "Unknown Price"
                     }
