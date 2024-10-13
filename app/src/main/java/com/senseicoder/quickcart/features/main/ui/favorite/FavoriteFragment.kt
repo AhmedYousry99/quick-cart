@@ -74,7 +74,6 @@ class FavoriteFragment : Fragment() {
         Log.d(TAG, "onViewCreated: created")
         setupListeners()
         subscribeToObservables()
-        getFavoritesIfNetworkAvailable()
     }
 
     override fun onStart() {

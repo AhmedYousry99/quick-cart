@@ -22,7 +22,7 @@ import com.storefront.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 
 interface StorefrontHandler {
-    suspend fun loginUser(
+    fun loginUser(
         email: String,
         password: String
     ): Flow<CreateCustomerAccessTokenMutation.CustomerAccessToken>
@@ -64,7 +64,7 @@ interface StorefrontHandler {
 
     suspend fun updateDefaultAddress(token:String,id :String):Flow<CustomerDefaultAddressUpdateMutation.CustomerDefaultAddressUpdate>?
 
-    suspend fun createCart(email: String): Flow<CreateCartMutation.Cart>
+    fun createCart(email: String): Flow<CreateCartMutation.Cart>
 
     suspend fun addToCartById(
         cartId: String,
