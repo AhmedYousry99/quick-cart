@@ -9,7 +9,9 @@ import com.senseicoder.quickcart.core.model.customer.CustomerKeys
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.tasks.await
+import java.io.IOException
 
 object FirebaseFirestoreDataSource : RemoteDataSource {
 
@@ -42,6 +44,16 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         }
     }
 
+    override suspend fun addUser(customer: CustomerDTO) = flow<CustomerDTO> {
+        Log.d(TAG, "addUser:  adding user: $customer")
+        val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
+        val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
+        val res = customersCollection.add(customer).await()
+        emit(customer.copy(firebaseId = res.id))
+    }.retryWhen { cause, attempt ->
+        cause is IOException && attempt < 3
+    }
+
     override suspend fun getUserByEmail(customer: CustomerDTO) = flow<CustomerDTO> {
         Log.d(TAG, "getUserByEmail: $customer")
         val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -51,12 +63,13 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
             .get()
             .await()
         if (!querySnapshot.isEmpty) {
-            Log.d(TAG, "getUserByEmail: ${querySnapshot.documents}")
+            Log.d(TAG, "getUserByEmail: documents: ${querySnapshot.documents}")
             // Assuming the first document contains the matching user
             val document = querySnapshot.documents.first()
             val firebaseCustomer = CustomerDTO.fromDocument(document)
             emit(firebaseCustomer.copy(token = customer.token))
         } else {
+            Log.d(TAG, "getUserByEmail: documents: ${querySnapshot.documents}")
             throw (Exception("Invalid credentials"))
         }
     }

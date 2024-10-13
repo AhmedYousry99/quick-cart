@@ -13,7 +13,7 @@
     //color secondary
     <color name="secondary_faint">#cee993</color>
     //color on secondary
-    <color name="secondary">#a3d139</color>
+    <color name="secondary">#4CAF50</color>
     <color name="secondary_variant">#a3d139</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

@@ -28,5 +28,7 @@ data class CustomerDetails(
     val first_name: String?,
     val last_name: String?,
     val created_at: String,
+    @SerializedName("verified_email")
+    val verified_email: Boolean = false,
     val updated_at: String
 )

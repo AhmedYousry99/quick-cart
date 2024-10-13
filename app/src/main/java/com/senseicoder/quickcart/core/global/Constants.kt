@@ -1,9 +1,5 @@
 package com.senseicoder.quickcart.core.global
 
-import com.senseicoder.quickcart.core.model.CurrencySymbol
-
-
-
 
 object Constants {
 
@@ -11,6 +7,9 @@ object Constants {
     object Errors {
         const val UNKNOWN = "unknown error occurred"
         const val CUSTOMER_CREATE_FAILED = "customer creation failed"
+        object CustomerCreate{
+            const val EMAIL_TAKEN = "Email has already been taken"
+        }
     }
 
     sealed class SharedPrefs {
@@ -34,6 +33,11 @@ object Constants {
             const val CART = "Cart_data"
         }
     }
+
+
+
+    const val TOKEN_EXPIRATION_DATE: String = "tokenExpirationDate"
+    const val TOKEN_EXPIRATION_DATE_DEAFULT: String = "unknown"
     const val LABEL = "label"
     const val LABEL_DEFAULT = "unknown"
     const val MAPS_FRAGMENT = "mapsFragment"

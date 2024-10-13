@@ -111,6 +111,15 @@ object SharedPrefsService : SharedPrefs {
                     )
                 }"
             )
+            Log.d(
+                TAG,
+                "${nameOfFunction}:TOKEN_EXPIRATION_DATE ${
+                    getSharedPrefString(
+                        it.TOKEN_EXPIRATION_DATE,
+                        it.TOKEN_EXPIRATION_DATE_DEAFULT
+                    )
+                }"
+            )
         }
 
     }

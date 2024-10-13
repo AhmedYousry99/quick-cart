@@ -318,7 +318,6 @@ class ProductDetailsFragment : Fragment() {
                                     // Link the ViewPager2 with the DotsIndicator
                                     binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
                                     binding.successProductDetails.visibility = View.VISIBLE
-                                    startAutoSwipe()
                                 }
                             }
                         }
@@ -590,8 +589,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun startAutoSwipe() {
-        /*handler.removeCallbacks(animationRunnable)
-        handler.postDelayed(animationRunnable, swipeInterval)*/
+        handler.removeCallbacks(animationRunnable)
+        handler.postDelayed(animationRunnable, swipeInterval)
     }
 
     companion object {

@@ -26,7 +26,7 @@ import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSearchBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
-import com.senseicoder.quickcart.features.main.ui.search.test_classes.SearchAdapter
+import com.senseicoder.quickcart.features.main.ui.search.adapters.SearchAdapter
 import com.senseicoder.quickcart.features.main.ui.search.viewmodel.SearchViewModel
 import com.senseicoder.quickcart.features.main.ui.search.viewmodel.SearchViewModelFactory
 import kotlinx.coroutines.FlowPreview
@@ -55,6 +55,8 @@ class SearchFragment : Fragment() {
     private var totalItemCount = 0
     private var mLayoutManager: LinearLayoutManager? = null
 
+    private var clickedSuggestion: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val factory = SearchViewModelFactory(
@@ -80,6 +82,14 @@ class SearchFragment : Fragment() {
         subscribeToObservables()
     }
 
+    private fun showListEmpty() {
+        binding.apply {
+            loadingSearchGroup.visibility = View.GONE
+            emptyListSearchGroup.visibility = View.VISIBLE
+            noInternetSearchGroup.visibility = View.GONE
+        }
+    }
+
     private fun subscribeToObservables() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -87,20 +97,19 @@ class SearchFragment : Fragment() {
                     when (it) {
                         ApiState.Init -> {
                             Log.d(TAG, "subscribeToObservables: init")
-
                         }
-
                         ApiState.Loading -> {
-                            //TODO: implement this
                             showListLoading()
                         }
-
                         is ApiState.Success -> {
                             Log.d(TAG, "subscribeToObservables: working: ${it.data}")
-                            binding.recyclerViewSearch.visibility = View.VISIBLE
-                            searchAdapter.submitList(it.data)
+                            if(it.data.isEmpty())
+                                showListEmpty()
+                            else{
+                                showListSuccess()
+                                searchAdapter.submitList(it.data)
+                            }
                         }
-
                         is ApiState.Failure -> {
                             showSnackbar(it.msg)
                         }
@@ -158,6 +167,15 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun showListSuccess() {
+        binding.apply {
+            loadingSearchGroup.visibility = View.GONE
+            emptyListSearchGroup.visibility = View.GONE
+            noInternetSearchGroup.visibility = View.GONE
+            recyclerViewSearch.visibility = View.VISIBLE
+        }
+    }
+
     private fun setupRecycler() {
         searchAdapter = SearchAdapter() {
             if(NetworkUtils.isConnected(requireContext())){
@@ -184,8 +202,12 @@ class SearchFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchQuery.tryEmit(newText ?: "")
-//                updateSuggestions(getSuggestions(newText ?: ""))
+                if(clickedSuggestion == newText && viewModel.searchResults.value is ApiState.Success){
+                    searchAdapter.submitList((viewModel.searchResults.value as ApiState.Success).data.filter { it.title == newText })
+                }else
+                {   binding.noInternetSearchGroup.visibility = View.GONE
+                    searchQuery.tryEmit(newText ?: "")
+                }
                 return true
             }
         })
@@ -197,8 +219,8 @@ class SearchFragment : Fragment() {
             override fun onSuggestionClick(position: Int): Boolean {
                 val cursor = suggestionsAdapter.cursor
                 cursor.moveToPosition(position)
-                val suggestion = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"))
-                binding.searchView.setQuery(suggestion, true)
+                clickedSuggestion = cursor.getString(cursor.getColumnIndexOrThrow("suggestion"))
+                binding.searchView.setQuery(clickedSuggestion, true)
                 return true
             }
         })
@@ -224,12 +246,17 @@ class SearchFragment : Fragment() {
             repeatOnLifecycle(state = Lifecycle.State.CREATED) {
                 searchQuery.debounce(500)
                     .collect { query ->
-                        if (query.length > 2 && query.isNotBlank()) {
-                            if(NetworkUtils.isConnected(requireContext()))
+                        if(NetworkUtils.isConnected(requireContext()))
+                        {
+                            binding.noInternetSearchGroup.visibility = View.GONE
+                            if (query.length > 2 && query.isNotBlank()) {
                                 viewModel.searchProducts(query)
-                            else
-                                showSnackbar(getString(R.string.no_internet_connection))
+                            }
                         }
+                        else
+                            showNoInternetGroup()
+//                                showSnackbar(getString(R.string.no_internet_connection))
+
                     }
             }
         }
@@ -263,8 +290,20 @@ class SearchFragment : Fragment() {
         })
     }
 
+    private fun showNoInternetGroup(){
+        binding.apply {
+            loadingSearchGroup.visibility = View.GONE
+            emptyListSearchGroup.visibility = View.GONE
+            noInternetSearchGroup.visibility = View.VISIBLE
+        }
+    }
     private fun showListLoading() {
-
+        binding.apply {
+            recyclerViewSearch.visibility = View.GONE
+            loadingSearchGroup.visibility = View.VISIBLE
+            emptyListSearchGroup.visibility = View.GONE
+            noInternetSearchGroup.visibility = View.GONE
+        }
     }
 
     private fun updateSuggestions(suggestions: List<String>) {

@@ -102,6 +102,7 @@
             app:counterEnabled="true"
             app:counterMaxLength="30"
             app:endIconMode="clear_text"
+            app:helperText="@string/required"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lastNameSignupLayout"
@@ -129,6 +130,8 @@
             android:textColorHint="@color/primary_variant"
             app:counterMaxLength="20"
             app:endIconMode="password_toggle"
+            app:helperText="@string/required"
+
             app:layout_constraintEnd_toEndOf="@+id/emailSignupLayout"
             app:layout_constraintStart_toStartOf="@+id/emailSignupLayout"
             app:layout_constraintTop_toBottomOf="@+id/emailSignupLayout"
@@ -156,6 +159,8 @@
             android:textColorHint="@color/primary_variant"
             app:counterMaxLength="20"
             app:endIconMode="password_toggle"
+            app:helperText="@string/required"
+
             app:layout_constraintEnd_toEndOf="@+id/emailSignupLayout"
             app:layout_constraintStart_toStartOf="@+id/emailSignupLayout"
             app:layout_constraintTop_toBottomOf="@+id/passwordSignupLayout"

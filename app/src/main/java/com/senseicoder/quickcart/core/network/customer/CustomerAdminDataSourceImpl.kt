@@ -1,6 +1,7 @@
 package com.senseicoder.quickcart.core.network.customer
 
 import android.util.Log
+import com.senseicoder.quickcart.core.global.addGIDPrefix
 import com.senseicoder.quickcart.core.global.withoutGIDPrefix
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.CustomerAdminDataSource
@@ -30,10 +31,13 @@ class CustomerAdminDataSourceImpl(private val api: CustomerAdminRetrofitInterfac
                 )
             )
         )
-        if(response.isSuccessful){
-            emit(CustomerDTO(email = email, displayName = "$firstName $lastName", password = password, isVerified = false, isGuest = false))
+        Log.d(TAG, "createCustomer: ")
+        val customer = response.body()?.customer
+        if(response.isSuccessful && customer != null){
+            emit(CustomerDTO(email = email, displayName = "$firstName $lastName", password = password, isVerified = customer.verified_email, isGuest = false, id = customer.id.addGIDPrefix()
+                ?: throw Exception("couldn't create customer, try again later")))
         }else{
-            throw Exception("Signup failed")
+            throw Exception("couldn't create customer, try again later")
         }
     }
 

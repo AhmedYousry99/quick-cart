@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteDataSource {
 
     suspend fun getUserByIdOrAddUser(customer: CustomerDTO): Flow<CustomerDTO>
+    suspend fun addUser(customer: CustomerDTO): Flow<CustomerDTO>
     suspend fun getUserByEmail(customer: CustomerDTO): Flow<CustomerDTO>
     suspend fun addFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO>
     suspend fun isFavorite(firebaseId: String, productId :String): Flow<Boolean>

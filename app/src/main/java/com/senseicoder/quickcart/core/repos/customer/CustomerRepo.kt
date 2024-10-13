@@ -8,7 +8,6 @@ interface CustomerRepo {
     /*
     * $email: String!, $firstName: String!, $lastName:String!*/
     suspend fun signupUsingEmailAndPassword(firstName: String, lastName: String, email: String, password: String): Flow<CustomerDTO>
-    suspend fun loginUsingGuest(): Flow<CustomerDTO>
     fun signOut()
     fun setUserId(value: String)
     fun getUserId(): String
@@ -19,6 +18,7 @@ interface CustomerRepo {
     fun setCartId(cartId: String)
     fun getCartId(): String
     fun setFirebaseId(firebaseId: String)
+    fun setTokenExpirationData(tokenExpirationDate: String)
     suspend fun addFavorite(email:String, favorite: FavoriteDTO): Flow<FavoriteDTO>
     suspend fun removeFavorite(email:String, favorite: FavoriteDTO): Flow<FavoriteDTO>
     suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO>

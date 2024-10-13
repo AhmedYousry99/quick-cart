@@ -20,7 +20,7 @@ interface FirebaseHandler {
 //
 //    fun loginUsingFacebookEmail()
 
-    suspend fun loginUsingGuest(): Flow<CustomerDTO>
+//    suspend fun loginUsingGuest(): Flow<CustomerDTO>
 
     fun signOut()
 
