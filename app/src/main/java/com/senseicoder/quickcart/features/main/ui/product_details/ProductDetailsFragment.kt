@@ -1,13 +1,9 @@
 package com.senseicoder.quickcart.features.main.ui.product_details
 
 import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,8 +16,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
@@ -46,6 +42,8 @@ import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import com.senseicoder.quickcart.databinding.BottomSheetAddressBinding
+import com.senseicoder.quickcart.databinding.BottomSheetRatingBinding
 import com.senseicoder.quickcart.databinding.FragmentProductDetailsBinding
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModel
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModelFactory
@@ -53,12 +51,11 @@ import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.product_details.adapters.ProductDetailsPagerAdapter
+import com.senseicoder.quickcart.features.main.ui.product_details.adapters.ReviewAdapter
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModel
 import com.senseicoder.quickcart.features.main.ui.product_details.viewmodel.ProductDetailsViewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class ProductDetailsFragment : Fragment() {
 
@@ -78,10 +75,10 @@ class ProductDetailsFragment : Fragment() {
             description = "Product arrived in terrible condition.",
             rating = 1.0
         ),
-        ReviewDTO(name = "Adel", description = "Not worth the price.", rating = 2.0),
         ReviewDTO(name = "Salma", description = "Exceeded my expectations!", rating = 5.0),
-        ReviewDTO(name = "Ibrahim", description = "Wouldn't recommend.", rating = 2.0),
+        ReviewDTO(name = "Adel", description = "Not worth the price.", rating = 2.0),
         ReviewDTO(name = "Reem", description = "Good, but shipping took too long.", rating = 3.5),
+        ReviewDTO(name = "Ibrahim", description = "Wouldn't recommend.", rating = 2.0)
     )
     private lateinit var currency: String
     private var selectedAmount: Int = 0
@@ -598,6 +595,15 @@ class ProductDetailsFragment : Fragment() {
     private fun showLoadingGroup(){
         binding.shimmerProductDetails.startShimmer()
         binding.loadingProductDetails.visibility = View.VISIBLE
+    }
+
+    private fun showReviews(){
+        val bottomSheetBinding = BottomSheetRatingBinding.inflate(layoutInflater)
+        val bottomSheetDialog = BottomSheetDialog(requireContext(),R.style.BottomSheetDialogTheme)
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+        val adapter = ReviewAdapter(reviews)
+        bottomSheetBinding.rvRating.adapter = adapter
+        bottomSheetDialog.show()
     }
 
     companion object {

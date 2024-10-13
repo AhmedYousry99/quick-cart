@@ -327,4 +327,19 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         handler.removeCallbacks(HomePager2AnimationRunnable)
         handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
     }
+//    private fun startRandomSwiping() {
+//        val swipeRunnable = object : Runnable {
+//            override fun run() {
+//                val current = binding.couponPager.currentItem
+//                val count = couponPagerAdapter.itemCount
+////                Log.d(TAG, "run: ${count}")
+//                var next = current + if (nextBoolean()) 1 else -1
+//                if (next < 0) next = count - 1
+//                else if (next >= count) next = 0
+//                binding.couponPager.currentItem = next
+//                handel.postDelayed(this, 4000L)
+//            }
+//        }
+//        handel.postDelayed(swipeRunnable, 4000)
+//    }
 }

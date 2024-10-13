@@ -3,14 +3,14 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
     id("com.apollographql.apollo") version "4.0.1"
     alias(libs.plugins.google.gms.google.services)
-    id ("androidx.navigation.safeargs")
+    id("androidx.navigation.safeargs")
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
-val properties= Properties()
+val properties = Properties()
 properties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
@@ -26,10 +26,31 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField ("String","shopify_admin_api_access_token","\"${properties.getProperty("shopify_admin_api_access_token")}\"")
-        buildConfigField ("String","shopify_api_key","\"${properties.getProperty("shopify_api_key")}\"")
-        buildConfigField ("String","shopify_secret_key","\"${properties.getProperty("shopify_secret_key")}\"")
-        buildConfigField ("String","shopify_store_front_api_access_token","\"${properties.getProperty("shopify_store_front_api_access_token")}\"")
+        buildConfigField(
+            "String",
+            "pay_pal_client_id",
+            "\"${properties.getProperty("client_id_paypal")}\""
+        )
+        buildConfigField(
+            "String",
+            "shopify_admin_api_access_token",
+            "\"${properties.getProperty("shopify_admin_api_access_token")}\""
+        )
+        buildConfigField(
+            "String",
+            "shopify_api_key",
+            "\"${properties.getProperty("shopify_api_key")}\""
+        )
+        buildConfigField(
+            "String",
+            "shopify_secret_key",
+            "\"${properties.getProperty("shopify_secret_key")}\""
+        )
+        buildConfigField(
+            "String",
+            "shopify_store_front_api_access_token",
+            "\"${properties.getProperty("shopify_store_front_api_access_token")}\""
+        )
         buildConfigField ("String","currency_api_key","\"${properties.getProperty("currency_api_key")}\"")
     }
 
@@ -71,7 +92,10 @@ apollo {
 //        }
         // This creates a downloadAdminApolloSchemaFromIntrospection task
         introspection {
-            headers.put("X-Shopify-Access-Token", properties["shopify_admin_api_access_token"].toString())
+            headers.put(
+                "X-Shopify-Access-Token",
+                properties["shopify_admin_api_access_token"].toString()
+            )
             endpointUrl.set("https://android-alex-team5.myshopify.com/admin/api/2024-10/graphql.json")
             // The path is interpreted relative to the current project
             schemaFile.set(file("src/main/graphql/com/admin/admin.graphqls"))
@@ -95,7 +119,10 @@ apollo {
 //        }
         // This creates a downloadStorefrontApolloSchemaFromIntrospection task
         introspection {
-            headers.put("X-Shopify-Storefront-Access-Token", properties["shopify_store_front_api_access_token"].toString())
+            headers.put(
+                "X-Shopify-Storefront-Access-Token",
+                properties["shopify_store_front_api_access_token"].toString()
+            )
             endpointUrl.set("https://android-alex-team5.myshopify.com/api/2024-10/graphql.json")
             // The path is interpreted relative to the current project
             schemaFile.set(file("src/main/graphql/com/storefront/storefront.graphqls"))
@@ -106,7 +133,8 @@ apollo {
 }
 
 dependencies {
-
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
+    implementation ("com.stripe:stripe-android:20.29.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -124,8 +152,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation ("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.9.0")
     //idk if this would be needed
     implementation("androidx.preference:preference:1.2.1")
     //legacy support for NestedRecyclerView
@@ -139,23 +166,23 @@ dependencies {
     //Apollo (GraphQL)
     implementation(libs.apollo.runtime)
     //Retrofit
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.okhttp)
-    implementation (libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
     //GSON
-    implementation (libs.gson)
+    implementation(libs.gson)
     //animation
-    implementation (libs.lottie)
+    implementation(libs.lottie)
     //facebook shimmer
-    implementation (libs.shimmer)
+    implementation(libs.shimmer)
     //Glide
-    implementation (libs.glide)
+    implementation(libs.glide)
     kapt(libs.glide.compiler)
     //SwipeRefreshLayout
     implementation(libs.androidx.swiperefreshlayout)
     //zoomable image
-    implementation (libs.touchimageview)
+    implementation(libs.touchimageview)
 
     ///////////////////////////////////////////////////////////
     implementation ("io.github.zagori:bottomnavbar:1.0.3")
@@ -164,7 +191,7 @@ dependencies {
     implementation ("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
 
-  //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
+    //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
     //implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     //implementation ("androidx.navigation:navigation-fragment-ktx:2.6.0")
     //implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
@@ -174,7 +201,6 @@ dependencies {
     //implementation ("com.google.firebase:firebase-firestore:24.1.1")
     //implementation ("androidx.legacy:legacy-support-v4:1.0.0")
     //implementation ("com.google.android.material:material:1.8.0")
-
 
 
     //retrofit
@@ -209,7 +235,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
 
-
     /*    // AndroidX Test - Instrumented Testing
         androidTestImplementation("androidx.test.ext:junit:1.1.5")
         androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")*/
@@ -233,24 +258,21 @@ dependencies {
     androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
 
 
-
     // Kotlin Coroutines
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     // Coroutine Testing
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
     // JUnit
-    testImplementation ("junit:junit:4.13.2")
+    testImplementation("junit:junit:4.13.2")
 
-    testImplementation ("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.12.0")
 
-    testImplementation ("org.robolectric:robolectric:4.9")
+    testImplementation("org.robolectric:robolectric:4.9")
 
     testImplementation ("app.cash.turbine:turbine:0.12.1")
-
-
 
 
 

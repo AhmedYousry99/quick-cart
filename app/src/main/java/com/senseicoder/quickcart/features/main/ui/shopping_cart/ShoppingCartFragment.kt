@@ -507,6 +507,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                     }
                 } else if (radBtnCard.isChecked) {
                     Toast.makeText(requireContext(), "Card", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_shoppingCartFragment_to_payPalFragment,
+                        bundleOf("PRICE" to bottomSheetBinding.txtValueOFAfterDiscount.text.toString().trimCurrencySymbol()))
                 } else
                     Toast.makeText(
                         requireContext(),

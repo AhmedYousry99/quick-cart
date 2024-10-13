@@ -204,7 +204,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                 }
             }
             bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-            bottomSheetDialog.setContentView(this.root)  // Use binding.root instead of dialogView
+            bottomSheetDialog.setContentView(this.root)
             bottomSheetDialog.show()
             resetError(this)
             setupBottomSheet(this)
