@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_shoppingCartFragment_to_addressFragment"
             app:destination="@id/addressFragment" />
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_payPalFragment"
+            app:destination="@id/payPalFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -166,4 +169,8 @@
             android:id="@+id/action_searchFragment_to_productDetailsFragment"
             app:destination="@id/productDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/payPalFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.paypal.PayPalFragment"
+        android:label="PayPalFragment" />
 </navigation>
