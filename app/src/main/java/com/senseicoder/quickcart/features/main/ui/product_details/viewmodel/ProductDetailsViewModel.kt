@@ -108,6 +108,7 @@ class ProductDetailsViewModel(
         }
     }
 
+
     /*fun removeProductFromCart(cartId: String, lineId: String) {
         viewModelScope.launch {
             cartRepo.removeProductFromCart(cartId, lineId).catch {
@@ -130,9 +131,7 @@ class ProductDetailsViewModel(
                 cartRepo.addToCartByIds(id, selectedAmount, variants.first().id).catch {
                     _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
                 }.collect {
-                    withContext(Dispatchers.Main){
-                        _addingToCart.value = ApiState.Success(it)
-                    }
+                    _addingToCart.value = ApiState.Success(it)
                 }
             }else{
                 Log.d(TAG, "addProductToCart: creating ID")
@@ -142,9 +141,7 @@ class ProductDetailsViewModel(
                     }.catch {
                         _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
                     }.collect {
-                        withContext(Dispatchers.Main){
                             _addingToCart.value = ApiState.Success(it)
-                        }
                     }
             }
         }
