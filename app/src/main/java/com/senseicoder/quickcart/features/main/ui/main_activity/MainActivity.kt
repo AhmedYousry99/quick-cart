@@ -69,10 +69,6 @@ class MainActivity : AppCompatActivity() {
         mainViewModel
         setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         setupWithNavController(binding.navView, navController)
-        if(SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT) {
-            navController.navigate(R.id.action_loginFragment_to_homeFragment)
-            navController.graph.setStartDestination(R.id.homeFragment)
-        }
         binding.imageFavorite.setOnClickListener{
             navController.navigate(R.id.favoriteFragment)
         }

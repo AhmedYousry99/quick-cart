@@ -172,7 +172,6 @@ class LoginFragment : Fragment() {
             val email: String = emailLoginEditText.text.toString()
             val password: String = passwordLoginEditText.text.toString()
             val areFieldsValid = email.isValidEmail() && password.isValidPassword()
-            //TODO: handle rest of login validation errors
             if(areFieldsValid){
                 if(NetworkUtils.isConnected(requireContext())){
                     loginViewModel.loginUsingNormalEmail(email, password)
