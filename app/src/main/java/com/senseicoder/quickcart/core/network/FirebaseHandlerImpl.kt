@@ -7,14 +7,15 @@ import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-object FirebaseHandlerImpl :FirebaseHandler{
+object FirebaseHandlerImpl : FirebaseHandler {
 
     private val firebaseAuthInstance = FirebaseAuth.getInstance()
-    override suspend fun signupUsingNormalEmail(
+    override fun signupUsingNormalEmail(
         email: String,
         password: String,
         firstName: String,
@@ -24,10 +25,10 @@ object FirebaseHandlerImpl :FirebaseHandler{
         val firstNameEmpty = firstName.isBlank()
         val lastNameEmpty = lastName.isBlank()
 
-        val displayName = if(firstNameEmpty && lastNameEmpty) email else{
-            if(!firstNameEmpty && !lastNameEmpty)
+        val displayName = if (firstNameEmpty && lastNameEmpty) email else {
+            if (!firstNameEmpty && !lastNameEmpty)
                 "$firstName $lastName"
-            else if(!firstNameEmpty)
+            else if (!firstNameEmpty)
                 firstName
             else
                 lastName
@@ -35,36 +36,37 @@ object FirebaseHandlerImpl :FirebaseHandler{
         Log.d(TAG, "signupUsingNormalEmail: $displayName")
         emit(
             CustomerDTO(
-            displayName = task.user!!.displayName ?: displayName,
-            email = email,
-            password = password)
+                displayName = task.user!!.displayName ?: displayName,
+                email = email,
+                password = password
+            )
         )
-       /* val profileUpdates = userProfileChangeRequest {
-            displayName = displayName
-        }
-        task.user!!.updateProfile(profileUpdates)*/
+        /* val profileUpdates = userProfileChangeRequest {
+             displayName = displayName
+         }
+         task.user!!.updateProfile(profileUpdates)*/
     }.catch {
-        if(it is FirebaseAuthUserCollisionException){
+        if (it is FirebaseAuthUserCollisionException) {
             throw Exception(Constants.Errors.CustomerCreate.EMAIL_TAKEN)
         }
         throw it
     }
 
-    override suspend fun loginUsingNormalEmail(email: String, password: String) = flow<CustomerDTO> {
+    override fun loginUsingNormalEmail(email: String, password: String) = flow<CustomerDTO> {
         val task = firebaseAuthInstance.signInWithEmailAndPassword(email, password).await()
         Log.d(TAG, "loginUsingNormalEmail: success")
         task.user.let {
             emit(
                 CustomerDTO(
-                it!!.displayName ?: Constants.Errors.UNKNOWN,
-                it.email!!,
-                password,
-            )
+                    it!!.displayName ?: Constants.Errors.UNKNOWN,
+                    it.email!!,
+                    password,
+                )
             )
         }
     }
 
-    override suspend fun updateDisplayName(customerDTO: CustomerDTO)= flow<CustomerDTO> {
+    override fun updateDisplayName(customerDTO: CustomerDTO) = flow<CustomerDTO> {
         val user = firebaseAuthInstance.currentUser
 
         val profileUpdates = userProfileChangeRequest {
@@ -74,17 +76,31 @@ object FirebaseHandlerImpl :FirebaseHandler{
         emit(customerDTO)
     }
 
-  /*  override suspend fun loginUsingGuest() = flow<CustomerDTO> {
-        val task = firebaseAuthInstance.signInAnonymously()
-        emit(
-            CustomerDTO(
-            "",
-            "",
-            "",
-            isGuest = true
-        )
-        )
-    }*/
+    override fun handleEmailVerification(customer: CustomerDTO): Flow<CustomerDTO> = flow {
+        val user = firebaseAuthInstance.currentUser
+        if (user?.isEmailVerified == true) {
+            emit(customer.copy(isVerified = true))
+        } else {
+            user!!.sendEmailVerification().await()
+            throw Exception(Constants.Errors.Firebase.EMAIL_NOT_VERIFIED)
+        }
+    }
+
+    override fun sendEmailVerification(email: String, password: String) = flow<Unit> {
+
+    }
+
+    /*  override suspend fun loginUsingGuest() = flow<CustomerDTO> {
+          val task = firebaseAuthInstance.signInAnonymously()
+          emit(
+              CustomerDTO(
+              "",
+              "",
+              "",
+              isGuest = true
+          )
+          )
+      }*/
 
 
     override fun signOut() {

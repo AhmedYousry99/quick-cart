@@ -12,10 +12,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,11 @@ class FavoriteViewModel(private val favoriteRepo: FavoriteRepo,
     val isFavorite = _isFavorite.asSharedFlow()
 
     private val _favorites = MutableStateFlow<ApiState<List<FavoriteDTO>>>(ApiState.Init)
-    val favorites = _favorites.asStateFlow()
+    val favorites = _favorites.onStart { getFavorites() }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+        ApiState.Init
+    )
 
     fun addToFavorite(product: ProductDTO) {
         viewModelScope.launch (dispatcher){
