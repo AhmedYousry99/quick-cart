@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
@@ -33,6 +34,7 @@ import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.toColor
 import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
 import com.senseicoder.quickcart.core.model.ReviewDTO
+import com.senseicoder.quickcart.core.model.graph_product.FeaturedImage
 import com.senseicoder.quickcart.core.model.graph_product.OptionValues
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
@@ -86,7 +88,7 @@ class ProductDetailsFragment : Fragment() {
 
     //for animating pager
     private lateinit var handler: Handler
-    private val animationRunnable: Runnable = object : Runnable {
+    private val productDetailsPager2AnimationRunnable: Runnable = object : Runnable {
         override fun run() {
             val totalPages = binding.productDetailsImagesPager.adapter?.itemCount ?: 0
 
@@ -103,6 +105,47 @@ class ProductDetailsFragment : Fragment() {
             handler.postDelayed(this, swipeInterval)
         }
     }
+
+    private fun setupViewPager2(images: List<FeaturedImage>) {
+        pagerAdapter = ProductDetailsPagerAdapter(images)
+        binding.productDetailsImagesPager.adapter = pagerAdapter
+
+
+        // Link the ViewPager2 with the DotsIndicator
+        binding.productDetailsDotsIndicator.apply {
+            attachTo(binding.productDetailsImagesPager)
+        }
+        binding.productDetailsImagesPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            private var isUserInteracting = false
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentPage = position
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+
+                when (state) {
+                    ViewPager2.SCROLL_STATE_DRAGGING -> {
+                        // The user started interacting with the pager (scrolling)
+                        isUserInteracting = true
+                        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+                    }
+                    ViewPager2.SCROLL_STATE_IDLE -> {
+                        if (isUserInteracting) {
+                            // The pager has stopped after user interaction
+                            Log.d(TAG, "onPageScrollStateChanged: ")
+                            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+                            isUserInteracting = false
+                        }
+                    }
+                }
+            }
+        })
+
+    }
+
     private val swipeInterval: Long = 3000 // 3 seconds
     private var currentPage = 0
 
@@ -151,6 +194,17 @@ class ProductDetailsFragment : Fragment() {
         (requireActivity() as MainActivity).hideBottomNavBar()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(productDetailsViewModel.product.value !is ApiState.Success)
+            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+    }
+
     private fun subscribeToObservables() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
@@ -164,12 +218,16 @@ class ProductDetailsFragment : Fragment() {
 
                             is ApiState.Success -> {
                                 hideLoadingGroup()
-                                successProductDetails.visibility = View.VISIBLE
                                 val product = response.data
                                 binding.apply {
                                     titleProductDetails.text = product.title
                                     descriptionProductDetails.text = product.description
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
+                                    if(product.totalInventory != 0){
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.black)))
+                                    }else{
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
+                                    }
                                     currentSelectedQuantityProductDetails.text = "0"
                                     currency = product.currency
                                     priceVarianceProductDetails.text = getPriceVariance(product)
@@ -178,16 +236,9 @@ class ProductDetailsFragment : Fragment() {
                                     updateSizesGroup(product.variants, product.options.first { it.name == "Size" }.values)
                                     updateColorsGroup(product.variants, product.options.first { it.name == "Color" }.values)
                                     // Initialize the adapter
-                                    pagerAdapter = ProductDetailsPagerAdapter(
-                                        product.images
-                                    )
-                                    productDetailsImagesPager.adapter = pagerAdapter
-                                    // Set the adapter to ViewPager2
-                                    binding.productDetailsImagesPager.adapter = pagerAdapter
-                                    // Link the ViewPager2 with the DotsIndicator
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
+                                    setupViewPager2(product.images)
                                     binding.successProductDetails.visibility = View.VISIBLE
-                                    startAutoSwipe()
+//                                    startAutoSwipe()
                                 }
                             }
 
@@ -208,7 +259,6 @@ class ProductDetailsFragment : Fragment() {
                             ProductDetailsViewModel.ProductState.Init -> {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
-
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
                                 selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()
@@ -238,7 +288,7 @@ class ProductDetailsFragment : Fragment() {
                                         addToCartBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
-                                        cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
+                                        cartPrice.text = "${getString(R.string.price_text)}${newPrice.toTwoDecimalPlaces()} $currency"
                                     }
                                     decreaseQuantityBtnProductDetails.setOnClickListener{ _->
                                         selectedAmount--
@@ -249,7 +299,7 @@ class ProductDetailsFragment : Fragment() {
                                         increaseQuantityBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
-                                        cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
+                                        cartPrice.text = "${getString(R.string.price_text)}${newPrice.toTwoDecimalPlaces()} $currency"
                                     }
                                     addToCartBtnProductDetails.setOnClickListener {
                                         if(NetworkUtils.isConnected(requireContext())){
@@ -287,7 +337,6 @@ class ProductDetailsFragment : Fragment() {
                                 selectedAmount = 0
                                 currentSelectedQuantityProductDetails.text = "0"
                                 cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
-                                pagerAdapter.updateList((productDetailsViewModel.product.value as ApiState.Success<ProductDTO>).data.images)
                                 when(selectedProducts.data.second){
                                     ProductDetailsViewModel.SelectedBy.Color -> {
                                         updateColorsGroup(selectedProducts.data.first, (productDetailsViewModel.product.value as ApiState.Success).data.options.first { it.name == "Color" }.values)
@@ -304,20 +353,17 @@ class ProductDetailsFragment : Fragment() {
                                     titleProductDetails.text = product.title
                                     descriptionProductDetails.text = product.description
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
+                                    if(product.totalInventory != 0){
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.black)))
+                                    }else{
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
+                                    }
                                     currentSelectedQuantityProductDetails.text = "0"
                                     currency = product.currency
                                     reviewCountProductDetails.text = "${reviews.size} Reviews"
                                     cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
                                     updateSizesGroup(product.variants, product.options.first { it.name == "Size" }.values)
                                     updateColorsGroup(product.variants, product.options.first { it.name == "Color" }.values)
-                                    // Initialize the adapter
-                                    pagerAdapter = ProductDetailsPagerAdapter(
-                                        product.images
-                                    )
-                                    pagerAdapter.updateList(product.images)
-                                    // Link the ViewPager2 with the DotsIndicator
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
-                                    binding.successProductDetails.visibility = View.VISIBLE
                                 }
                             }
                         }
@@ -339,8 +385,6 @@ class ProductDetailsFragment : Fragment() {
                         }
                         is ApiState.Success -> {
                             this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
-                            delay(1.5.seconds)
-                            findNavController().navigateUp()
                         }
                         is ApiState.Failure -> {
                             enableButtons()
@@ -378,8 +422,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun getPriceVariance(product: ProductDTO): CharSequence {
-        val priceMinimum = product.priceRange.minVariantPrice.amount
-        val priceMaximum = product.priceRange.maxVariantPrice.amount
+        val priceMinimum = product.priceRange.minVariantPrice.amount.toTwoDecimalPlaces()
+        val priceMaximum = product.priceRange.maxVariantPrice.amount.toTwoDecimalPlaces()
         val priceMinimumEmpty = priceMinimum.isBlank()
         val priceMaximumEmpty = priceMaximum.isBlank()
         val price = product.let {
@@ -521,38 +565,6 @@ class ProductDetailsFragment : Fragment() {
         chipGroup.addView(chip)
     }
 
-    private fun updateButtonText(price: String) {
-        // Button title
-        val buttonText = "Add To Cart"
-
-        // Combine title and price into a single string
-        val fullText = "$buttonText    |   $$price"
-
-        // Create a SpannableString
-        val spannable = SpannableString(fullText)
-
-        // Set spans for the price
-        val priceStart = fullText.indexOf("$") // Find the start index of the price
-        val priceEnd = fullText.length // End of the string
-
-        // Style the price (change color to yellow and make it bold)
-        spannable.setSpan(
-            ForegroundColorSpan(requireContext().getColor(R.color.primary)), // Change color to yellow
-            priceStart,
-            priceEnd,
-            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        spannable.setSpan(
-            StyleSpan(Typeface.BOLD), // Make the price bold
-            priceStart,
-            priceEnd,
-            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        // Set the spannable text to the MaterialButton
-//        binding.addToCartBtnProductDetails.text = spannable
-    }
 
     private fun disableAllChipGroups(){
         disableChipGroup(binding.sizesChipGroupProductDetails)
@@ -586,11 +598,6 @@ class ProductDetailsFragment : Fragment() {
     private fun showLoadingGroup(){
         binding.shimmerProductDetails.startShimmer()
         binding.loadingProductDetails.visibility = View.VISIBLE
-    }
-
-    private fun startAutoSwipe() {
-        handler.removeCallbacks(animationRunnable)
-        handler.postDelayed(animationRunnable, swipeInterval)
     }
 
     companion object {

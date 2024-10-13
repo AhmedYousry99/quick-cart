@@ -186,11 +186,11 @@ dependencies {
     implementation(libs.touchimageview)
 
     ///////////////////////////////////////////////////////////
-    implementation("io.github.zagori:bottomnavbar:1.0.3")
-    implementation("com.github.bumptech.glide:glide:4.15.0")
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("com.tbuonomo:dotsindicator:4.2")
+    implementation ("io.github.zagori:bottomnavbar:1.0.3")
+    implementation ("com.github.bumptech.glide:glide:4.15.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("com.tbuonomo:dotsindicator:5.0")
 
     //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
     //implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")

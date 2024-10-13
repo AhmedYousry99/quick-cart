@@ -59,6 +59,26 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
         }.timeout(15.seconds)
     }
 
+    override suspend fun convertPricesAccordingToCurrency(product: ProductDTO): ProductDTO {
+        val conversionRate = sharedPrefs.getSharedPrefFloat(Constants.PERCENTAGE_OF_CURRENCY_CHANGE, Constants.PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT)
+        return product.copy(priceRange = product.priceRange.copy(
+            maxVariantPrice = product.priceRange.maxVariantPrice.copy(
+                amount = (product.priceRange.maxVariantPrice.amount.toDouble() * conversionRate).toString()
+            ),
+            minVariantPrice = product.priceRange.minVariantPrice.copy(
+                amount = (product.priceRange.minVariantPrice.amount.toDouble() * conversionRate).toString()
+            )
+        ),
+            variants = product.variants.map { variant ->
+                variant.copy(
+                    price = (variant.price.copy(
+                        amount = (variant.price.amount.toDouble() * conversionRate).toString()
+                    )
+                ))
+            },
+        )
+    }
+
     override suspend fun getProductsByQuery(query: String): Flow<List<ProductDTO>> {
         return storefrontHandler.getProductsByQuery(query).map { it.nodes.map { node -> node.onProduct!!.mapQueryProductToProductDTO(it.totalCount) } }.timeout(15.seconds)
     }
@@ -68,6 +88,8 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
         return flowOf(remoteProductsDataSource.getAllProduct().products.map { it.mapApiRemoteProductToDisplayProduct() })
 
     }
+
+
 
     override suspend fun getCurrency(): String {
         return sharedPrefs.getSharedPrefString(Constants.CURRENCY, Constants.CURRENCY_DEFAULT)
