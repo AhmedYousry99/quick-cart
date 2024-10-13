@@ -20,16 +20,14 @@ import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
+import com.senseicoder.quickcart.core.global.handleErrorOnFocusChange
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
-import com.senseicoder.quickcart.core.network.ApiService
-//import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
-import com.senseicoder.quickcart.core.network.customer.CustomerAdminDataSourceImpl
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -86,7 +84,6 @@ class LoginFragment : Fragment() {
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
         confirmationDialog = ConfirmationDialog(requireActivity(), null){
 //            progressBar.startProgressBar()
-            loginViewModel.signupAsGuest()
         }
         confirmationDialog.message = getString(R.string.you_wont_have_access_to_features)
        /* binding.emailLoginEditText.doOnTextChanged { text, start, before, count ->
@@ -165,17 +162,19 @@ class LoginFragment : Fragment() {
 
     private fun setupListeners(){
         binding.apply {
+            emailPasswordLayout.handleErrorOnFocusChange(this@LoginFragment::handlePasswordError, String::isValidPassword)
+            emailLoginLayout.handleErrorOnFocusChange(this@LoginFragment::handleEmailError , String::isValidEmail)
             loginButton.setOnClickListener{
                 validateFields()
             }
             continueAsAGuestButton.setOnClickListener {
                 ConfirmationDialogFragment(DialogType.GUEST_MODE){
-                    loginViewModel.signupAsGuest()
                 }.show(parentFragmentManager, "guest_mode")
 //                confirmationDialog.showDialog()
             }
             loginText.setOnClickListener{
 //                findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+                hideValidationErrors()
                 Navigation.findNavController(it).navigate(R.id.action_loginFragment_to_signupFragment)
             }
             passwordLoginEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
@@ -204,19 +203,35 @@ class LoginFragment : Fragment() {
                     binding.root.showSnackbar(getString(R.string.no_internet_connection))
                 }
             }else{
-                if(!email.isValidEmail()){
-                    emailLoginLayout.error = getString(R.string.email_invalid)
+                if(handleEmailError(email) != null) {
+                    emailLoginEditText.requestFocus()
+                    KeyboardUtils.showKeyboard(requireActivity(), emailLoginEditText)
                 }
-                if(!password.isValidPassword()){
-                    /** Minimum six characters, at least one letter and one number:*/
-                    emailPasswordLayout.error = if(password.length < 6){
-                        getString(R.string.password_invalid_length_small)
-                    }else {
-                        getString(R.string.password_invalid_at_least_1_letter_1_number)
-                    }
+                else {
+                    passwordLoginEditText.requestFocus()
+                    KeyboardUtils.showKeyboard(requireActivity(), passwordLoginEditText)
                 }
             }
         }
+    }
+
+    fun handleEmailError(email: String): String?{
+        return if(!email.isValidEmail()){
+            getString(R.string.email_invalid)
+        } else
+            null
+    }
+
+    fun handlePasswordError(password: String): String?{
+        return if(!password.isValidPassword()){
+            /** Minimum six characters, at least one letter and one number:*/
+            if(password.length < 6){
+                getString(R.string.password_invalid_length_small)
+            }else {
+                getString(R.string.password_invalid_at_least_1_letter_1_number)
+            }
+        } else
+            null
     }
 
     private fun hideValidationErrors() {

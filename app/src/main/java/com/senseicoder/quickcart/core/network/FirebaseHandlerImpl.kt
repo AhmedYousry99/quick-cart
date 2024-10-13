@@ -2,10 +2,12 @@ package com.senseicoder.quickcart.core.network
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -41,6 +43,11 @@ object FirebaseHandlerImpl :FirebaseHandler{
             displayName = displayName
         }
         task.user!!.updateProfile(profileUpdates)*/
+    }.catch {
+        if(it is FirebaseAuthUserCollisionException){
+            throw Exception(Constants.Errors.CustomerCreate.EMAIL_TAKEN)
+        }
+        throw it
     }
 
     override suspend fun loginUsingNormalEmail(email: String, password: String) = flow<CustomerDTO> {
@@ -67,7 +74,7 @@ object FirebaseHandlerImpl :FirebaseHandler{
         emit(customerDTO)
     }
 
-    override suspend fun loginUsingGuest() = flow<CustomerDTO> {
+  /*  override suspend fun loginUsingGuest() = flow<CustomerDTO> {
         val task = firebaseAuthInstance.signInAnonymously()
         emit(
             CustomerDTO(
@@ -77,7 +84,7 @@ object FirebaseHandlerImpl :FirebaseHandler{
             isGuest = true
         )
         )
-    }
+    }*/
 
 
     override fun signOut() {

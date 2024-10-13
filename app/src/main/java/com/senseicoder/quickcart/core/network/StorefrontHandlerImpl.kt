@@ -9,13 +9,9 @@ import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.network.okHttpClient
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.entity.order.Address
-import com.senseicoder.quickcart.core.entity.product.ProductDetails
 import com.senseicoder.quickcart.core.entity.order.Order
 import com.senseicoder.quickcart.core.entity.product.Product
-import com.senseicoder.quickcart.core.entity.product.Products
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.model.ProductOfCart
-import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 import com.storefront.AddProductToCartMutation
 import com.storefront.CartLinesUpdateMutation
@@ -40,9 +36,11 @@ import com.storefront.type.MailingAddressInput
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okio.IOException
 
 object StorefrontHandlerImpl : StorefrontHandler {
 
@@ -102,12 +100,17 @@ object StorefrontHandlerImpl : StorefrontHandler {
                 )
             )
         ).execute()
-        if (response.data?.customerCreate != null && response.exception == null) {
+        val data = response.data?.customerCreate
+        if (data != null && response.exception == null) {
             Log.d(TAG, "createCustomer: ${response.data!!.customerCreate!!.customerUserErrors}")
-            emit(response.data!!.customerCreate!!.customer ?: throw Exception(response.data!!.customerCreate!!.customerUserErrors.joinToString { it.message }))
+            if(data.customerUserErrors.any { it.message == Constants.Errors.CustomerCreate.EMAIL_TAKEN })
+                throw Exception(Constants.Errors.CustomerCreate.EMAIL_TAKEN)
+            emit(data.customer ?: throw Exception(response.data!!.customerCreate!!.customerUserErrors.joinToString { it.message }))
         } else {
             throw Exception(response.errors?.joinToString{it.message} ?: Constants.Errors.UNKNOWN)
         }
+    }.retryWhen { cause, attempt ->
+        cause is IOException && attempt < 3
     }
 
     override suspend fun updateQuantityOfProduct(
@@ -159,6 +162,8 @@ object StorefrontHandlerImpl : StorefrontHandler {
         } else {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
         }
+    }.retryWhen { cause, attempt ->
+        cause is IOException && attempt < 3
     }
 
     override suspend fun addToCartById(

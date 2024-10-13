@@ -7,6 +7,7 @@ package com.senseicoder.quickcart.core.global
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.util.Patterns
@@ -17,17 +18,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
-import com.senseicoder.quickcart.core.model.CurrencySymbol
-import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
-import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
-import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
-import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
-import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.GetCartDetailsQuery
@@ -62,9 +57,14 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
 /**
  * Transforms static java function Snackbar.make() to an extension function on Fragment.
  */
-fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
+fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000, action: (() -> Unit)? = null ) {
     Snackbar.make(requireView(), snackbarText, timeLength).run {
-        view.setBackgroundColor(this.context.getColor(R.color.secondary))
+        view.setBackgroundColor(requireContext().getColor(R.color.secondary))
+        if (action != null) {
+            setAction("Ok") {
+                action.invoke()
+            }
+        }
         show()
     }
 }
@@ -134,12 +134,46 @@ fun Int.lightenColor(factor: Float = 3f): Int {
     return Color.rgb(red, green, blue)
 }
 
-fun Fragment.showErrorSnackbar(snackbarText: String, timeLength: Int = 4000) {
+fun Fragment.showErrorSnackbar(
+    snackbarText: String,
+    timeLength: Int = 4000,
+    action: (() -> Unit)? = null
+) {
     Snackbar.make(requireView(), snackbarText, timeLength).run {
-        view.setBackgroundColor(ContextCompat.getColor(this.context, R.color.red))
+        view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.red))
+        view.setOnClickListener {dismiss()}
+        if (action != null) {
+            setAction("Retry") {
+                action.invoke()
+            }
+        }
         show()
     }
 }
+
+fun TextInputLayout.handleErrorOnFocusChange(
+    errorFunc: ((text: String) -> String?),
+    validationFunc: String.() -> Boolean,
+    showHintOnNull: Boolean = false
+) {
+    this.editText?.setOnFocusChangeListener { _, hasFocus ->
+        val inputText = (this.editText?.text ?: "").toString() // Get the text from EditText
+        if (hasFocus) {
+            this.error = null
+            if(showHintOnNull){
+                this@handleErrorOnFocusChange.helperText = context.getString(R.string.required)
+            }
+        } else {
+            if (!validationFunc(inputText)) {
+                val error = errorFunc(inputText)
+                this@handleErrorOnFocusChange.helperText = if(error == null && showHintOnNull) context.getString(R.string.required) else null
+                this.error = if(showHintOnNull) error else null
+            }
+        }
+    }
+}
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toDateTime(pattern: String): String {

@@ -13,10 +13,17 @@ import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 //import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
 import com.senseicoder.quickcart.core.services.SharedPrefsService
+import com.senseicoder.quickcart.core.services.SharedPrefsService.setSharedPrefFloat
+import com.senseicoder.quickcart.core.services.SharedPrefsService.setSharedPrefString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
@@ -35,11 +42,14 @@ class CustomerRepoImpl private constructor(
             password = password
         )){ dto, data ->
             dto.copy(token = data.accessToken, expireAt = data.expiresAt)
-        }.timeout(15.seconds)
-    }
-
-    override suspend fun loginUsingGuest(): Flow<CustomerDTO> {
-        return firebaseHandler.loginUsingGuest().timeout(15.seconds)
+        }.flatMapConcat {dto ->
+            if(dto.cartId == Constants.CART_ID_DEFAULT)
+                storefrontHandler.createCart(dto.email).map {
+                    dto.copy(cartId = it.id)
+                }
+            else
+                flowOf(dto)
+            }.timeout(15.seconds)
     }
 
     override fun signOut(){
@@ -51,7 +61,8 @@ class CustomerRepoImpl private constructor(
             sharedPrefsService.setSharedPrefString(CART_ID, CART_ID_DEFAULT)
             sharedPrefsService.setSharedPrefString(FIREBASE_USER_ID, FIREBASE_USER_ID_DEFAULT)
             sharedPrefsService.setSharedPrefString(USER_DISPLAY_NAME, USER_DISPLAY_NAME_DEFAULT)
-            //TODO: add currency
+            sharedPrefsService.setSharedPrefString(CURRENCY, CURRENCY_DEFAULT)
+            sharedPrefsService.setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE, PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT)
         }
     }
 
@@ -122,10 +133,13 @@ class CustomerRepoImpl private constructor(
             .zip(storefrontHandler.createCustomer(firstName = firstName, lastName = lastName, email = email, password = password)) {
             dto, data->
                 dto.copy(id = data.id)
+        }.zip(storefrontHandler.createCart(email)) {
+            dto, data->
+                dto.copy(cartId = data.id)
         }.flatMapLatest {
             dbRemoteDataSource.addUser(it)
         }
-            .timeout(15.seconds)
+            .timeout(20.seconds)
     }
 
     companion object {

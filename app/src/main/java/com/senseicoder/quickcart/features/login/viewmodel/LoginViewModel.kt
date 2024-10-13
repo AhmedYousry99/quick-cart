@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
 
@@ -33,30 +32,8 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 customerRepo.setCartId(it.cartId)
                 customerRepo.setFirebaseId(it.firebaseId)
                 customerRepo.setTokenExpirationData(it.expireAt.toString())
-                SharedPrefsService.logAllSharedPref(TAG, "loginUsingNormalEmail")
-                withContext(Dispatchers.Main){
-                    _loginState.emit(value = ApiState.Success(it))
-                }
-            }
-        }
-    }
-
-    fun signupAsGuest() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _loginState.emit(value = ApiState.Loading)
-            customerRepo.loginUsingGuest().catch { e ->
-                _loginState.emit(value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))
-            }.collect {
-                customerRepo.setUserId(Constants.USER_ID_DEFAULT)
-                customerRepo.setUserToken(Constants.USER_TOKEN_DEFAULT)
-                customerRepo.setEmail(Constants.CART_ID_DEFAULT)
-                customerRepo.setDisplayName(Constants.USER_DISPLAY_NAME_DEFAULT)
-                customerRepo.setCartId(Constants.CART_ID_DEFAULT)
-                customerRepo.setFirebaseId(it.firebaseId)
-                customerRepo.setTokenExpirationData(Constants.TOKEN_EXPIRATION_DATE_DEAFULT)
-                withContext(Dispatchers.Main){
-                    _loginState.emit(value = ApiState.Success(it))
-                }
+                SharedPrefsService.logAllSharedPref(TAG, "loginUsingNormalEmail ${it.expireAt}")
+                _loginState.emit(value = ApiState.Success(it))
             }
         }
     }

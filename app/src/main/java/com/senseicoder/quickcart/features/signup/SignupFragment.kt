@@ -16,20 +16,21 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
+import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
+import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.handleErrorOnFocusChange
 import com.senseicoder.quickcart.core.global.isValidEmail
 import com.senseicoder.quickcart.core.global.isValidPassword
 import com.senseicoder.quickcart.core.global.matchesPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
-import com.senseicoder.quickcart.core.network.ApiService
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 //import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
-import com.senseicoder.quickcart.core.network.customer.CustomerAdminDataSourceImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSignupBinding
@@ -119,6 +120,7 @@ class SignupFragment : Fragment() {
                         }
                         ApiState.Loading -> {
                             disableButtons()
+                            showSnackbar(getString(R.string.signup_loading), Int.MAX_VALUE)
 //                            progressBar.startProgressBar()
                         }
                         is ApiState.Success -> {
@@ -152,6 +154,20 @@ class SignupFragment : Fragment() {
 
     private fun setupListeners(){
         binding.apply {
+            emailSignupLayout.handleErrorOnFocusChange(this@SignupFragment::handleEmailError , String::isValidEmail, true)
+            passwordSignupLayout.handleErrorOnFocusChange(this@SignupFragment::handlePasswordError, String::isValidPassword, true)
+            confirmPasswordSignupLayout.apply {
+                this.editText?.setOnFocusChangeListener { _, hasFocus ->
+                    val confirmPassword = (this.editText?.text ?: "").toString() // Get the text from EditText
+                    if (hasFocus) {
+                        this.error = null // Clear error when the field gains focus
+                    } else {
+                        if (confirmPassword.isNotEmpty() && !passwordSignupEditText.text.toString().matchesPassword(confirmPassword)) {
+                            this.error = getString(R.string.confirm_password_invalid)
+                        }
+                    }
+                }
+            }
             signupButton.setOnClickListener{
                 validateFields()
             }
@@ -181,29 +197,70 @@ class SignupFragment : Fragment() {
             val confirmPassword: String = confirmPasswordSignupEditText.text.toString()
 
             val areFieldsValid = email.isValidEmail() && password.isValidPassword() && confirmPassword.matchesPassword(password)
-            //TODO: handle rest of signup validation errors
             if(areFieldsValid){
                 if(NetworkUtils.isConnected(requireContext())){
-                    signupViewModel.signUpUsingEmailAndPassword(email, firstName, lastName, password)
+                    if(!handledByDialog(firstName, lastName, email, password)){
+                        signupViewModel.signUpUsingEmailAndPassword(email, firstName, lastName, password)
+                    }
                 }else{
-                    binding.root.showSnackbar(getString(R.string.no_internet_connection))
+                    showSnackbar(getString(R.string.no_internet_connection))
                 }
             }else{
-                if(!email.isValidEmail()){
-                    emailSignupLayout.error = getString(R.string.email_invalid)
+                if(handleEmailError(email) != null){
+                    emailSignupEditText.requestFocus()
+                    KeyboardUtils.showKeyboard(requireActivity(), emailSignupEditText)
+                }else if(handlePasswordError(password) != null){
+                    passwordSignupEditText.requestFocus()
+                    KeyboardUtils.showKeyboard(requireActivity(), passwordSignupEditText)
+                }else{
+                    confirmPasswordSignupEditText.requestFocus()
+                    KeyboardUtils.showKeyboard(requireActivity(), confirmPasswordSignupEditText)
                 }
-                if(!password.isValidPassword()){
-                    /** Minimum six characters, at least one letter and one number:*/
-                    passwordSignupLayout.error = if(password.length < 6){
-                        getString(R.string.password_invalid_length_small)
-                    }else {
-                        getString(R.string.password_invalid_at_least_1_letter_1_number)
-                    }
-                }
-                if(!confirmPassword.matchesPassword(password)){
-                    confirmPasswordSignupLayout.error = getString(R.string.confirm_password_invalid)
-                }
+                confirmPasswordSignupLayout.error = handleConfirmPasswordError(confirmPassword)
             }
+        }
+    }
+
+
+    fun handleConfirmPasswordError(confirmPassword: String): String{
+        return if(!confirmPassword.matchesPassword(binding.passwordSignupEditText.text.toString())){
+            getString(R.string.confirm_password_invalid)
+        } else
+            getString(R.string.required)
+    }
+    fun handleEmailError(email: String): String? {
+        return if(!email.isValidEmail()){
+            getString(R.string.email_invalid)
+        } else
+            null
+    }
+
+    fun handlePasswordError(password: String): String? {
+        return if(!password.isValidPassword()){
+            /** Minimum six characters, at least one letter and one number:*/
+            if(password.length < 6){
+                getString(R.string.password_invalid_length_small)
+            }else {
+                getString(R.string.password_invalid_at_least_1_letter_1_number)
+            }
+        } else
+            null
+    }
+
+    fun handledByDialog(firstName: String, lastName: String, email: String, password: String): Boolean{
+        val func = {signupViewModel.signUpUsingEmailAndPassword(email, firstName, lastName, password)}
+        if(firstName.isEmpty() && lastName.isEmpty()){
+            ConfirmationDialogFragment(DialogType.SIGN_UP_EMAIL, func).show(childFragmentManager, null)
+            return true
+        }else{
+            return if(firstName.isEmpty()){
+                ConfirmationDialogFragment(DialogType.SIGN_UP_FIRST_NAME, func).show(childFragmentManager, null)
+                true
+            } else if(lastName.isEmpty()){
+                ConfirmationDialogFragment(DialogType.SIGN_UP_LAST_NAME, func).show(childFragmentManager, null)
+                true
+            } else
+                false
         }
     }
 

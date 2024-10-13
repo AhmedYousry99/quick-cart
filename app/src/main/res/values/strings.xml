@@ -96,6 +96,12 @@
     <string name="suggestion_list_error">Couldn\'t show suggestions</string>
     <string name="available_sizes">Sizes:\u0020</string>
     <string name="search_empty">There\'s no products with that name</string>
+    <string name="signup_loading">Singing up...</string>
+    <string name="required">Required*</string>
+    <string name="signup_email_will_be_used">Email will be used as your display name\n\\nContinue?</string>
+    <string name="notice">Notice</string>
+    <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
+    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
 
 
 </resources>

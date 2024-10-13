@@ -8,7 +8,6 @@ interface CustomerRepo {
     /*
     * $email: String!, $firstName: String!, $lastName:String!*/
     suspend fun signupUsingEmailAndPassword(firstName: String, lastName: String, email: String, password: String): Flow<CustomerDTO>
-    suspend fun loginUsingGuest(): Flow<CustomerDTO>
     fun signOut()
     fun setUserId(value: String)
     fun getUserId(): String

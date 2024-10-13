@@ -9,7 +9,9 @@ import com.senseicoder.quickcart.core.model.customer.CustomerKeys
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.tasks.await
+import java.io.IOException
 
 object FirebaseFirestoreDataSource : RemoteDataSource {
 
@@ -48,6 +50,8 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
         val res = customersCollection.add(customer).await()
         emit(customer.copy(firebaseId = res.id))
+    }.retryWhen { cause, attempt ->
+        cause is IOException && attempt < 3
     }
 
     override suspend fun getUserByEmail(customer: CustomerDTO) = flow<CustomerDTO> {
