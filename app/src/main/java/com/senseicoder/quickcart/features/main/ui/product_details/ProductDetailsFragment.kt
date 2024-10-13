@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.product_details
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.text.style.StyleSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -86,7 +88,7 @@ class ProductDetailsFragment : Fragment() {
 
     //for animating pager
     private lateinit var handler: Handler
-    private val animationRunnable: Runnable = object : Runnable {
+    private val productDetailsPager2AnimationRunnable: Runnable = object : Runnable {
         override fun run() {
             val totalPages = binding.productDetailsImagesPager.adapter?.itemCount ?: 0
 
@@ -144,11 +146,23 @@ class ProductDetailsFragment : Fragment() {
             )[MainActivityViewModel::class.java].currentProductId.value
         )
         handler = Handler(Looper.getMainLooper())
+        setupPagerListener()
     }
 
     override fun onStart() {
         super.onStart()
         (requireActivity() as MainActivity).hideBottomNavBar()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(productDetailsViewModel.product.value !is ApiState.Success)
+            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
     }
 
     private fun subscribeToObservables() {
@@ -170,6 +184,11 @@ class ProductDetailsFragment : Fragment() {
                                     titleProductDetails.text = product.title
                                     descriptionProductDetails.text = product.description
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
+                                    if(product.totalInventory != 0){
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.black)))
+                                    }else{
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
+                                    }
                                     currentSelectedQuantityProductDetails.text = "0"
                                     currency = product.currency
                                     priceVarianceProductDetails.text = getPriceVariance(product)
@@ -208,7 +227,6 @@ class ProductDetailsFragment : Fragment() {
                             ProductDetailsViewModel.ProductState.Init -> {
                                 Log.d(TAG, "subscribeToObservables: Init")
                             }
-
                             is ProductDetailsViewModel.ProductState.MultiSelected -> {
                                 selectedAmount = 0
                                 val variant = selectedProducts.data.first.first()
@@ -238,7 +256,7 @@ class ProductDetailsFragment : Fragment() {
                                         addToCartBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
-                                        cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
+                                        cartPrice.text = "${getString(R.string.price_text)}${newPrice.toTwoDecimalPlaces()} $currency"
                                     }
                                     decreaseQuantityBtnProductDetails.setOnClickListener{ _->
                                         selectedAmount--
@@ -249,7 +267,7 @@ class ProductDetailsFragment : Fragment() {
                                         increaseQuantityBtnProductDetails.isEnabled = true
                                         currentSelectedQuantityProductDetails.text = selectedAmount.toString()
                                         val newPrice = (it.price.amount.toDouble() * selectedAmount).toTwoDecimalPlaces()
-                                        cartPrice.text = "${getString(R.string.price_text)}$newPrice $currency"
+                                        cartPrice.text = "${getString(R.string.price_text)}${newPrice.toTwoDecimalPlaces()} $currency"
                                     }
                                     addToCartBtnProductDetails.setOnClickListener {
                                         if(NetworkUtils.isConnected(requireContext())){
@@ -304,6 +322,11 @@ class ProductDetailsFragment : Fragment() {
                                     titleProductDetails.text = product.title
                                     descriptionProductDetails.text = product.description
                                     stockProductDetails.text = "${requireContext().getString(R.string.in_stock)}${product.totalInventory}"
+                                    if(product.totalInventory != 0){
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.black)))
+                                    }else{
+                                        stockProductDetails.setTextColor(ColorStateList.valueOf(requireContext().getColor(R.color.red)))
+                                    }
                                     currentSelectedQuantityProductDetails.text = "0"
                                     currency = product.currency
                                     reviewCountProductDetails.text = "${reviews.size} Reviews"
@@ -378,8 +401,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun getPriceVariance(product: ProductDTO): CharSequence {
-        val priceMinimum = product.priceRange.minVariantPrice.amount
-        val priceMaximum = product.priceRange.maxVariantPrice.amount
+        val priceMinimum = product.priceRange.minVariantPrice.amount.toTwoDecimalPlaces()
+        val priceMaximum = product.priceRange.maxVariantPrice.amount.toTwoDecimalPlaces()
         val priceMinimumEmpty = priceMinimum.isBlank()
         val priceMaximumEmpty = priceMaximum.isBlank()
         val price = product.let {
@@ -397,6 +420,25 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         return price
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupPagerListener(){
+        binding.productDetailsImagesPager.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // The pager is currently being pressed
+                    handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+                    true // Indicate that the touch event has been consumed
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+                    // The pager is currently released
+                    true // Indicate that the touch event has been consumed
+                }
+                else -> false // Let the ViewPager handle other touch events
+            }
+        }
     }
 
     private fun setupFavoriteOnClickListener(data: Boolean) {
@@ -589,8 +631,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun startAutoSwipe() {
-        handler.removeCallbacks(animationRunnable)
-        handler.postDelayed(animationRunnable, swipeInterval)
+        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+        handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
     }
 
     companion object {

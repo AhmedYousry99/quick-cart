@@ -20,7 +20,7 @@ interface ProductsRepoInterface {
 
     suspend fun getProductDetailsGraph(id: String): Flow<ProductDTO>
 
-
+    suspend fun convertPricesAccordingToCurrency(product: ProductDTO): ProductDTO
 
     suspend fun getProductsByQuery(query: String): Flow<List<ProductDTO>>
 }

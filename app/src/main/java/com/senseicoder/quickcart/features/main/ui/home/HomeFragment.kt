@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.home
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -8,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -50,8 +52,26 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private lateinit var brandAdapter: HomeBrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
-    val handel: Handler by lazy {
-        Handler(Looper.getMainLooper())
+
+    private val swipeInterval: Long = 3000 // 3 seconds
+    private var currentPage = 0
+    private lateinit var handler: Handler
+    private val productDetailsPager2AnimationRunnable: Runnable = object : Runnable {
+        override fun run() {
+            val totalPages = binding.couponPager.adapter?.itemCount ?: 0
+
+            // Move to the next page or reset to the first page if at the end
+            if (currentPage == totalPages - 1) {
+                currentPage = 0
+            } else {
+                currentPage++
+            }
+
+            binding.couponPager.setCurrentItem(currentPage, true)
+
+            // Repeat this runnable every `swipeInterval` milliseconds
+            handler.postDelayed(this, swipeInterval)
+        }
     }
     val couponImages = listOf(
         R.drawable.twinty,
@@ -148,8 +168,8 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 }
             }
         }
-
-
+        handler = Handler(Looper.getMainLooper())
+        setupPagerListener()
     }
 
     override fun onStart() {
@@ -176,14 +196,36 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        (requireActivity() as MainActivity).toolbarVisibility(false)
-    }
-
     override fun onResume() {
         super.onResume()
         (requireActivity() as MainActivity).toolbarVisibility(true)
+        if(homeViewModel.coupons.value !is ApiState.Success)
+            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (requireActivity() as MainActivity).toolbarVisibility(false)
+        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupPagerListener(){
+        binding.couponPager.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // The pager is currently being pressed
+                    handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+                    true // Indicate that the touch event has been consumed
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+                    // The pager is currently released
+                    true // Indicate that the touch event has been consumed
+                }
+                else -> false // Let the ViewPager handle other touch events
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -271,18 +313,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     }
 
     private fun startRandomSwiping() {
-        val swipeRunnable = object : Runnable {
-            override fun run() {
-                val current = binding.couponPager.currentItem
-                val count = couponPagerAdapter.itemCount
-//                Log.d(TAG, "run: ${count}")
-                var next = current + if (nextBoolean()) 1 else -1
-                if (next < 0) next = count - 1
-                else if (next >= count) next = 0
-                binding.couponPager.currentItem = next
-                handel.postDelayed(this, 4000L)
-            }
-        }
-        handel.postDelayed(swipeRunnable, 4000)
+        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+        handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
     }
 }
