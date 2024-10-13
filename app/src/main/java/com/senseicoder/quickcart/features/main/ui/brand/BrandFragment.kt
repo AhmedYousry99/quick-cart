@@ -132,10 +132,11 @@ class BrandFragment : Fragment(), OnItemProductClicked {
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
+                binding.swipeRefresher.isEnabled = false
             }
 
             override fun onStopTrackingTouch(seek: SeekBar) {
-
+                binding.swipeRefresher.isEnabled = true
             }
         })
 

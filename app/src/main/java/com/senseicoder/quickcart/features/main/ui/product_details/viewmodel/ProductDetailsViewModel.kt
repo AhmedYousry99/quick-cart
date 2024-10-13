@@ -12,6 +12,7 @@ import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.repos.cart.CartRepo
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -84,12 +85,22 @@ class ProductDetailsViewModel(
                 val tempRating: Double =
                     reviews.fold(0.0) { acc: Double, review: ReviewDTO -> acc + review.rating }
                 val tempCurrency = productsRepo.getCurrency()
-                productDTO.copy(
+                val product = productsRepo.convertPricesAccordingToCurrency(productDTO)
+                product.copy(
                     rating = tempRating / if (reviews.isEmpty()) 1 else reviews.size,
                     currency = tempCurrency,
                     reviewCount = reviews.size
                 )
             }.collect { product ->
+                Log.d(
+                    TAG,
+                    "getProductDetails: ${
+                        SharedPrefsService.logAllSharedPref(
+                            TAG,
+                            "getProductDetails"
+                        )
+                    }"
+                )
                 _product.value = ApiState.Success(product)
             }
         }

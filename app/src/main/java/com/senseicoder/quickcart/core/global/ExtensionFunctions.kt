@@ -47,9 +47,19 @@ import java.util.concurrent.TimeoutException
 /**
  * Transforms static java function Snackbar.make() to an extension function on View.
  */
-fun View.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
+fun View.showSnackbar(
+    snackbarText: String,
+    timeLength: Int = 4000,
+    action: (() -> Unit)? = null
+) {
     Snackbar.make(this, snackbarText, timeLength).run {
-        view.setBackgroundColor(this.context.getColor(R.color.secondary))
+        view.backgroundTintList = ColorStateList.valueOf(this.context.getColor(R.color.secondary))
+        view.setOnClickListener {dismiss()}
+        if (action != null) {
+            setAction("Ok") {
+                action.invoke()
+            }
+        }
         show()
     }
 }
@@ -57,9 +67,14 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int = 4000) {
 /**
  * Transforms static java function Snackbar.make() to an extension function on Fragment.
  */
-fun Fragment.showSnackbar(snackbarText: String, timeLength: Int = 4000, action: (() -> Unit)? = null ) {
+fun Fragment.showSnackbar(
+    snackbarText: String,
+    timeLength: Int = 4000,
+    action: (() -> Unit)? = null
+) {
     Snackbar.make(requireView(), snackbarText, timeLength).run {
-        view.setBackgroundColor(requireContext().getColor(R.color.secondary))
+        view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.secondary))
+        view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Ok") {
                 action.invoke()
@@ -271,6 +286,10 @@ fun Double.toTwoDecimalPlaces(locale: Locale = Locale.US): String {
 }
 
 fun Double.toTwoDecimalPlaces(): String {
+    return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toString()
+}
+
+fun String.toTwoDecimalPlaces(): String {
     return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toString()
 }
 

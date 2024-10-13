@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.home
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -10,24 +11,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.MyDialog
-import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.CouponsForDisplay
-import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
@@ -36,8 +33,6 @@ import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
-import kotlin.random.Random.Default.nextBoolean
 
 class HomeFragment : Fragment(), OnItemBrandClicked {
 
@@ -50,8 +45,26 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     private lateinit var brandAdapter: HomeBrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
-    val handel: Handler by lazy {
-        Handler(Looper.getMainLooper())
+
+    private val swipeInterval: Long = 3000 // 3 seconds
+    private var currentPage = 0
+    private lateinit var handler: Handler
+    private val HomePager2AnimationRunnable: Runnable = object : Runnable {
+        override fun run() {
+            val totalPages = binding.couponPager.adapter?.itemCount ?: 0
+
+            // Move to the next page or reset to the first page if at the end
+            if (currentPage == totalPages - 1) {
+                currentPage = 0
+            } else {
+                currentPage++
+            }
+
+            binding.couponPager.setCurrentItem(currentPage, true)
+
+            // Repeat this runnable every `swipeInterval` milliseconds
+            handler.postDelayed(this, swipeInterval)
+        }
     }
     val couponImages = listOf(
         R.drawable.twinty,
@@ -64,6 +77,11 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     private val networkConnectivity by lazy {
         NetworkConnectivity.getInstance(requireActivity().application)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        handler = Handler(Looper.getMainLooper())
     }
 
     override fun onCreateView(
@@ -149,7 +167,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
             }
         }
 
-
     }
 
     override fun onStart() {
@@ -176,14 +193,45 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        (requireActivity() as MainActivity).toolbarVisibility(false)
-    }
-
     override fun onResume() {
         super.onResume()
         (requireActivity() as MainActivity).toolbarVisibility(true)
+        if(homeViewModel.coupons.value !is ApiState.Success)
+            handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (requireActivity() as MainActivity).toolbarVisibility(false)
+        handler.removeCallbacks(HomePager2AnimationRunnable)
+    }
+
+    private fun setupPagerListener(){
+        binding.couponPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            private var isUserInteracting = false
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentPage = position
+            }
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                when (state) {
+                    ViewPager2.SCROLL_STATE_DRAGGING -> {
+                        // The user started interacting with the pager (scrolling)
+                        isUserInteracting = true
+                        handler.removeCallbacks(HomePager2AnimationRunnable)
+                    }
+                    ViewPager2.SCROLL_STATE_IDLE -> {
+                        if (isUserInteracting) {
+                            // The pager has stopped after user interaction
+                            Log.d(TAG, "onPageScrollStateChanged: ")
+                            handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
+                            isUserInteracting = false
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -230,12 +278,16 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                             }
                         }
                         binding.couponPager.adapter = couponPagerAdapter
-                        startRandomSwiping()
-                        binding.dotsIndicator.setViewPager2(binding.couponPager)
+                        binding.dotsIndicator.attachTo(binding.couponPager)
+                        startSwipingAnimation()
+                        setupPagerListener()
                     }
 
                     is ApiState.Failure -> Log.d(TAG, "setupCouponViewPager: ${it.msg}")
-                    else -> Log.d(TAG, "setupCouponViewPager: LOADING")
+                    else -> {
+                        Log.d(TAG, "setupCouponViewPager: LOADING")
+                        handler.removeCallbacks(HomePager2AnimationRunnable)
+                    }
                 }
             }
         }
@@ -270,19 +322,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
         binding.swipeRefresher.isRefreshing = false
     }
 
-    private fun startRandomSwiping() {
-        val swipeRunnable = object : Runnable {
-            override fun run() {
-                val current = binding.couponPager.currentItem
-                val count = couponPagerAdapter.itemCount
-//                Log.d(TAG, "run: ${count}")
-                var next = current + if (nextBoolean()) 1 else -1
-                if (next < 0) next = count - 1
-                else if (next >= count) next = 0
-                binding.couponPager.currentItem = next
-                handel.postDelayed(this, 4000L)
-            }
-        }
-        handel.postDelayed(swipeRunnable, 4000)
+
+    private fun startSwipingAnimation() {
+        handler.removeCallbacks(HomePager2AnimationRunnable)
+        handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
     }
 }
