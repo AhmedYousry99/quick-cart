@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.entity.order.Order
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ItemOrderBinding // Import the generated binding class
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -31,7 +32,11 @@ class OrderAdapter(
         Log.d("OrderAdapter", "Binding order ID: ${current.id}, Total Price: ${current.totalPriceAmount}, Currency: EGP")
 
         // Bind data to the layout
-        holder.binding.totalPrice.text = String.format("%.2f EGP - %d item", current.totalPriceAmount.toDouble(), current.products.size)
+     //   holder.binding.totalPrice.text = String.format("%.2f EGP - %d item", current.totalPriceAmount.toDouble(), current.products.size)
+
+        holder.binding.totalPrice.text = formatTotalPrice(current.totalPriceAmount.toDouble())
+
+
         holder.binding.dateCreated.text = formatToYearMonthDayHourMinuteAmPm(current.processedAt)
         holder.binding.imageProductOrder.setImageResource(R.drawable.bag)
 
@@ -46,6 +51,15 @@ class OrderAdapter(
             listener.invoke(position)
             Log.i("TAG", "Details clicked for order: ${current.id}")
         }
+    }
+    private fun formatTotalPrice(totalPrice: Double): String {
+        val currencyData = SharedPrefsService.getCurrencyData() // Get current currency settings
+        val code = currencyData.first ?: "EGP" // Default to EGP if no currency found
+        val rate = currencyData.third?.toDouble() ?: 1.0 // Convert rate to Double, default to 1.0 if null
+
+        // Convert the total price based on the current rate
+        val newTotalPrice = totalPrice * rate
+        return String.format("%.2f %s", newTotalPrice, code) // Format price to two decimal places and append currency code
     }
 }
 

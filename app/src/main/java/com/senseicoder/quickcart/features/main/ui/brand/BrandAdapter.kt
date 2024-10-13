@@ -1,3 +1,4 @@
+
 package com.senseicoder.quickcart.features.main.ui.brand
 
 import android.annotation.SuppressLint
@@ -15,6 +16,7 @@ import com.senseicoder.quickcart.CurrencyManager
 import com.senseicoder.quickcart.CurrencySharedPref
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.model.DisplayProduct
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ProductItemBinding
 
 class BrandAdapter(
@@ -38,7 +40,9 @@ class BrandAdapter(
 
         holder.binding.nameProduct.title(getItem(position).title)
 
-        holder.binding.priceProduct.setPrice(holder.itemView.context, getItem(position).price.toDouble())
+        // holder.binding.priceProduct.setPrice(holder.itemView.context, getItem(position).price.toDouble())
+
+        holder.binding.priceProduct.setPrice(getItem(position).price.toDouble())
 
         holder.binding.cardProduct.setOnClickListener {
             onItemProductClicked.productClicked(getItem(position).id)
@@ -76,20 +80,34 @@ fun ImageView.setImageFromUrl(url : String){
         .into(this)
 }
 
+//@SuppressLint("DefaultLocale")
+//fun TextView.setPrice(context: Context, price: Double) {
+//    val cManager = CurrencyManager(CurrencySharedPref.sharedPreferences)
+//    val pair = cManager.getCurrencyPair()  // Fetch the currency code and rate
+//    val code = pair.first  // Currency code (e.g., EGP)
+//    val rate = pair.second  // Exchange rate
+//
+//    // Convert the product price based on the current rate
+//    val newPrice = price * rate
+//    text = buildString {
+//        append(String.format("%.2f", newPrice))  // Format price to two decimal places
+//        append(" $code")  // Append the currency code (as "EGP")
+//    }
+//}
 @SuppressLint("DefaultLocale")
-fun TextView.setPrice(context: Context, price: Double) {
-    val cManager = CurrencyManager(CurrencySharedPref.sharedPreferences)
-    val pair = cManager.getCurrencyPair()  // Fetch the currency code and rate
-    val code = pair.first  // Currency code (e.g., EGP)
-    val rate = pair.second  // Exchange rate
+fun TextView.setPrice(price: Double) {
+    val currencyData = SharedPrefsService.getCurrencyData() // Get the current currency settings
+    val code = currencyData.first ?: "USD" // Default to USD if no currency found
+    val rate = currencyData.third ?: 1.0f // Default to 1.0 if no rate found
 
     // Convert the product price based on the current rate
     val newPrice = price * rate
     text = buildString {
-        append(String.format("%.2f", newPrice))  // Format price to two decimal places
-        append(" $code")  // Append the currency code (as "EGP")
+        append(String.format("%.2f", newPrice)) // Format price to two decimal places
+        append(" $code")
     }
 }
+
 
 //to get title of product
 fun TextView.title(titleProduct : String){

@@ -93,9 +93,15 @@ class OrderDetailsFragment : Fragment() {
 
                         is ApiState.Success -> {
 
-                            binding.totalPrice.text = result.data[index].totalPriceAmount+"EGP"
-                            binding.subTotal.text = result.data[index].subTotalPriceAmount+"EGP"
-                            binding.tax.text = result.data[index].totalTaxAmount+"EGP"
+//                            binding.totalPrice.text = result.data[index].totalPriceAmount+"EGP"
+//                            binding.subTotal.text = result.data[index].subTotalPriceAmount+"EGP"
+//                            binding.tax.text = result.data[index].totalTaxAmount+"EGP"
+
+                            // Use the formatPrice function for conversion
+                            binding.totalPrice.text = formatPrice(result.data[index].totalPriceAmount.toDouble())
+                            binding.subTotal.text = formatPrice( result.data[index].subTotalPriceAmount.toDouble())
+                            binding.tax.text = formatPrice(result.data[index].totalTaxAmount.toDouble())
+
                             binding.orderId.text = result.data[index].name
                             binding.itemsCount.text =
                                 "${result.data[index].products.count()} item"
@@ -129,6 +135,16 @@ class OrderDetailsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun formatPrice(price: Double): String {
+        val currencyData = SharedPrefsService.getCurrencyData()
+        val code = currencyData.first ?: "EGP" // Default to EGP if no currency found
+        val rate = currencyData.third?.toDouble() ?: 1.0 // Convert rate to Double, default to 1.0 if null
+
+        // Convert the price based on the current rate
+        val newPrice = price * rate
+        return String.format("%.2f %s", newPrice, code) // Format price to two decimal places and append currency code
     }
 
 //    private fun getCurrentCurrency(tax: Double, subTotal: Double, totalPrice: Double) {
