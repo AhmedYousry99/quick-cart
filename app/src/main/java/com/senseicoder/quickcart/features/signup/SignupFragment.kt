@@ -63,9 +63,6 @@ class SignupFragment : Fragment() {
                 StorefrontHandlerImpl,
                 SharedPrefsService,
                 FirebaseFirestoreDataSource,
-                CustomerAdminDataSourceImpl(
-                    ApiService.customerApiService
-                )
             )
         )
         signupViewModel = ViewModelProvider(this, factory)[SignupViewModel::class]

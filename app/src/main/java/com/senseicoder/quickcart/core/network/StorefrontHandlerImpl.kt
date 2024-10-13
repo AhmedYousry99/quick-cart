@@ -103,9 +103,10 @@ object StorefrontHandlerImpl : StorefrontHandler {
             )
         ).execute()
         if (response.data?.customerCreate != null && response.exception == null) {
-            emit(response.data!!.customerCreate!!.customer ?: throw Exception("SignUp Failed"))
+            Log.d(TAG, "createCustomer: ${response.data!!.customerCreate!!.customerUserErrors}")
+            emit(response.data!!.customerCreate!!.customer ?: throw Exception(response.data!!.customerCreate!!.customerUserErrors.joinToString { it.message }))
         } else {
-            throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
+            throw Exception(response.errors?.joinToString{it.message} ?: Constants.Errors.UNKNOWN)
         }
     }
 

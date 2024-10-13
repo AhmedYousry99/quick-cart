@@ -8,11 +8,8 @@ import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,6 +32,7 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 customerRepo.setDisplayName(it.displayName)
                 customerRepo.setCartId(it.cartId)
                 customerRepo.setFirebaseId(it.firebaseId)
+                customerRepo.setTokenExpirationData(it.expireAt.toString())
                 SharedPrefsService.logAllSharedPref(TAG, "loginUsingNormalEmail")
                 withContext(Dispatchers.Main){
                     _loginState.emit(value = ApiState.Success(it))
@@ -55,6 +53,7 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 customerRepo.setDisplayName(Constants.USER_DISPLAY_NAME_DEFAULT)
                 customerRepo.setCartId(Constants.CART_ID_DEFAULT)
                 customerRepo.setFirebaseId(it.firebaseId)
+                customerRepo.setTokenExpirationData(Constants.TOKEN_EXPIRATION_DATE_DEAFULT)
                 withContext(Dispatchers.Main){
                     _loginState.emit(value = ApiState.Success(it))
                 }

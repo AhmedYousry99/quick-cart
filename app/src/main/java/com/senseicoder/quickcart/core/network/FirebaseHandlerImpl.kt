@@ -68,7 +68,7 @@ object FirebaseHandlerImpl :FirebaseHandler{
     }
 
     override suspend fun loginUsingGuest() = flow<CustomerDTO> {
-        val task = firebaseAuthInstance.signInAnonymously().await()
+        val task = firebaseAuthInstance.signInAnonymously()
         emit(
             CustomerDTO(
             "",

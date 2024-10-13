@@ -73,6 +73,10 @@ fun String.withoutGIDPrefix(): String {
     return substringAfterLast("/")
 }
 
+fun Long.addGIDPrefix(): String{
+    return "${Constants.API.CUSTOMER_ID_PREFIX}$this"
+}
+
 fun String.toColor(): Int {
     return when (this.lowercase()) {
         "red" -> Color.RED

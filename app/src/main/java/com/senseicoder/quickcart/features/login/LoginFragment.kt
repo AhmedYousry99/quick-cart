@@ -80,7 +80,6 @@ class LoginFragment : Fragment() {
                 FirebaseHandlerImpl,
                 StorefrontHandlerImpl,
                 SharedPrefsService,
-                customerAdminDataSource = CustomerAdminDataSourceImpl( ApiService.customerApiService)
             )
         )
 //        progressBar = CircularProgressIndicatorDialog(requireActivity())

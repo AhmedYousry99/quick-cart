@@ -34,6 +34,9 @@ object Constants {
             const val CART = "Cart_data"
         }
     }
+
+    const val TOKEN_EXPIRATION_DATE: String = "tokenExpirationDate"
+    const val TOKEN_EXPIRATION_DATE_DEAFULT: String = "unknown"
     const val LABEL = "label"
     const val LABEL_DEFAULT = "unknown"
     const val MAPS_FRAGMENT = "mapsFragment"
