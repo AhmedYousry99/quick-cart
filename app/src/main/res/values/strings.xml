@@ -28,7 +28,7 @@
     <string name="login_button">Login</string>
     <string name="email_login">Email</string>
     <string name="welcome_back">Welcome Back! 👋</string>
-    <string name="continue_as_guest">Continue As A Guest</string>
+    <string name="continue_as_guest">Continue</string>
     <string name="dont_have_an_account">Don\'t have an account?\u0020</string>
     <string name="register">Register!</string>
     <string name="sign_up">Sign Up! 📝</string>
@@ -96,12 +96,12 @@
     <string name="suggestion_list_error">Couldn\'t show suggestions</string>
     <string name="available_sizes">Sizes:\u0020</string>
     <string name="search_empty">There\'s no products with that name</string>
-    <string name="signup_loading">Singing up...</string>
+    <string name="signup_loading">Singing up…</string>
     <string name="required">Required*</string>
-    <string name="signup_email_will_be_used">Email will be used as your display name\n\\nContinue?</string>
+    <string name="signup_email_will_be_used">Email will be used as your display name\n\n\nContinue?</string>
     <string name="notice">Notice</string>
-    <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
-    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
+    <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
+    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
 
 
 </resources>
