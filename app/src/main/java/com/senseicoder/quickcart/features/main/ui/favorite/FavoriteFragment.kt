@@ -7,16 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.NetworkUtils
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepoImpl
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -26,10 +25,7 @@ import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteVie
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FavoriteFragment : Fragment() {
 
@@ -53,12 +49,9 @@ class FavoriteFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
         adapter = FavoritesAdapter ({
-            ConfirmationDialog(requireActivity(), null) {
+            ConfirmationDialogFragment(DialogType.DEL_FAV) {
                 viewModel.removeFromFavorite(it)
-            }.apply {
-                this.message = "${getString(R.string.remove_from_favorite_confirmation_part_1)}\n${it.title}${getString(R.string.remove_from_favorite_confirmation_part_2)}"
-                showDialog()
-            }
+            }.show(childFragmentManager, null)
         }) {
             ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].setCurrentProductId(it.apply {
                 Log.d(

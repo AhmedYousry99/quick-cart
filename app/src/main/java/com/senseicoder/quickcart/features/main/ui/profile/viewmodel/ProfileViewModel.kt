@@ -1,7 +1,14 @@
 package com.senseicoder.quickcart.features.main.ui.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepo
 
-class ProfileViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+class ProfileViewModel(val customerRepo: CustomerRepo) : ViewModel() {
+
+
+
+
+    fun signOut(){
+        customerRepo.signOut()
+    }
 }

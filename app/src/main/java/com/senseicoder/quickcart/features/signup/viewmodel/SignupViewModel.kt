@@ -37,8 +37,6 @@ class SignupViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
                 Log.e(TAG, "signUpUsingEmailAndPassword: ", e)
                 _signUpState.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }.collect {
-                customerRepo.setUserId(it.id)
-                customerRepo.setCartId(it.cartId)
                 _signUpState.value = ApiState.Success(it)
             }
         }
