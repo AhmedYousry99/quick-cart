@@ -134,8 +134,7 @@ apollo {
 
 dependencies {
     implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
-//    implementation ("com.google.android.gms:play-services-wallet:20.4.0")
-//    implementation ("com.stripe:stripe-android:20.29.0")
+    implementation ("com.stripe:stripe-android:20.29.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
