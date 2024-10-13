@@ -1,6 +1,5 @@
 package com.senseicoder.quickcart.features.main.ui.product_details
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.text.style.StyleSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -23,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
@@ -35,6 +34,7 @@ import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.toColor
 import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
 import com.senseicoder.quickcart.core.model.ReviewDTO
+import com.senseicoder.quickcart.core.model.graph_product.FeaturedImage
 import com.senseicoder.quickcart.core.model.graph_product.OptionValues
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
@@ -105,6 +105,47 @@ class ProductDetailsFragment : Fragment() {
             handler.postDelayed(this, swipeInterval)
         }
     }
+
+    private fun setupViewPager2(images: List<FeaturedImage>) {
+        pagerAdapter = ProductDetailsPagerAdapter(images)
+        binding.productDetailsImagesPager.adapter = pagerAdapter
+
+
+        // Link the ViewPager2 with the DotsIndicator
+        binding.productDetailsDotsIndicator.apply {
+            attachTo(binding.productDetailsImagesPager)
+        }
+        binding.productDetailsImagesPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            private var isUserInteracting = false
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentPage = position
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+
+                when (state) {
+                    ViewPager2.SCROLL_STATE_DRAGGING -> {
+                        // The user started interacting with the pager (scrolling)
+                        isUserInteracting = true
+                        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
+                    }
+                    ViewPager2.SCROLL_STATE_IDLE -> {
+                        if (isUserInteracting) {
+                            // The pager has stopped after user interaction
+                            Log.d(TAG, "onPageScrollStateChanged: ")
+                            handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
+                            isUserInteracting = false
+                        }
+                    }
+                }
+            }
+        })
+
+    }
+
     private val swipeInterval: Long = 3000 // 3 seconds
     private var currentPage = 0
 
@@ -146,7 +187,6 @@ class ProductDetailsFragment : Fragment() {
             )[MainActivityViewModel::class.java].currentProductId.value
         )
         handler = Handler(Looper.getMainLooper())
-        setupPagerListener()
     }
 
     override fun onStart() {
@@ -178,7 +218,6 @@ class ProductDetailsFragment : Fragment() {
 
                             is ApiState.Success -> {
                                 hideLoadingGroup()
-                                successProductDetails.visibility = View.VISIBLE
                                 val product = response.data
                                 binding.apply {
                                     titleProductDetails.text = product.title
@@ -197,16 +236,9 @@ class ProductDetailsFragment : Fragment() {
                                     updateSizesGroup(product.variants, product.options.first { it.name == "Size" }.values)
                                     updateColorsGroup(product.variants, product.options.first { it.name == "Color" }.values)
                                     // Initialize the adapter
-                                    pagerAdapter = ProductDetailsPagerAdapter(
-                                        product.images
-                                    )
-                                    productDetailsImagesPager.adapter = pagerAdapter
-                                    // Set the adapter to ViewPager2
-                                    binding.productDetailsImagesPager.adapter = pagerAdapter
-                                    // Link the ViewPager2 with the DotsIndicator
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
+                                    setupViewPager2(product.images)
                                     binding.successProductDetails.visibility = View.VISIBLE
-                                    startAutoSwipe()
+//                                    startAutoSwipe()
                                 }
                             }
 
@@ -305,7 +337,6 @@ class ProductDetailsFragment : Fragment() {
                                 selectedAmount = 0
                                 currentSelectedQuantityProductDetails.text = "0"
                                 cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
-                                pagerAdapter.updateList((productDetailsViewModel.product.value as ApiState.Success<ProductDTO>).data.images)
                                 when(selectedProducts.data.second){
                                     ProductDetailsViewModel.SelectedBy.Color -> {
                                         updateColorsGroup(selectedProducts.data.first, (productDetailsViewModel.product.value as ApiState.Success).data.options.first { it.name == "Color" }.values)
@@ -333,14 +364,6 @@ class ProductDetailsFragment : Fragment() {
                                     cartPrice.text = "${getString(R.string.price_text)}0.0 $currency"
                                     updateSizesGroup(product.variants, product.options.first { it.name == "Size" }.values)
                                     updateColorsGroup(product.variants, product.options.first { it.name == "Color" }.values)
-                                    // Initialize the adapter
-                                    pagerAdapter = ProductDetailsPagerAdapter(
-                                        product.images
-                                    )
-                                    pagerAdapter.updateList(product.images)
-                                    // Link the ViewPager2 with the DotsIndicator
-                                    binding.productDetailsDotsIndicator.setViewPager2(binding.productDetailsImagesPager)
-                                    binding.successProductDetails.visibility = View.VISIBLE
                                 }
                             }
                         }
@@ -420,25 +443,6 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         return price
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupPagerListener(){
-        binding.productDetailsImagesPager.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    // The pager is currently being pressed
-                    handler.removeCallbacks(productDetailsPager2AnimationRunnable)
-                    true // Indicate that the touch event has been consumed
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
-                    // The pager is currently released
-                    true // Indicate that the touch event has been consumed
-                }
-                else -> false // Let the ViewPager handle other touch events
-            }
-        }
     }
 
     private fun setupFavoriteOnClickListener(data: Boolean) {
@@ -628,11 +632,6 @@ class ProductDetailsFragment : Fragment() {
     private fun showLoadingGroup(){
         binding.shimmerProductDetails.startShimmer()
         binding.loadingProductDetails.visibility = View.VISIBLE
-    }
-
-    private fun startAutoSwipe() {
-        handler.removeCallbacks(productDetailsPager2AnimationRunnable)
-        handler.postDelayed(productDetailsPager2AnimationRunnable, swipeInterval)
     }
 
     companion object {
