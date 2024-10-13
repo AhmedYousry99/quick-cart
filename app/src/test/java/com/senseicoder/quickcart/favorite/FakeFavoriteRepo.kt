@@ -8,12 +8,16 @@ import kotlinx.coroutines.flow.flow
 class FakeFavoriteRepo : FavoriteRepo {
 
     private val favorites = mutableListOf<FavoriteDTO>()
-    var shouldReturnError = false
+    private var shouldReturnError = false // Make this private
 
-    var isUserIdInvalid  = false // New flag to simulate invalid Firebase ID
+    var isUserIdInvalid = false // New flag to simulate invalid Firebase ID
 
+    // Public method to control the error simulation for testing
+    fun setShouldReturnError(value: Boolean) {
+        shouldReturnError = value
+    }
 
-    override suspend fun addFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO> {
+    override fun addFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO> {
         return flow {
             if (shouldReturnError) {
                 throw Exception("Failed to add favorite") // Simulate error
@@ -31,7 +35,8 @@ class FakeFavoriteRepo : FavoriteRepo {
             emit(favorite) // Emit the favorite after adding
         }
     }
-    override suspend fun removeFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO> {
+
+    override fun removeFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO> {
         return flow {
             delay(100)
             val favoriteToRemove = favorites.find { it.id == product.id }
@@ -44,7 +49,7 @@ class FakeFavoriteRepo : FavoriteRepo {
         }
     }
 
-    override suspend fun removeFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+    override fun removeFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         return flow {
             delay(100)
             val favoriteToRemove = favorites.find { it.id == favorite.id }
@@ -68,33 +73,27 @@ class FakeFavoriteRepo : FavoriteRepo {
     override fun getFavorites(firebaseId: String): Flow<List<FavoriteDTO>> {
         return flow {
             if (firebaseId.isEmpty()) {
-                throw Exception("failed to get favorites") // Simulate failure if userId is invalid
+                throw Exception("Failed to get favorites") // Simulate failure if userId is invalid
             }
-
-            // Create a list of favorites with empty fields for the test
-            val favoritesToEmit = favorites.map {
-                FavoriteDTO(
-                    id = it.id,
-                    title = it.title,
-                    image = it.image,
-                    description = "", // Set this to empty to match the test expectation
-                    priceMinimum = "", // Set this to empty to match the test expectation
-                    priceMaximum = "" // Set this to empty to match the test expectation
-                )
-            }
-            emit(favoritesToEmit) // Emit the list of favorites
+            delay(100) // Simulating network delay before emitting
+            emit(favorites.toList()) // Emit the list of favorites
         }
     }
 
-    override suspend fun isFavorite(firebaseId: String, productId: String): Flow<Boolean> {
+    override fun isFavorite(firebaseId: String, productId: String): Flow<Boolean> {
         return flow {
             delay(100)
             emit(favorites.any { it.id == productId })
         }
     }
 
-    // Helper method to simulate returning an invalid Firebase ID
-    fun setUserFirebaseIDToReturnNull() {
-        isUserIdInvalid = true
+    override suspend fun convertPricesAccordingToCurrency(favorite: FavoriteDTO): FavoriteDTO {
+        // TODO: Implement this if needed for testing
+        return favorite
+    }
+
+    override suspend fun revertPricesAccordingToCurrency(product: ProductDTO): ProductDTO {
+        // For testing, return the product as is
+        return product
     }
 }

@@ -89,6 +89,10 @@ open class FakeProductsRepo : ProductsRepoInterface {
         }
     }
 
+    override suspend fun convertPricesAccordingToCurrency(product: ProductDTO): ProductDTO {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getProductsByQuery(query: String): Flow<List<ProductDTO>> {
         return flow {
             delay(100) // Simulating network delay

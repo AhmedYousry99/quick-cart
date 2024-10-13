@@ -17,7 +17,7 @@ class FakeCustomerRepo : CustomerRepo {
         return flow { /* Not needed for this test */ }
     }
 
-    override suspend fun loginUsingGuest(): Flow<CustomerDTO> {
+    suspend fun loginUsingGuest(): Flow<CustomerDTO> {
         return flow {
             if (shouldReturnError) {
                 throw Exception("Guest login failed")
@@ -59,6 +59,9 @@ class FakeCustomerRepo : CustomerRepo {
     }
 
     override fun setFirebaseId(firebaseId: String) {}
+    override fun setTokenExpirationData(tokenExpirationDate: String) {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         // Implement as needed for testing
