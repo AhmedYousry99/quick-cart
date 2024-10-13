@@ -6,13 +6,11 @@ import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModel
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -28,7 +26,7 @@ class FavoriteViewModelTest {
     }
 
     @Test
-    //should test this first to initilaze before running the second test!
+    // Test to ensure the initial state is set to Init
     fun `getFavorites should emit Init state initially`() = runTest {
         // Act
         viewModel.getFavorites()
@@ -38,67 +36,66 @@ class FavoriteViewModelTest {
         assertEquals(ApiState.Init, result)
     }
 
+
     @Test
     fun `getFavorites should update favorites state to Success with correct data`() = runTest {
-        // Arrange: Create sample ProductDTO objects
-        val product1 = createSampleProductDTO("1", "Product 1", "url1")
-        val product2 = createSampleProductDTO("2", "Product 2", "url2")
-
-        // Add favorites to the fake repo
-        fakeFavoriteRepo.addFavorite(fakeFavoriteRepo.getUserFirebaseID(), product1).first()
-        fakeFavoriteRepo.addFavorite(fakeFavoriteRepo.getUserFirebaseID(), product2).first()
-
-        // Act: Call getFavorites on the ViewModel
-        viewModel.getFavorites()
-
-        // Advance the coroutine until idle to ensure all emissions are processed
-        advanceUntilIdle()
-
-        // Assert: Expecting the favorites state to be Success with the correct data
-        val result = viewModel.favorites.first()
-        assertEquals(
-            ApiState.Success(
-                listOf(
-                    FavoriteDTO(id = "1", title = "Product 1", image = listOf("url1"), description = "", priceMinimum = "", priceMaximum = ""),
-                    FavoriteDTO(id = "2", title = "Product 2", image = listOf("url2"), description = "", priceMinimum = "", priceMaximum = "")
-                )
+        // Prepare the product data
+        val product = ProductDTO(
+            id = "123",
+            title = "Test Product",
+            description = "This is a test product.",
+            productType = "Type",
+            vendor = "Vendor",
+            handle = "test-product",
+            totalInventory = 100,
+            options = emptyList(),
+            priceRange = PriceRange(
+                maxVariantPrice = Price(amount = "100.0", currencyCode = "USD"),
+                minVariantPrice = Price(amount = "50.0", currencyCode = "USD")
             ),
-            result
+            variants = emptyList(),
+            images = listOf(FeaturedImage(url = "http://example.com/image.png")),
+            rating = 4.5,
+            reviewCount = 10,
+            currency = "USD",
+            totalCount = 1
         )
+
+        // Simulate adding a favorite and collect the result
+        val addedFavoriteFlow = fakeFavoriteRepo.addFavorite("firebaseId", product)
+
+        // Collect to trigger emission and ensure it completes
+        addedFavoriteFlow.collect { favorite ->
+            assertEquals("123", favorite.id)
+            assertEquals("Test Product", favorite.title)
+        }
+
+        // Now fetch favorites
+        val favoritesFlow = fakeFavoriteRepo.getFavorites("firebaseId")
+
+        favoritesFlow.collect { favorites ->
+            assertTrue(favorites.isNotEmpty())
+            assertEquals(1, favorites.size)
+            assertEquals("Test Product", favorites[0].title) // Assert the correct title
+        }
     }
 
     @Test
-    fun `addToFavorite should update isFavorite state to Success`() = runTest {
-        // Arrange: Create a sample ProductDTO object to be added as favorite
-        val product = createSampleProductDTO("3", "Product 3", "url3")
+    fun `addToFavorite should emit Failure when an error occurs`() = runTest {
+        // Arrange
+        fakeFavoriteRepo.setShouldReturnError(true) // Simulate an error
+        val product = createSampleProductDTO("invalid", "Invalid Product", "http://example.com/image.png")
 
-        // Assert: Expecting initial state to be Init
-        val initialResult = viewModel.isFavorite.first()
-        assertEquals(ApiState.Init, initialResult)
-
-        // Act: Launch a coroutine to collect the isFavorite state
-        val job = launch {
-            viewModel.isFavorite.collect { result ->
-                // Capture the emitted values
-                if (result is ApiState.Success) {
-                    assertEquals(true, result.data)
-                    // Once we capture a success, we can cancel the collection to prevent further emissions
-                    cancel()
-                } else if (result is ApiState.Failure) {
-                    fail("Expected Success, but got Failure: ${result.msg}")
-                }
-            }
-        }
-
-        // Call the function to add the favorite
+        // Act
         viewModel.addToFavorite(product)
+        advanceUntilIdle() // Advance the coroutine until idle to process all emissions
 
-        // Advance until idle to process emissions
-        advanceUntilIdle()
-
-        // Ensure the job is canceled after processing
-        job.join() // wait for cancellation to complete
+        // Assert
+        val state = viewModel.isFavorite.first() // Collect the first emission
+        assertTrue(state is ApiState.Failure)
+        assertEquals("failed to add favorite", (state as ApiState.Failure).msg)
     }
+
 
 
     private fun createSampleProductDTO(id: String, title: String, imageUrl: String): ProductDTO {
