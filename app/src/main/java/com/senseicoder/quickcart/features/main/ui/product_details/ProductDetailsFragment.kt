@@ -9,8 +9,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isNotEmpty
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -22,10 +25,13 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
+import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.dpToPx
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.lightenColor
+import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.toColor
 import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
@@ -42,7 +48,6 @@ import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
-import com.senseicoder.quickcart.databinding.BottomSheetAddressBinding
 import com.senseicoder.quickcart.databinding.BottomSheetRatingBinding
 import com.senseicoder.quickcart.databinding.FragmentProductDetailsBinding
 import com.senseicoder.quickcart.features.main.ui.favorite.viewmodel.FavoriteViewModel
@@ -184,6 +189,14 @@ class ProductDetailsFragment : Fragment() {
             )[MainActivityViewModel::class.java].currentProductId.value
         )
         handler = Handler(Looper.getMainLooper())
+        binding.apply {
+            ratingBarProductDetails.setOnClickListener{
+                showReviews()
+            }
+            reviewCountProductDetails.setOnClickListener{
+                showReviews()
+            }
+        }
     }
 
     override fun onStart() {
@@ -310,7 +323,7 @@ class ProductDetailsFragment : Fragment() {
                                                 ).show()
                                             }
                                             }else{
-                                                showSnackbar(getString(R.string.no_internet_connection))
+                                                showErrorSnackbar(getString(R.string.no_internet_connection))
                                         }
                                     }
                                     // Link the ViewPager2 with the DotsIndicator
@@ -371,14 +384,16 @@ class ProductDetailsFragment : Fragment() {
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
-                productDetailsViewModel.addingToCart.collect {
-                    when(it){
+                productDetailsViewModel.addingToCart.collect { addingToCartState ->
+                    when(addingToCartState){
                         ApiState.Init -> {
 
                         }
                         ApiState.Loading -> {
                             disableButtons()
                             disableAllChipGroups()
+                            this@ProductDetailsFragment.showSnackbar(getString(R.string.adding_to_cart), Int.MAX_VALUE)
+
                         }
                         is ApiState.Success -> {
                             this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
@@ -409,7 +424,7 @@ class ProductDetailsFragment : Fragment() {
                             }
                             is ApiState.Failure -> {
                                 favoriteLayoutProductDetails.isEnabled = true
-                                showSnackbar(response.msg)
+                                showErrorSnackbar(response.msg)
                             }
                         }
                     }
@@ -443,11 +458,9 @@ class ProductDetailsFragment : Fragment() {
     private fun setupFavoriteOnClickListener(data: Boolean) {
         if(NetworkUtils.isConnected(requireContext())){
             if(SharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT) != Constants.USER_TOKEN_DEFAULT){
-                if(data) ConfirmationDialog(requireActivity(), null){
+
+                if(data) ConfirmationDialogFragment(DialogType.DEL_FAV){
                     favoriteViewModel.removeFromFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
-                }.apply {
-                    this.message = getString(R.string.remove_from_favorite_confirmation)
-                    showDialog()
                 } else favoriteViewModel.addToFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
             }else{
                 Toast.makeText(
@@ -457,7 +470,7 @@ class ProductDetailsFragment : Fragment() {
                 ).show()
             }
         }else{
-            showSnackbar(getString(R.string.no_internet_connection))
+            showErrorSnackbar(getString(R.string.no_internet_connection))
         }
     }
 
@@ -600,6 +613,10 @@ class ProductDetailsFragment : Fragment() {
     private fun showReviews(){
         val bottomSheetBinding = BottomSheetRatingBinding.inflate(layoutInflater)
         val bottomSheetDialog = BottomSheetDialog(requireContext(),R.style.BottomSheetDialogTheme)
+        bottomSheetDialog.window?.apply {
+            val layoutParams = ViewGroup.LayoutParams((resources.displayMetrics.widthPixels * 0.9).toInt(), (resources.displayMetrics.heightPixels * 0.9).toInt())
+            setLayout(layoutParams.width, layoutParams.height)
+        }
         bottomSheetDialog.setContentView(bottomSheetBinding.root)
         val adapter = ReviewAdapter(reviews)
         bottomSheetBinding.rvRating.adapter = adapter
