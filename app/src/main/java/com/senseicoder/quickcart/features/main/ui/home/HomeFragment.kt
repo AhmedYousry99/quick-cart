@@ -269,20 +269,48 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         binding.swipeRefresher.isRefreshing = false
     }
-
     private fun startRandomSwiping() {
+        var next = 0
         val swipeRunnable = object : Runnable {
             override fun run() {
                 val current = binding.couponPager.currentItem
                 val count = couponPagerAdapter.itemCount
-//                Log.d(TAG, "run: ${count}")
-                var next = current + if (nextBoolean()) 1 else -1
-                if (next < 0) next = count - 1
-                else if (next >= count) next = 0
+
+                // Randomly determine whether to swipe forward or backward
+                next = ++next
+                 next = current + if (nextBoolean()) 1 else -1
+
+                // Circular rotation logic
+                if (next < 0) {
+                    next = count - 1 // Go to the last item if swiping backwards past the first item
+                } else if (next >= count) {
+                    next = 0 // Go to the first item if swiping forward past the last item
+                }
+
+                // Set the next item for the ViewPager
                 binding.couponPager.currentItem = next
+
+                // Re-run the swipe after a delay (4 seconds)
                 handel.postDelayed(this, 4000L)
             }
         }
+
+        // Start the swiping with an initial delay
         handel.postDelayed(swipeRunnable, 4000)
     }
+//    private fun startRandomSwiping() {
+//        val swipeRunnable = object : Runnable {
+//            override fun run() {
+//                val current = binding.couponPager.currentItem
+//                val count = couponPagerAdapter.itemCount
+////                Log.d(TAG, "run: ${count}")
+//                var next = current + if (nextBoolean()) 1 else -1
+//                if (next < 0) next = count - 1
+//                else if (next >= count) next = 0
+//                binding.couponPager.currentItem = next
+//                handel.postDelayed(this, 4000L)
+//            }
+//        }
+//        handel.postDelayed(swipeRunnable, 4000)
+//    }
 }
