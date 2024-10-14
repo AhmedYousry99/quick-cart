@@ -13,6 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
@@ -31,6 +34,7 @@ import com.senseicoder.quickcart.core.model.DraftOrder
 import com.senseicoder.quickcart.core.model.DraftOrderReqRes
 import com.senseicoder.quickcart.core.model.PriceRule
 import com.senseicoder.quickcart.core.model.ProductOfCart
+import com.senseicoder.quickcart.core.model.noteAttributesData
 import com.senseicoder.quickcart.core.model.toAddress
 import com.senseicoder.quickcart.core.model.toApplied_Discount
 import com.senseicoder.quickcart.core.model.toDiscountCodeDto
@@ -53,6 +57,8 @@ import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainA
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.senseicoder.quickcart.features.main.ui.shopping_cart.viewmodel.ShoppingCartViewModel
 import com.senseicoder.quickcart.features.main.ui.shopping_cart.viewmodel.ShoppingCartViewModelFactory
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -61,7 +67,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.time.LocalDateTime
+import java.util.Locale
 
 class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
@@ -69,6 +77,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         private const val TAG = "ShoppingCartFragment"
     }
 
+    lateinit var customerId: String
+    lateinit var customerEphemeralKey: String
+    private lateinit var paymentSheet: PaymentSheet
+    lateinit var customerConfiguration: PaymentSheet.CustomerConfiguration
+    lateinit var paymentIntentClientSecret: String
     private val customScope = CoroutineScope(Dispatchers.Main)
     lateinit var draftOrder: DraftOrder
     private lateinit var fragmentBinding: FragmentShoppingCartBinding
@@ -129,6 +142,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         collectCouponsList()
+        paymentSheet =
+            PaymentSheet(this@ShoppingCartFragment, this@ShoppingCartFragment::onPaymentSheetResult)
     }
 
     override fun onCreateView(
@@ -314,7 +329,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
-    private fun createDraftOrderForCash() {
+    private fun createDraftOrder(type : String) {
         customScope.launch {
             val lines = fetchedList.map {
                 it.toLineItem()
@@ -334,7 +349,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                         Customer(email),
                         defaultAddress!!.toAddress(),
                         defaultAddress!!.toAddress(),
-                        couponToUse.toApplied_Discount()
+                        couponToUse.toApplied_Discount(),
+                        listOf(noteAttributesData(Constants.PAYMENT_TYPE, type))
                     )
                 } else
                     draftOrder = DraftOrder(
@@ -343,8 +359,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                         lines,
                         Customer(email),
                         defaultAddress!!.toAddress(),
-                        defaultAddress!!.toAddress()
-                    )
+                        defaultAddress!!.toAddress(),
+                        note_attributes = listOf(noteAttributesData(Constants.PAYMENT_TYPE, type)
+                    ))
 
                 val request = DraftOrderReqRes(draftOrder)
                 viewModel.createDraftOrder(request)
@@ -484,7 +501,9 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                     couponToUse = couponsList.first { it.title == userInputCoupons.toString() }
                         .toDiscountCodeDto()
                     editTxtCoupon.text.clear()
-                    "${this@ShoppingCartFragment.couponToUse.value} %".also { txtValueOfDiscount.text = it }
+                    "${this@ShoppingCartFragment.couponToUse.value} %".also {
+                        txtValueOfDiscount.text = it
+                    }
                     setDiscount()
                 } else {
                     Toast.makeText(requireContext(), "Coupon is not valid", Toast.LENGTH_SHORT)
@@ -501,14 +520,12 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         binding.apply {
             btnCompletePurches.setOnClickListener {
                 if (radBtnCash.isChecked) {
-                    lifecycleScope.launch{ paymentProcess.show(childFragmentManager, null) }.invokeOnCompletion {
-                        Toast.makeText(requireContext(), "Cash", Toast.LENGTH_SHORT).show()
-                        createDraftOrderForCash()
-                    }
+                    lifecycleScope.launch { paymentProcess.show(childFragmentManager, null) }
+                        .invokeOnCompletion {
+                            createDraftOrder(Constants.CASH)
+                        }
                 } else if (radBtnCard.isChecked) {
-                    Toast.makeText(requireContext(), "Card", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_shoppingCartFragment_to_payPalFragment,
-                        bundleOf("PRICE" to bottomSheetBinding.txtValueOFAfterDiscount.text.toString().trimCurrencySymbol()))
+                        checkOut()
                 } else
                     Toast.makeText(
                         requireContext(),
@@ -539,6 +556,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
+
 
     // HANDEL CLICK ON PRODUCT IN CART
     override fun onProductClick(item: ProductOfCart) {
@@ -611,5 +629,122 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     override fun paymentProcessDialog(binding: PaymentProccessDialogBinding) {
         TODO("Not yet implemented")
     }
+    /*
 
+        fun startPaymentSheet() {
+            paymentSheet.presentWithPaymentIntent(
+                paymentIntentClientSecret,
+                PaymentSheet.Configuration(
+                    "Quick Cart", customerConfiguration
+                )
+            )
+        }
+
+
+        fun hitApiAndFetchData() {
+            val queue = Volley.newRequestQueue(requireContext())
+            val url =
+                "http://100.42.177.115:8888/create-payment-intent"
+
+            val stringRequest: StringRequest = object : StringRequest(
+                Request.Method.POST, url,
+                Response.Listener { response ->
+                    // response
+                    val jsonObj = JSONObject(response)
+                    customerConfiguration = PaymentSheet.CustomerConfiguration(
+                        jsonObj.getString("customer"),
+                        jsonObj.getString("ephemeralKey"),
+                    )
+                    paymentIntentClientSecret = jsonObj.getString("paymentIntent")
+                    PaymentConfiguration.init(
+                        this.requireActivity().applicationContext,
+                        jsonObj.getString("publishableKey")
+                    )
+                    Log.d(TAG, "hitApiAndFetchData:respone  ${response}")
+                }, Response.ErrorListener { it ->
+                    Log.d(TAG, "hitApiAndFetchData: error ${it}")
+                }) {
+                override fun getParams(): Map<String, String> {
+                    val params: MutableMap<String, String> = HashMap()
+                    params["authKey"] = "abc"
+                    return params
+                }
+            }
+            queue.add(stringRequest)
+        }
+    */
+
+    private fun checkOut() {
+        val reqBody = JSONObject().apply {
+            put(
+                "amount",
+                bottomSheetBinding.txtValueOFAfterDiscount.text.toString().trimCurrencySymbol()
+                    .toDoubleOrNull()?.times(100) ?: 0
+            )
+            put(
+                "currency",
+                SharedPrefsService.getSharedPrefString(
+                    Constants.CURRENCY,
+                    Constants.CURRENCY_DEFAULT
+                )
+                    .lowercase(Locale.getDefault())
+            )
+            put(
+                "email",
+                SharedPrefsService.getSharedPrefString(
+                    Constants.USER_EMAIL,
+                    Constants.USER_EMAIL_DEFAULT
+                )
+            )
+            put(
+                "name",
+                SharedPrefsService.getSharedPrefString(
+                    Constants.USER_DISPLAY_NAME,
+                    Constants.USER_DISPLAY_NAME_DEFAULT
+                )
+            )
+        }
+        Log.d(TAG, "checkOut: $reqBody")
+        val url = "http://100.42.177.115:8888/create-payment-intent"
+        val jsonRequest = JsonObjectRequest(
+            Request.Method.POST, url, reqBody,
+            { response ->
+                paymentIntentClientSecret = response.getString("clientSecret")
+                customerEphemeralKey = response.getString("ephemeralKey")
+                customerId = response.getString("customer")
+                presentPaymentSheet()
+                Log.d(TAG, "checkOut:(success) $response")
+            },
+            { error ->
+                Log.d(TAG, "checkOut(error): ${error}")
+            }
+        )
+        Volley.newRequestQueue(requireContext()).add(jsonRequest)
+    }
+
+    private fun presentPaymentSheet() {
+        val paymentSheetConfiguration = PaymentSheet.Configuration(
+            getString(R.string.app_name),
+            PaymentSheet.CustomerConfiguration(
+                customerId, customerEphemeralKey
+            )
+        )
+        paymentSheet.presentWithPaymentIntent(
+            paymentIntentClientSecret,
+            paymentSheetConfiguration
+        )
+    }
+
+    private fun onPaymentSheetResult(res: PaymentSheetResult) {
+        when (res) {
+            is PaymentSheetResult.Canceled -> Log.d(TAG, "onPaymentSheetResult: canceled")
+            is PaymentSheetResult.Failed -> Log.d(TAG, "onPaymentSheetResult: failed")
+            is PaymentSheetResult.Completed -> {
+                createDraftOrder(Constants.CARD)
+                Log.d(TAG, "onPaymentSheetResult: completed")
+            }
+        }
+
+    }
 }
+

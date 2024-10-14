@@ -166,6 +166,6 @@
     </fragment>
     <fragment
         android:id="@+id/payPalFragment"
-        android:name="com.senseicoder.quickcart.features.main.ui.paypal.PayPalFragment"
+        android:name="com.senseicoder.quickcart.features.main.ui.payment.paypal.PayPalFragment"
         android:label="PayPalFragment" />
 </navigation>

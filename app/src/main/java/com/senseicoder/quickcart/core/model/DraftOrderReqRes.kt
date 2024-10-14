@@ -9,7 +9,12 @@ data class DraftOrder(
     val customer: Customer,
     val billing_address: Address,
     val shipping_address: Address,
-    val applied_discounts: Applied_Discount? =null
+    val applied_discounts: Applied_Discount? =null,
+    val note_attributes :List<noteAttributesData>
+)
+data class noteAttributesData(
+    val name: String,
+    val value: String
 )
 
 data class LineItem(
@@ -28,7 +33,7 @@ data class Address(
     val city: String,
     val province: String,
     val zip: String = "321",
-    val country: String = "Egypt"
+    val country: String
 )
 data class Applied_Discount(
     val title: String,

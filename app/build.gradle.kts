@@ -133,8 +133,12 @@ apollo {
 }
 
 dependencies {
-    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
-    implementation ("com.stripe:stripe-android:20.29.0")
+//    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
+
+    implementation ("com.stripe:stripe-android:20.52.0")
+
+    implementation ("com.android.volley:volley:1.2.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -149,6 +153,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.play.services.maps)
     implementation(libs.firebase.firestore)
+//    implementation(libs.androidx.tools.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -191,7 +196,7 @@ dependencies {
     implementation ("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
 
-    //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
+/*    //implementation ("com.facebook.shimmer:shimmer:0.1.0@aar") //shimmer effect for views as loading indicator
     //implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     //implementation ("androidx.navigation:navigation-fragment-ktx:2.6.0")
     //implementation ("androidx.navigation:navigation-ui-ktx:2.6.0")
@@ -218,7 +223,7 @@ dependencies {
     //implementation ("androidx.room:room-runtime:2.5.0")
     //kapt ("androidx.room:room-compiler:2.5.0")
 
-    //implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    //implementation ("com.squareup.okhttp3:logging-interceptor:4.11.0")*/
 
     //Testing
     // Unit Testing
