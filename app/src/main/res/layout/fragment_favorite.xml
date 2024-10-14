@@ -12,13 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="networkLottie3" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/loadingFavoriteGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="lottieAnimationView2" />
+        app:constraint_referenced_ids="networkLottie3,loadingFavoriteGroup" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/noInternetFavoriteGroup"
@@ -37,15 +31,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/favoriteRecycler"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:visibility="gone"
-            tools:listitem="@layout/favorite_item" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgBtnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/alexandria_medium"
+                android:text="@string/may_fav"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imgBtnBack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgBtnBack" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/favoriteRecycler"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView19"
+                tools:listitem="@layout/favorite_item"
+                tools:visibility="gone" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView
@@ -83,6 +112,7 @@
         android:layout_gravity="center"
         app:shimmer_auto_start="true"
         app:shimmer_duration="1500">
+
         <ScrollView
             android:id="@+id/lottieAnimationView23"
             android:layout_width="match_parent"
@@ -92,19 +122,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
 
                 android:orientation="vertical"
-                android:padding="16dp">
-                <include layout="@layout/favorites_shimmer"/>
-                <include layout="@layout/favorites_shimmer"/>
-                <include layout="@layout/favorites_shimmer"/>
-                <include layout="@layout/favorites_shimmer"/>
-                <include layout="@layout/favorites_shimmer"/>
-                <include layout="@layout/favorites_shimmer"/>
+                android:padding="16dp"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="1dp">
+
+                <include layout="@layout/favorites_shimmer" />
+
+                <include layout="@layout/favorites_shimmer" />
+
+                <include layout="@layout/favorites_shimmer" />
+
+                <include layout="@layout/favorites_shimmer" />
+
+                <include layout="@layout/favorites_shimmer" />
+
+                <include layout="@layout/favorites_shimmer" />
             </LinearLayout>
+
         </ScrollView>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
@@ -119,4 +159,12 @@
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/emptyanimation" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/loadingFavoriteGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="lottieAnimationView2"
+        tools:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

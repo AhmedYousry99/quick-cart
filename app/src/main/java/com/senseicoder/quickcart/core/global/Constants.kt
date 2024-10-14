@@ -38,6 +38,9 @@ object Constants {
     }
 
 
+    const val PAYMENT_TYPE ="Payment Type"
+    const val CASH ="cash"
+    const val CARD ="card"
 
     const val TOKEN_EXPIRATION_DATE: String = "tokenExpirationDate"
     const val TOKEN_EXPIRATION_DATE_DEAFULT: String = "unknown"

@@ -129,6 +129,8 @@ class CurrencyFragment : Fragment() {
             Constants.apply {
                 Log.d(TAG, "setChangeInCurrency: $response")
                 setSharedPrefString(CURRENCY, code)
+                Log.d(TAG, "setChangeInCurrency:code: ${code}")
+                Log.d(TAG, "setChangeInCurrency:to float ${response.data[code]?.value?.toFloat()}")
                 setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE,
                     response.data[code]!!.value.toFloat())
             }

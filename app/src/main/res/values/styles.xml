@@ -10,5 +10,11 @@
         <item name="android:minHeight">15dp</item>
         <item name="android:maxHeight">15dp</item>
     </style>
+    <style name="name_of_title_fragment">
+        <item name="android:textSize" >20sp</item>
+        <item name="fontFamily">@font/alexandria_medium</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

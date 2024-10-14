@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun canNavigate(destinationId: Int): Boolean {
-        if (destinationId == R.id.shoppingCartFragment || destinationId == R.id.profileFragment) {
+        if (destinationId == R.id.shoppingCartFragment || destinationId == R.id.profileFragment || destinationId == R.id.favoriteFragment) {
             return SharedPrefsService.getSharedPrefString(Constants.USER_ID, Constants.USER_ID_DEFAULT) != Constants.USER_ID_DEFAULT
         }
         return true
