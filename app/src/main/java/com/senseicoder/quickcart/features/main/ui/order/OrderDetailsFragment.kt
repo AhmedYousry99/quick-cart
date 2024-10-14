@@ -79,6 +79,10 @@ class OrderDetailsFragment : Fragment() {
         binding.orderProductsRv.layoutManager = productsManager
         binding.orderProductsRv.adapter = productsAdapter
 
+
+        // Update currency in the adapter whenever it's set up
+        productsAdapter.updateCurrency()
+
     }
 
     private fun collectOrderDetails() {
@@ -109,21 +113,26 @@ class OrderDetailsFragment : Fragment() {
 //                            binding.address.text =
 //                                result.data[index].address?: "Maimi,Alexandria,Egypt"
 
-                            // Set address, concatenating address1, city, and country
+                            // Set address, concatenating street name, city, and country
                             val address = result.data[index].address
-                            val fullAddress = listOfNotNull(address?.address1, address?.city, address?.country).joinToString(", ")
+                          //  val fullAddress = listOfNotNull(address?.address1, address?.city, address?.country).joinToString(", ")
+
+                            val street = address?.address2 ?: "Unknown Street"
+                            val city = address?.city ?: "Unknown City"
+                            val country = address?.country ?: "Unknown Country"
+
+                            val fullAddress = listOfNotNull(street, city, country).joinToString(", ")
 
                             binding.address.text = if (fullAddress.isNotEmpty()) {
                                 fullAddress
                             } else {
                                 "Maimi, Alexandria, Egypt"
                             }
-                            //getCurrentCurrency(
-//                                result.data[index].totalTaxAmount.toDouble(),
-//                                result.data[index].subTotalPriceAmount.toDouble(),
-//                                result.data[index].totalPriceAmount.toDouble()
-                           // )
+
                             productsAdapter.submitList(result.data[index].products)
+
+                            // Update the currency in the adapter whenever new data is set
+                            productsAdapter.updateCurrency()
                         }
 
                         is ApiState.Failure -> {
@@ -146,37 +155,5 @@ class OrderDetailsFragment : Fragment() {
         val newPrice = price * rate
         return String.format("%.2f %s", newPrice, code) // Format price to two decimal places and append currency code
     }
-
-//    private fun getCurrentCurrency(tax: Double, subTotal: Double, totalPrice: Double) {
-//        viewModel.getCurrencyUnit()
-//        viewModel.getRequiredCurrency()
-//
-//        lifecycleScope.launch {
-//            combine(
-//                viewModel.currencyUnit,
-//                viewModel.requiredCurrency
-//            ) { currencyUnit, requiredCurrency ->
-//                Pair(currencyUnit, requiredCurrency)
-//            }.collect { (currencyUnit, requiredCurrency) ->
-//                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
-//                when (requiredCurrency) {
-//                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
-//                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
-//                    is ApiState.Success -> {
-//
-//                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
-//                            binding.tax.text = String.format("%.2f %s", tax * currency.value, currency.code)
-//                            binding.subTotal.text =
-//                                String.format("%.2f %s", subTotal * currency.value, currency.code)
-//                            binding.totalPrice.text =
-//                                String.format("%.2f %s", totalPrice * currency.value, currency.code)
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 
 }
