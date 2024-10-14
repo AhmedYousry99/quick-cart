@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.senseicoder.quickcart.R
@@ -28,8 +29,12 @@ class PaymentProcessesDialog(listener : OnCartItemClickListener) : DialogFragmen
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog!!.window!!.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog?.setCancelable(false)
+        dialog?.window?.apply {
+            val layoutParams = ViewGroup.LayoutParams((resources.displayMetrics.widthPixels * 0.9).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+            setLayout(layoutParams.width, layoutParams.height)
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setCancelable(false)
+        }
         stepOne()
 
     }

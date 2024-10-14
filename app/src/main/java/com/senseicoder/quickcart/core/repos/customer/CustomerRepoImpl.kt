@@ -1,6 +1,5 @@
 package com.senseicoder.quickcart.core.repos.customer
 
-import android.util.Log
 import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
 import com.senseicoder.quickcart.core.db.remote.RemoteDataSource
 import com.senseicoder.quickcart.core.global.Constants
@@ -13,17 +12,13 @@ import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 //import com.senseicoder.quickcart.core.network.interfaces.AdminHandler
 import com.senseicoder.quickcart.core.services.SharedPrefs
 import com.senseicoder.quickcart.core.services.SharedPrefsService
-import com.senseicoder.quickcart.core.services.SharedPrefsService.setSharedPrefFloat
-import com.senseicoder.quickcart.core.services.SharedPrefsService.setSharedPrefString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration.Companion.seconds
@@ -36,23 +31,31 @@ class CustomerRepoImpl private constructor(
     private val dbRemoteDataSource: RemoteDataSource,
 ) : CustomerRepo {
 
-    override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
-            return dbRemoteDataSource.getUserByEmail(CustomerDTO(email = email)).zip(storefrontHandler.loginUser(
-            email = email,
-            password = password
-        )){ dto, data ->
-            dto.copy(token = data.accessToken, expireAt = data.expiresAt)
-        }.flatMapConcat {dto ->
-            if(dto.cartId == Constants.CART_ID_DEFAULT)
+    override fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
+        return dbRemoteDataSource.getUserByEmail(CustomerDTO(email = email)).zip(
+            firebaseHandler.loginUsingNormalEmail(
+                email, password
+            )
+        ) { dto, _ ->
+            dto
+        }.flatMapLatest { firebaseHandler.handleEmailVerification(it) }.flatMapConcat { dto ->
+            if (dto.cartId == Constants.CART_ID_DEFAULT)
                 storefrontHandler.createCart(dto.email).map {
                     dto.copy(cartId = it.id)
                 }
             else
                 flowOf(dto)
-            }.timeout(15.seconds)
+        }.zip(
+            storefrontHandler.loginUser(
+                email = email,
+                password = password
+            )
+        ) { dto, data ->
+            dto.copy(token = data.accessToken, expireAt = data.expiresAt)
+        }.timeout(15.seconds)
     }
 
-    override fun signOut(){
+    override fun signOut() {
         firebaseHandler.signOut()
         Constants.apply {
             sharedPrefsService.setSharedPrefString(USER_ID, USER_ID_DEFAULT)
@@ -62,7 +65,10 @@ class CustomerRepoImpl private constructor(
             sharedPrefsService.setSharedPrefString(FIREBASE_USER_ID, FIREBASE_USER_ID_DEFAULT)
             sharedPrefsService.setSharedPrefString(USER_DISPLAY_NAME, USER_DISPLAY_NAME_DEFAULT)
             sharedPrefsService.setSharedPrefString(CURRENCY, CURRENCY_DEFAULT)
-            sharedPrefsService.setSharedPrefFloat(PERCENTAGE_OF_CURRENCY_CHANGE, PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT)
+            sharedPrefsService.setSharedPrefFloat(
+                PERCENTAGE_OF_CURRENCY_CHANGE,
+                PERCENTAGE_OF_CURRENCY_CHANGE_DEFAULT
+            )
         }
     }
 
@@ -123,22 +129,32 @@ class CustomerRepoImpl private constructor(
     }*/
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun signupUsingEmailAndPassword(
+    override fun signupUsingEmailAndPassword(
         firstName: String,
         lastName: String,
         email: String,
         password: String
     ): Flow<CustomerDTO> {
-        return firebaseHandler.signupUsingNormalEmail(email = email, password = password, firstName = firstName, lastName = lastName)
-            .zip(storefrontHandler.createCustomer(firstName = firstName, lastName = lastName, email = email, password = password)) {
-            dto, data->
+        return firebaseHandler.signupUsingNormalEmail(
+            email = email,
+            password = password,
+            firstName = firstName,
+            lastName = lastName
+        )
+            .zip(
+                storefrontHandler.createCustomer(
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = email,
+                    password = password
+                )
+            ) { dto, data ->
                 dto.copy(id = data.id)
-        }.zip(storefrontHandler.createCart(email)) {
-            dto, data->
+            }.zip(storefrontHandler.createCart(email)) { dto, data ->
                 dto.copy(cartId = data.id)
-        }.flatMapLatest {
-            dbRemoteDataSource.addUser(it)
-        }
+            }.flatMapLatest {
+                dbRemoteDataSource.addUser(it)
+            }
             .timeout(20.seconds)
     }
 
@@ -180,7 +196,10 @@ class CustomerRepoImpl private constructor(
     }
 
     override fun getUserToken(): String {
-        return sharedPrefsService.getSharedPrefString(Constants.USER_TOKEN, Constants.USER_TOKEN_DEFAULT)
+        return sharedPrefsService.getSharedPrefString(
+            Constants.USER_TOKEN,
+            Constants.USER_TOKEN_DEFAULT
+        )
     }
 
     override fun setEmail(email: String) {
@@ -200,14 +219,17 @@ class CustomerRepoImpl private constructor(
     }
 
     override fun setTokenExpirationData(tokenExpirationDate: String) {
-        return sharedPrefsService.setSharedPrefString(Constants.TOKEN_EXPIRATION_DATE, tokenExpirationDate)
+        return sharedPrefsService.setSharedPrefString(
+            Constants.TOKEN_EXPIRATION_DATE,
+            tokenExpirationDate
+        )
     }
 
-    override suspend fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+    override fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         return dbRemoteDataSource.addFavorite(email, favorite)
     }
 
-    override suspend fun removeFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+    override fun removeFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         return dbRemoteDataSource.removeFavorite(email, favorite)
     }
 

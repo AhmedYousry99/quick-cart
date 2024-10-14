@@ -35,15 +35,15 @@ class ReviewAdapter(val list: List<ReviewDTO>) : RecyclerView.Adapter<ReviewAdap
 
     private val imageList: List<Int> by lazy {
         listOf(
-            R.drawable.a,
-            R.drawable.b,
-            R.drawable.c,
-            R.drawable.d,
-            R.drawable.e,
-            R.drawable.f,
-            R.drawable.g,
-            R.drawable.h,
-            R.drawable.i,
+            R.drawable.persona,
+            R.drawable.personb,
+            R.drawable.personc,
+            R.drawable.persond,
+            R.drawable.persone,
+            R.drawable.personf,
+            R.drawable.persong,
+            R.drawable.personh,
+            R.drawable.personi,
             R.drawable.j,
 
             )

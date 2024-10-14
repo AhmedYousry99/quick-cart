@@ -6,17 +6,31 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.FragmentProfileBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
+import com.senseicoder.quickcart.features.main.ui.profile.viewmodel.ProfileViewModel
+import com.senseicoder.quickcart.features.main.ui.profile.viewmodel.ProfileViewModelFactory
 
 class ProfileFragment : Fragment() {
+
+
+        private lateinit var viewModel: ProfileViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val factory = ProfileViewModelFactory(
+            CustomerRepoImpl.getInstance()
+        )
+        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
+    }
 
     private lateinit var binding: FragmentProfileBinding
     override fun onCreateView(
@@ -69,7 +83,11 @@ class ProfileFragment : Fragment() {
             }
             btnLogOut.setOnClickListener {
                 ConfirmationDialogFragment(DialogType.LOGOUT) {
-                    //TODO: logout
+                    viewModel.signOut()
+                    Navigation.findNavController(requireView()).apply {
+                        navigate(R.id.action_profileFragment_to_loginFragment)
+                        graph.setStartDestination(R.id.loginFragment)
+                    }
                 }.show(childFragmentManager, null)
             }
         }

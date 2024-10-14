@@ -28,7 +28,7 @@
     <string name="login_button">Login</string>
     <string name="email_login">Email</string>
     <string name="welcome_back">Welcome Back! 👋</string>
-    <string name="continue_as_guest">Continue As A Guest</string>
+    <string name="continue_as_guest">Continue</string>
     <string name="dont_have_an_account">Don\'t have an account?\u0020</string>
     <string name="register">Register!</string>
     <string name="sign_up">Sign Up! 📝</string>
@@ -63,7 +63,7 @@
     <string name="products_amount_text">0</string>
     <string name="price_text">Total:\u0020</string>
     <string name="product_added_successfully">Product Added To Cart Successfully!</string>
-    <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again Later</string>
+    <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again?</string>
     <string name="permission_denied">You must be logged in to access thees features.</string>
 
 
@@ -96,12 +96,16 @@
     <string name="suggestion_list_error">Couldn\'t show suggestions</string>
     <string name="available_sizes">Sizes:\u0020</string>
     <string name="search_empty">There\'s no products with that name</string>
-    <string name="signup_loading">Singing up...</string>
+    <string name="signup_loading">Singing up…</string>
     <string name="required">Required*</string>
-    <string name="signup_email_will_be_used">Email will be used as your display name\n\\nContinue?</string>
+    <string name="signup_email_will_be_used">Email will be used as your display name\n\n\nContinue?</string>
     <string name="notice">Notice</string>
-    <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
-    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\nContinue?</string>
+    <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
+    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
+    <string name="adding_to_cart">Adding to cart...</string>
+    <string name="adding_to_favorite">Adding To Favorites...</string>
+    <string name="added_to_favorite">Product Added To Favorites Successfully</string>
+    <string name="reviews_title">Reviews</string>
 
 
 </resources>

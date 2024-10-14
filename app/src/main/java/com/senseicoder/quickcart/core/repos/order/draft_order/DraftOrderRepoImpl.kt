@@ -12,6 +12,7 @@ import com.storefront.CustomerAddressesQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
 import retrofit2.Response
 import kotlin.math.log
 
@@ -24,8 +25,11 @@ class DraftOrderRepoImpl(val orderRemoteDataSource: OrderRemoteDataSource,): Dra
     override suspend fun createDraftOrder(request: DraftOrderReqRes): Flow<Response<DraftOrderReqRes>> {
         return flow{
             val res = orderRemoteDataSource.createDraftOrder(request)
-            if (res.isSuccessful)
+
+            if (res.isSuccessful) {
                 emit(res)
+                Log.d(TAG, "createDraftOrder: ${request.draft_order}")
+            }
             else
                 throw  Exception(res.message())
         }
@@ -38,6 +42,10 @@ class DraftOrderRepoImpl(val orderRemoteDataSource: OrderRemoteDataSource,): Dra
                 emit(res)
             else
                 throw  Exception(res.message())
+        }.retryWhen{
+            cause, attempt ->
+            Log.d(TAG, "completeDraftOrder retrying: $cause, ${cause.message}")
+            attempt < 5
         }
     }
 

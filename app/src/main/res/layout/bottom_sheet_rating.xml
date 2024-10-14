@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetRootReviews"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
@@ -19,7 +20,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/alexandria_medium"
             android:gravity="center"
-            android:text="@string/address_details"
+            android:text="@string/reviews_title"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -29,15 +30,15 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvRating"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="650dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView17"
-
             tools:listitem="@layout/row_of_review" />
 
 

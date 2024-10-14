@@ -1,13 +1,11 @@
 package com.senseicoder.quickcart.core.db.remote
 
 import android.util.Log
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.senseicoder.quickcart.core.global.withoutGIDPrefix
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.customer.CustomerKeys
 import com.senseicoder.quickcart.core.model.favorite.FavoriteDTO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.tasks.await
@@ -21,7 +19,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         FirebaseFirestore.setLoggingEnabled(true)
     }
 
-    override suspend fun getUserByIdOrAddUser(customer: CustomerDTO) = flow {
+    override fun getUserByIdOrAddUser(customer: CustomerDTO) = flow {
 
         val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
@@ -44,7 +42,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         }
     }
 
-    override suspend fun addUser(customer: CustomerDTO) = flow<CustomerDTO> {
+    override fun addUser(customer: CustomerDTO) = flow<CustomerDTO> {
         Log.d(TAG, "addUser:  adding user: $customer")
         val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
@@ -54,7 +52,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         cause is IOException && attempt < 3
     }
 
-    override suspend fun getUserByEmail(customer: CustomerDTO) = flow<CustomerDTO> {
+    override fun getUserByEmail(customer: CustomerDTO) = flow<CustomerDTO> {
         Log.d(TAG, "getUserByEmail: $customer")
         val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
@@ -75,7 +73,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
     }
 
 
-    override suspend fun addFavorite(firebaseId: String, favorite: FavoriteDTO) =
+    override fun addFavorite(firebaseId: String, favorite: FavoriteDTO) =
         flow<FavoriteDTO> {
             val firestoreInstance = FirebaseFirestore.getInstance()
             val customersCollection =
@@ -86,7 +84,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
             emit(favorite)
         }
 
-    override suspend fun isFavorite(firebaseId: String, productId: String) = flow<Boolean> {
+    override fun isFavorite(firebaseId: String, productId: String) = flow<Boolean> {
         val firestoreInstance = FirebaseFirestore.getInstance()
         val document =
             firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION).document(firebaseId)
@@ -96,7 +94,7 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         emit(document.exists())
     }
 
-    override suspend fun removeFavorite(firebaseId: String, favorite: FavoriteDTO) =
+    override fun removeFavorite(firebaseId: String, favorite: FavoriteDTO) =
         flow<FavoriteDTO> {
             val firestoreInstance = FirebaseFirestore.getInstance()
             val customersCollection =

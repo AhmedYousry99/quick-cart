@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.ConfirmationDialog
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
@@ -43,8 +42,6 @@ class LoginFragment : Fragment() {
 
     private lateinit var binding:FragmentLoginBinding
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var confirmationDialog: ConfirmationDialog
-//    private lateinit var progressBar: CircularProgressIndicatorDialog
 
 
     override fun onCreateView(
@@ -58,16 +55,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         SharedPrefsService.logAllSharedPref(TAG, "onViewCreated")
-        /*SharedPrefsService.apply {
-            Constants.also {
-                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_ID, it.USER_ID_DEFAULT)}")
-                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_TOKEN, it.USER_TOKEN_DEFAULT)}")
-                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_EMAIL, it.USER_ID_DEFAULT)}")
-                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.CART_ID, it.CART_ID_DEFAULT)}")
-                Log.d(TAG, "onViewCreated: ${getSharedPrefString(it.USER_DISPLAY_NAME, it.USER_DISPLAY_NAME_DEFAULT)}")
-
-            }
-        }*/
         /*
         * used when endIcon is set to custom icon to handle on click events*/
         /*binding.emailLoginLayout.setEndIconOnClickListener{
@@ -80,12 +67,7 @@ class LoginFragment : Fragment() {
                 SharedPrefsService,
             )
         )
-//        progressBar = CircularProgressIndicatorDialog(requireActivity())
         loginViewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
-        confirmationDialog = ConfirmationDialog(requireActivity(), null){
-//            progressBar.startProgressBar()
-        }
-        confirmationDialog.message = getString(R.string.you_wont_have_access_to_features)
        /* binding.emailLoginEditText.doOnTextChanged { text, start, before, count ->
             binding.emailLoginLayout.error = if(text!!.length> 2){
                 "no more!"
@@ -110,16 +92,13 @@ class LoginFragment : Fragment() {
                     when(it){
                         ApiState.Init ->{
                             enableButtons()
-//                            progressBar.dismissProgressBar(this@LoginFragment)
                         }
                         ApiState.Loading -> {
                             disableButtons()
-//                            progressBar.startProgressBar()
                         }
                         is ApiState.Success -> {
                             enableButtons()
                             ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].updateCurrentUser(it.data)
-//                            progressBar.dismissProgressBar(this@LoginFragment)
                             try{
                                 findNavController().graph.setStartDestination(R.id.homeFragment)
                                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
@@ -129,7 +108,6 @@ class LoginFragment : Fragment() {
                         }
                         is ApiState.Failure -> {
                             enableButtons()
-//                            progressBar.dismissProgressBar(this@LoginFragment)
                             showErrorSnackbar(
                                 when(it.msg){
                                     Constants.Errors.UNKNOWN -> getString(R.string.something_went_wrong)
@@ -169,11 +147,10 @@ class LoginFragment : Fragment() {
             }
             continueAsAGuestButton.setOnClickListener {
                 ConfirmationDialogFragment(DialogType.GUEST_MODE){
-                }.show(parentFragmentManager, "guest_mode")
-//                confirmationDialog.showDialog()
+                    findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+                }.show(parentFragmentManager, null)
             }
             loginText.setOnClickListener{
-//                findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
                 hideValidationErrors()
                 Navigation.findNavController(it).navigate(R.id.action_loginFragment_to_signupFragment)
             }
@@ -195,7 +172,6 @@ class LoginFragment : Fragment() {
             val email: String = emailLoginEditText.text.toString()
             val password: String = passwordLoginEditText.text.toString()
             val areFieldsValid = email.isValidEmail() && password.isValidPassword()
-            //TODO: handle rest of login validation errors
             if(areFieldsValid){
                 if(NetworkUtils.isConnected(requireContext())){
                     loginViewModel.loginUsingNormalEmail(email, password)

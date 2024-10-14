@@ -44,6 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toStartOf="@+id/imgStepTwo"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView3"
             app:srcCompat="@drawable/black_check" />
@@ -64,11 +67,11 @@
             android:id="@+id/imgStepThree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="315dp"
             android:layout_marginEnd="32dp"
             app:layout_constraintBottom_toBottomOf="@+id/imgStepTwo"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/imgStepOne"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgStepTwo"
             app:layout_constraintTop_toTopOf="@+id/imgStepTwo"
             app:srcCompat="@drawable/black_check" />
 
@@ -89,9 +92,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@+id/imgStepOne"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgStepThree"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgStepOne"
             app:layout_constraintTop_toTopOf="@+id/imgStepOne"
+            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/black_check" />
 
         <ProgressBar

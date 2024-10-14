@@ -6,10 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface FavoriteRepo {
 
-    suspend fun addFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO>
-    suspend fun removeFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO>
-    suspend fun removeFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO>
+    fun addFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO>
+    fun removeFavorite(firebaseId: String, product: ProductDTO): Flow<FavoriteDTO>
+    fun removeFavorite(firebaseId: String, favorite: FavoriteDTO): Flow<FavoriteDTO>
     fun getUserFirebaseID(): String
     fun getFavorites(firebaseId: String): Flow<List<FavoriteDTO>>
-    suspend fun isFavorite(firebaseId: String, productId :String): Flow<Boolean>
+    fun isFavorite(firebaseId: String, productId :String): Flow<Boolean>
+    suspend fun convertPricesAccordingToCurrency(favorite: FavoriteDTO): FavoriteDTO
+    suspend fun revertPricesAccordingToCurrency(product: ProductDTO): ProductDTO
 }

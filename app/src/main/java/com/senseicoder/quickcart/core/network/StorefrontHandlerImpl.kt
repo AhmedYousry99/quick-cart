@@ -69,7 +69,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
         .okHttpClient(okHttpClient)
         .build()
 
-    override suspend fun loginUser(
+    override fun loginUser(
         email: String,
         password: String
     ): Flow<CreateCustomerAccessTokenMutation.CustomerAccessToken> = flow {
@@ -153,7 +153,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
             throw response.exception ?: Exception(Constants.Errors.UNKNOWN)
     }
 
-    override suspend fun createCart(email: String) = flow {
+    override fun createCart(email: String) = flow {
         val mutation = CreateCartMutation(email)
 
         val response = apolloClient.mutation(mutation).execute()

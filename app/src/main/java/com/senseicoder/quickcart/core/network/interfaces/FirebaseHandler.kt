@@ -5,26 +5,23 @@ import kotlinx.coroutines.flow.Flow
 
 interface FirebaseHandler {
 
-    suspend fun signupUsingNormalEmail(email: String, password: String, firstName: String, lastName: String): Flow<CustomerDTO>
+    fun signupUsingNormalEmail(email: String, password: String, firstName: String, lastName: String): Flow<CustomerDTO>
 
-    suspend fun loginUsingNormalEmail(
+    fun loginUsingNormalEmail(
         email: String,
         password: String,
     ): Flow<CustomerDTO>
-    suspend fun updateDisplayName(
+    fun updateDisplayName(
         customerDTO: CustomerDTO
     ): Flow<CustomerDTO>
 
 
-//    fun loginUsingGoogleEmail(idToken: String?)
-//
-//    fun loginUsingFacebookEmail()
+    fun handleEmailVerification(customer: CustomerDTO): Flow<CustomerDTO>
 
-//    suspend fun loginUsingGuest(): Flow<CustomerDTO>
+    fun sendEmailVerification(email: String, password: String): Flow<Unit>
+
+//    fun loginUsingGoogleEmail(idToken: String?)
 
     fun signOut()
 
-//    fun isUserLoggedIn(): Boolean
-//
-//    fun isUserGuest(): Boolean
 }

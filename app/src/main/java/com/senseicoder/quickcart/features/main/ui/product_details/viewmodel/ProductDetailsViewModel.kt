@@ -15,6 +15,8 @@ import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -106,6 +108,7 @@ class ProductDetailsViewModel(
         }
     }
 
+
     /*fun removeProductFromCart(cartId: String, lineId: String) {
         viewModelScope.launch {
             cartRepo.removeProductFromCart(cartId, lineId).catch {
@@ -117,8 +120,10 @@ class ProductDetailsViewModel(
         }
     }*/
 
-    fun addProductToCart(selectedAmount: Int,variants: List<Variant>, currentCustomer: CustomerDTO) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun addProductToCart(selectedAmount: Int, variants: List<Variant>, currentCustomer: CustomerDTO) {
         viewModelScope.launch(Dispatchers.Default) {
+            _addingToCart.value = ApiState.Loading
             val id = cartRepo.getCartId()
             //TODO: handle if cart_id is invalid
             if(id != Constants.CART_ID_DEFAULT){
@@ -126,9 +131,7 @@ class ProductDetailsViewModel(
                 cartRepo.addToCartByIds(id, selectedAmount, variants.first().id).catch {
                     _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
                 }.collect {
-                    withContext(Dispatchers.Main){
-                        _addingToCart.value = ApiState.Success(it)
-                    }
+                    _addingToCart.value = ApiState.Success(it)
                 }
             }else{
                 Log.d(TAG, "addProductToCart: creating ID")
@@ -138,15 +141,12 @@ class ProductDetailsViewModel(
                     }.catch {
                         _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
                     }.collect {
-                        withContext(Dispatchers.Main){
                             _addingToCart.value = ApiState.Success(it)
-                        }
                     }
             }
         }
     }
 
-    //TODO: handle uncheck cases correctly
     fun setCurrentSelectedProduct(
         variants: List<Variant>,
         isChecked: Boolean,

@@ -10,6 +10,9 @@ object Constants {
         object CustomerCreate{
             const val EMAIL_TAKEN = "Email has already been taken"
         }
+        object Firebase{
+            const val EMAIL_NOT_VERIFIED = "Email is not verified"
+        }
     }
 
     sealed class SharedPrefs {
