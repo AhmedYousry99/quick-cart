@@ -54,6 +54,9 @@ class FavoriteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.imgBtnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
         adapter = FavoritesAdapter ({
             ConfirmationDialogFragment(DialogType.DEL_FAV) {
                 viewModel.removeFromFavorite(it)

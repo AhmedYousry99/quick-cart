@@ -106,6 +106,15 @@
     <string name="adding_to_favorite">Adding To Favorites...</string>
     <string name="added_to_favorite">Product Added To Favorites Successfully</string>
     <string name="reviews_title">Reviews</string>
+    <string name="save_address">Save Address</string>
+    <string name="save_address_message">Are you sure you will add this address</string>
+    <string name="add">ADD</string>
+    <string name="delete_product">Delete Product</string>
+    <string name="delete_product_message">\"Are you sure you will deleted this Product</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_message">Are you sure you will Sign out</string>
+    <string name="may_fav">My Favourite</string>
+    <string name="search">Search</string>
 
 
 </resources>

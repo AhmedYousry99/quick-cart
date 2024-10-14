@@ -147,7 +147,7 @@ class LoginFragment : Fragment() {
             }
             continueAsAGuestButton.setOnClickListener {
                 ConfirmationDialogFragment(DialogType.GUEST_MODE){
-                    findNavController().navigate(R.id.action_loginFragment_to_signupFragment)
+                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                 }.show(parentFragmentManager, null)
             }
             loginText.setOnClickListener{

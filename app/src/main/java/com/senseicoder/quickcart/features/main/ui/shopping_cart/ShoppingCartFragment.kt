@@ -681,7 +681,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             put(
                 "amount",
                 bottomSheetBinding.txtValueOFAfterDiscount.text.toString().trimCurrencySymbol()
-                    .toDoubleOrNull()?.times(100) ?: 0
+                    .toDoubleOrNull()?.times(100) ?: 100
             )
             put(
                 "currency",

@@ -44,28 +44,28 @@ class ConfirmationDialogFragment(val code: DialogType, val function: (()->Unit)?
 
                 DialogType.DEL_PRODUCT -> {
                     setDialogDetails(
-                        "Delete Product",
+                        getString(R.string.delete_product),
                         R.drawable.ic_delete,
-                        "Are you sure you will deleted this Product",
-                        "Delete"
+                        getString(R.string.delete_product_message),
+                        getString(R.string.delete)
                     )
                 }
 
                 DialogType.LOGOUT -> {
                     setDialogDetails(
-                        "Sign Out",
+                        getString(R.string.sign_out),
                         R.drawable.ic_logout,
-                        "Are you sure you will Sign out",
-                        "Sign Out"
+                        getString(R.string.sign_out_message),
+                        getString(R.string.sign_out)
                     )
                 }
 
                 DialogType.SAVE_ADDRESS -> {
                     setDialogDetails(
-                        "Save Address",
+                        getString(R.string.save_address),
                         R.drawable.ic_edit_address,
-                        "Are you sure you will add this address",
-                        "ADD"
+                        getString(R.string.save_address_message),
+                        getString(R.string.add)
                     )
                 }
                 DialogType.DEL_FAV -> {
@@ -82,10 +82,6 @@ class ConfirmationDialogFragment(val code: DialogType, val function: (()->Unit)?
                         R.drawable.baseline_person_24,
                         getString(R.string.you_wont_have_access_to_features),
                         getString(R.string.continue_as_guest))
-                    binding.apply {
-                        btnOk.setBackgroundResource(R.drawable.button_selector_default)
-                        btnCancel.setBackgroundResource(R.drawable.button_selector_logout)
-                    }
                 }
 
                 DialogType.SIGN_UP_FIRST_NAME -> {

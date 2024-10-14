@@ -76,6 +76,9 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.imgBtnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
         setupRecycler()
         setupSearchView()
         setupSuggestionsAdapter()
