@@ -70,10 +70,11 @@ fun View.showSnackbar(
 fun Fragment.showSnackbar(
     snackbarText: String,
     timeLength: Int = 4000,
-    action: (() -> Unit)? = null
-) {
-    Snackbar.make(requireView(), snackbarText, timeLength).run {
-        view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.secondary))
+    color: Int?,
+    action: (() -> Unit)? = null,
+) : Snackbar{
+    return Snackbar.make(requireView(), snackbarText, timeLength).apply {
+        view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(color ?: R.color.secondary))
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Ok") {
@@ -153,8 +154,8 @@ fun Fragment.showErrorSnackbar(
     snackbarText: String,
     timeLength: Int = 4000,
     action: (() -> Unit)? = null
-) {
-    Snackbar.make(requireView(), snackbarText, timeLength).run {
+) : Snackbar{
+    return Snackbar.make(requireView(), snackbarText, timeLength).apply {
         view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.red))
         view.setOnClickListener {dismiss()}
         if (action != null) {

@@ -222,13 +222,7 @@ class ProductDetailsFragment : Fragment() {
                         is ApiState.Failure -> {
                             enableButtons()
                             enableAllChipGroups()
-                            this@ProductDetailsFragment.showErrorSnackbar(getString(R.string.product_added_unsuccessfully)){
-                                Toast.makeText(
-                                    requireContext(),
-                                    "retry clicked",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            this@ProductDetailsFragment.showErrorSnackbar(getString(R.string.product_added_unsuccessfully))
                         }
                     }
                 }

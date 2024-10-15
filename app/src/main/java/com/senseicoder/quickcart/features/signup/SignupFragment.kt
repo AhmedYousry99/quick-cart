@@ -28,7 +28,6 @@ import com.senseicoder.quickcart.core.global.matchesPassword
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
-//import com.senseicoder.quickcart.core.network.AdminHandlerImpl
 import com.senseicoder.quickcart.core.network.FirebaseHandlerImpl
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
@@ -116,21 +115,17 @@ class SignupFragment : Fragment() {
                     when(it){
                         ApiState.Init ->{
                         enableButtons()
-//                        progressBar.dismissProgressBar(this@SignupFragment)
                         }
                         ApiState.Loading -> {
                             disableButtons()
-                            showSnackbar(getString(R.string.signup_loading), Int.MAX_VALUE)
-//                            progressBar.startProgressBar()
+                            showSnackbar(getString(R.string.signup_loading), Int.MAX_VALUE, R.color.black)
                         }
                         is ApiState.Success -> {
                             enableButtons()
-//                            progressBar.dismissProgressBar(this@SignupFragment)
-                            showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}")
+                            showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}", color = R.color.secondary)
                         }
                         is ApiState.Failure -> {
                             enableButtons()
-//                            progressBar.dismissProgressBar(this@SignupFragment)
                             showErrorSnackbar(
                                 when(it.msg){
                                     Constants.Errors.UNKNOWN -> getString(R.string.something_went_wrong)
@@ -203,7 +198,7 @@ class SignupFragment : Fragment() {
                         signupViewModel.signUpUsingEmailAndPassword(email, firstName, lastName, password)
                     }
                 }else{
-                    showSnackbar(getString(R.string.no_internet_connection))
+                    showErrorSnackbar(getString(R.string.no_internet_connection))
                 }
             }else{
                 if(handleEmailError(email) != null){
