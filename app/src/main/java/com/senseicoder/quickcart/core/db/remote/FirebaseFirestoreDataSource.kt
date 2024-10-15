@@ -2,6 +2,7 @@ package com.senseicoder.quickcart.core.db.remote
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.withoutGIDPrefix
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.customer.CustomerKeys
@@ -46,8 +47,14 @@ object FirebaseFirestoreDataSource : RemoteDataSource {
         Log.d(TAG, "addUser:  adding user: $customer")
         val firestoreInstance: FirebaseFirestore = FirebaseFirestore.getInstance()
         val customersCollection = firestoreInstance.collection(CustomerKeys.CUSTOMERS_COLLECTION)
-        val res = customersCollection.add(customer).await()
-        emit(customer.copy(firebaseId = res.id))
+        if(customer.firebaseId != Constants.FIREBASE_USER_ID_DEFAULT){
+            customersCollection.document(customer.firebaseId).set(customer).await()
+            emit(customer)
+        }
+        else {
+            val res = customersCollection.add(customer).await()
+            emit(customer.copy(firebaseId = res.id))
+        }
     }.retryWhen { cause, attempt ->
         cause is IOException && attempt < 3
     }

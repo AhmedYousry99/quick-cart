@@ -105,8 +105,12 @@ class LoginFragment : Fragment() {
                             ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].updateCurrentUser(it.data)
                             snackBar.dismiss()
                             Handler(Looper.getMainLooper()).postDelayed({
-                                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-                                findNavController().graph.setStartDestination(R.id.homeFragment)
+                                try{
+                                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                                    findNavController().graph.setStartDestination(R.id.homeFragment)
+                                }catch (e: Exception){
+                                    Log.e(TAG, "subscribeToObservables: ", e)
+                                }
                             }, 170)
                         }
                         is ApiState.Failure -> {

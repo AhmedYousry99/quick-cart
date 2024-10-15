@@ -40,8 +40,8 @@ class CustomerRepoImpl private constructor(
             dto
         }.flatMapLatest { firebaseHandler.handleEmailVerification(it) }.flatMapConcat { dto ->
             if (dto.cartId == Constants.CART_ID_DEFAULT)
-                storefrontHandler.createCart(dto.email).map {
-                    dto.copy(cartId = it.id)
+                storefrontHandler.createCart(dto.email).flatMapConcat {
+                   dbRemoteDataSource.addUser(dto.copy(cartId = it.id))
                 }
             else
                 flowOf(dto)

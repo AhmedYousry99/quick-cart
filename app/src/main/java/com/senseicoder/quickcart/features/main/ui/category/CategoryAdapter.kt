@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.senseicoder.quickcart.CurrencyManager
-import com.senseicoder.quickcart.CurrencySharedPref
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.model.DisplayProduct
 import com.senseicoder.quickcart.core.services.SharedPrefsService
