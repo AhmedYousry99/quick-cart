@@ -31,6 +31,7 @@ object Constants {
         const val CUSTOMER_ID_PREFIX = "gid://shopify/Customer/"
         const val ORDER_ID_PREFIX = "gid://shopify/Order/"
         const val PRODUCT_ID_PREFIX = "gid://shopify/Product/"
+        const val BASE_URL_STRIPE_SERVER = "http://100.42.177.115:8888/"
 
         object MetaFields {
             const val CART = "Cart_data"
