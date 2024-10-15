@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.global.NetworkUtils
-import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentSearchBinding
@@ -114,7 +114,7 @@ class SearchFragment : Fragment() {
                             }
                         }
                         is ApiState.Failure -> {
-                            showSnackbar(it.msg)
+                            showErrorSnackbar(it.msg)
                         }
                     }
                 }
@@ -137,7 +137,7 @@ class SearchFragment : Fragment() {
                         }
 
                         is ApiState.Failure -> {
-                            showSnackbar(getString(R.string.suggestion_list_error))
+                            showErrorSnackbar(getString(R.string.suggestion_list_error))
                         }
                     }
                 }
@@ -163,6 +163,7 @@ class SearchFragment : Fragment() {
                         is ApiState.Failure -> {
                             loading = false
                             searchAdapter.removeLoadingFooter()
+                            showErrorSnackbar(it.msg)
                         }
                     }
                 }
@@ -188,7 +189,7 @@ class SearchFragment : Fragment() {
                 findNavController().navigate(R.id.action_searchFragment_to_productDetailsFragment)
             }
             else
-                showSnackbar(getString(R.string.no_internet_connection))
+                showErrorSnackbar(getString(R.string.no_internet_connection))
         }
         mLayoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewSearch.apply {
@@ -297,6 +298,7 @@ class SearchFragment : Fragment() {
         binding.apply {
             loadingSearchGroup.visibility = View.GONE
             emptyListSearchGroup.visibility = View.GONE
+            recyclerViewSearch.visibility = View.GONE
             noInternetSearchGroup.visibility = View.VISIBLE
         }
     }
