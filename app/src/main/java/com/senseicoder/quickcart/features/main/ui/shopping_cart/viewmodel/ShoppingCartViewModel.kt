@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
-import com.senseicoder.quickcart.core.model.DiscountCodesResponse
 import com.senseicoder.quickcart.core.model.DraftOrderReqRes
 import com.senseicoder.quickcart.core.model.PriceRulesResponse
 import com.senseicoder.quickcart.core.model.ProductOfCart
@@ -15,6 +14,7 @@ import com.senseicoder.quickcart.core.model.toAddressOfCustomer
 import com.senseicoder.quickcart.core.repos.cart.CartRepo
 import com.senseicoder.quickcart.core.repos.coupons.CouponsRepo
 import com.senseicoder.quickcart.core.repos.order.draft_order.DraftOrderRepo
+import com.senseicoder.quickcart.core.repos.payment.PaymentRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRepo,val couponsRepo : CouponsRepo) : ViewModel() {
+class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRepo,val couponsRepo : CouponsRepo,
+    val paymentRepo : PaymentRepo
+) : ViewModel() {
     private val _cartProducts: MutableStateFlow<ApiState<List<ProductOfCart>?>> =
         MutableStateFlow(ApiState.Loading)
     val cartProducts = _cartProducts
