@@ -42,7 +42,7 @@
     <string name="confirm_password_signup">Confirm Password</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="account_created_successfully">Your account has been created!</string>
+    <string name="account_created_successfully">Your account has been created\nCheck your inbox and verify your account!</string>
     <string name="email_invalid">Invalid Email</string>
     <string name="password_invalid_length_small">Password must be more than 6 characters</string>
     <string name="password_invalid_at_least_1_letter_1_number">Password must have at least 1 letter and 1 number</string>
@@ -64,7 +64,7 @@
     <string name="price_text">Total:\u0020</string>
     <string name="product_added_successfully">Product Added To Cart Successfully!</string>
     <string name="product_added_unsuccessfully">Couldn\'t add product To Cart, Try Again?</string>
-    <string name="permission_denied">You must be logged in to access thees features.</string>
+    <string name="permission_denied_body">You must be logged in to access these features.</string>
 
 
     <string name="order_items">Order Items</string>
@@ -115,6 +115,9 @@
     <string name="sign_out_message">Are you sure you will Sign out</string>
     <string name="may_fav">My Favourite</string>
     <string name="search">Search</string>
+    <string name="permission_denied_title">Permission Denied</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="login_success">Login Successful!</string>
 
 
 </resources>

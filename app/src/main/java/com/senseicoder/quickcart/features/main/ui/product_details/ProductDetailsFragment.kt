@@ -207,21 +207,28 @@ class ProductDetailsFragment : Fragment() {
                             disableAllChipGroups()
                             this@ProductDetailsFragment.showSnackbar(
                                 getString(R.string.adding_to_cart),
-                                Int.MAX_VALUE
+                                Int.MAX_VALUE,
+                                R.color.black
                             )
                         }
                         is ApiState.Success -> {
                             enableButtons()
                             enableAllChipGroups()
-                            this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully))
                             enableButtons()
                             enableAllChipGroups()
+                            this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_successfully), color = R.color.secondary)
                         }
 
                         is ApiState.Failure -> {
                             enableButtons()
                             enableAllChipGroups()
-                            this@ProductDetailsFragment.showSnackbar(getString(R.string.product_added_unsuccessfully))
+                            this@ProductDetailsFragment.showErrorSnackbar(getString(R.string.product_added_unsuccessfully)){
+                                Toast.makeText(
+                                    requireContext(),
+                                    "retry clicked",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }
@@ -444,7 +451,7 @@ class ProductDetailsFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.permission_denied),
+                    getString(R.string.permission_denied_body),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -506,7 +513,7 @@ class ProductDetailsFragment : Fragment() {
 
                 is ApiState.Failure -> {
                     hideLoadingGroup()
-                    this@ProductDetailsFragment.showSnackbar(response.msg)
+                    this@ProductDetailsFragment.showErrorSnackbar(response.msg)
                 }
             }
         }
@@ -554,7 +561,7 @@ class ProductDetailsFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                getString(R.string.permission_denied),
+                getString(R.string.permission_denied_body),
                 Toast.LENGTH_SHORT
             ).show()
         }

@@ -8,17 +8,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
+import androidx.navigation.navOptions
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
+import com.senseicoder.quickcart.features.main.ui.home.HomeFragment
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 
@@ -34,10 +38,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onDestinationChangedListener =
-        NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            if (!canNavigate(destination.id)){
-                controller.popBackStack()
-                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+        NavController.OnDestinationChangedListener { controller, destination, _ ->
+            if (!canNavigate(destination.id)) {
+                Log.d(TAG, "qwhehq: ${controller.getBackStackEntry(destination.id)}")
+                ConfirmationDialogFragment(DialogType.PERMISSION_DENIED_GUEST_MODE) {
+                    controller.navigate(R.id.splashFragment, null, navOptions {
+                        popUpTo(R.id.loginFragment) {
+                            inclusive = true
+                        }
+                    })
+                    controller.graph.setStartDestination(R.id.loginFragment)
+                }.show(supportFragmentManager, null)
+
+                controller.popBackStack(destination.id, true)
             }
         }
 
@@ -65,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 //        progressBar.startProgressBar()
 
         setSupportActionBar(binding.toolbar)
-
+        binding.toolbar.navigationIcon = null
         mainViewModel
         setupWithNavController(binding.toolbar, navController, appBarConfiguration)
         setupWithNavController(binding.navView, navController)

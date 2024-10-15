@@ -107,6 +107,14 @@ class ConfirmationDialogFragment(val code: DialogType, val function: (()->Unit)?
                         getString(R.string.signup_email_will_be_used),
                         getString(R.string.dialog_on_confirm_default))
                 }
+
+                DialogType.PERMISSION_DENIED_GUEST_MODE -> {
+                    setDialogDetails(
+                        getString(R.string.permission_denied_title),
+                        R.drawable.ic_info_outlined,
+                        getString(R.string.permission_denied_body),
+                        getString(R.string.login_button))
+                }
             }
             btnCancel.setOnClickListener{
                 dismiss()

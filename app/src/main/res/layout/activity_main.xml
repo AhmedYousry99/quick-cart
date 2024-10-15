@@ -37,9 +37,30 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/imageSearch"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/search"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="32dp"
+                    app:iconTint="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageFavorite"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeWidth="0dp" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -64,28 +85,27 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_cart_button" />
 
-                <ImageView
-                    android:id="@+id/imageSearch"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="20dp"
-                    android:src="@drawable/search"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageFavorite"
-                    app:layout_constraintEnd_toStartOf="@+id/imageFavorite"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/imageFavorite"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_marginEnd="30dp"
-                    android:src="@drawable/favouritemain"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/favouritemain"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="32dp"
+                    app:iconTint="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeWidth="0dp" />
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -122,6 +142,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
