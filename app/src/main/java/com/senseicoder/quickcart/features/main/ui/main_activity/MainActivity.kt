@@ -12,6 +12,7 @@ import androidx.navigation.navOptions
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
@@ -25,6 +26,7 @@ import com.senseicoder.quickcart.databinding.ActivityMainBinding
 import com.senseicoder.quickcart.features.main.ui.home.HomeFragment
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
+import com.stripe.android.PaymentConfiguration
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,7 +58,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        PaymentConfiguration.init(
+            applicationContext,
+            BuildConfig.publish_key // Replace with your Stripe publishable key
+        /*"pk_test_51Q5iOxB2VRlrbgQ7sEVPYTMVmfplCmtGo5EibD95SbNMis5QoW8IMzkHCloTbbx6uS89wToh9Z3AOqBRF431i44m00nXQ3rTn9"*/)
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
