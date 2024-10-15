@@ -11,7 +11,7 @@ object Constants {
             const val EMAIL_TAKEN = "Email has already been taken"
         }
         object Firebase{
-            const val EMAIL_NOT_VERIFIED = "Email is not verified"
+            const val EMAIL_NOT_VERIFIED = "Email is not verified, please check your inbox and verify your account!"
         }
     }
 
