@@ -16,6 +16,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -443,11 +445,15 @@ class ProductDetailsFragment : Fragment() {
                     ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].currentUser.value
                 )
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.permission_denied_body),
-                    Toast.LENGTH_SHORT
-                ).show()
+                val navController = findNavController()
+                ConfirmationDialogFragment(DialogType.PERMISSION_DENIED_GUEST_MODE) {
+                    navController.navigate(R.id.splashFragment, null, navOptions {
+                        popUpTo(R.id.loginFragment) {
+                            inclusive = true
+                        }
+                    })
+                    navController.graph.setStartDestination(R.id.loginFragment)
+                }.show(childFragmentManager, null)
             }
         } else {
             showErrorSnackbar(getString(R.string.no_internet_connection))
@@ -546,18 +552,21 @@ class ProductDetailsFragment : Fragment() {
         ) {
             if (NetworkUtils.isConnected(requireContext())) {
                 Log.d(TAG, "setupFavoriteOnClickListener: $data")
-                if (data) ConfirmationDialogFragment(DialogType.DEL_FAV) {
-                    favoriteViewModel.removeFromFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
-                }.show(childFragmentManager, null) else favoriteViewModel.addToFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
+                if (data)  favoriteViewModel.removeFromFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
+                else favoriteViewModel.addToFavorite((productDetailsViewModel.product.value as ApiState.Success).data)
             } else {
                 showErrorSnackbar(getString(R.string.no_internet_connection))
             }
         } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.permission_denied_body),
-                Toast.LENGTH_SHORT
-            ).show()
+            val navController = findNavController()
+            ConfirmationDialogFragment(DialogType.PERMISSION_DENIED_GUEST_MODE) {
+                navController.navigate(R.id.splashFragment, null, navOptions {
+                    popUpTo(R.id.loginFragment) {
+                        inclusive = true
+                    }
+                })
+                navController.graph.setStartDestination(R.id.loginFragment)
+            }.show(childFragmentManager, null)
         }
 
     }
