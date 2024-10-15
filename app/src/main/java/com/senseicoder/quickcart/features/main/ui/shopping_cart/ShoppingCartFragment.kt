@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.Locale
+import kotlin.math.log
 
 class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
@@ -345,6 +346,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 if (bottomSheetBinding.txtValueOfDiscount.text.toString().trimCurrencySymbol()
                         .replace("-", "").toDouble() > 0.0
                 ) {
+                    Log.d(TAG, "createDraftOrder: ")
                     draftOrder = DraftOrder(
                         email,
                         LocalDateTime.now().nano.toLong(),
@@ -408,16 +410,19 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     }
 
     private suspend fun freeCart() {
-        for (product in fetchedList) {
+        val dlList =fetchedList.map {
+            it.id
+        }
+
             val removeJob = lifecycleScope.launch {
-                viewModel.deleteFromCart(cardId, product.id)
+                viewModel.deleteFromCart(cardId, dlList)
             }
             removeJob.join()
 
             viewModel.removeProductFromCart.first { removeResult ->
                 when (removeResult) {
                     is ApiState.Success -> {
-                        Log.i(TAG, "Successfully removed item: ${product.id}")
+                        Log.i(TAG, "Successfully removed item: ${dlList}")
                         true
                     }
 
@@ -426,7 +431,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                     }
                 }
             }
-        }
         Snackbar.make(requireView(), "Order Completed", Toast.LENGTH_LONG).show()
     }
 
@@ -609,7 +613,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
     override fun onDeleteClick(item: ProductOfCart) {
         ConfirmationDialogFragment(DialogType.DEL_PRODUCT) {
-            viewModel.deleteFromCart(cardId, item.id)
+            viewModel.deleteFromCart(cardId, listOf(item.id))
             lifecycleScope.launch {
                 viewModel.removeProductFromCart.collect {
                     when (it) {

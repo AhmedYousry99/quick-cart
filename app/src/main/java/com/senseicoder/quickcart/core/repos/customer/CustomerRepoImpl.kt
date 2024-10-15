@@ -32,7 +32,7 @@ class CustomerRepoImpl private constructor(
 ) : CustomerRepo {
 
     override fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
-        return dbRemoteDataSource.getUserByEmail(CustomerDTO(email = email)).zip(
+        return dbRemoteDataSource.getUserByIdOrAddUser(CustomerDTO(email = email)).zip(
             firebaseHandler.loginUsingNormalEmail(
                 email, password
             )

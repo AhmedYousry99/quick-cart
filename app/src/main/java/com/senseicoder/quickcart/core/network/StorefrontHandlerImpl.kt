@@ -137,7 +137,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
 
     override suspend fun removeProductFromCart(
         cartId: String,
-        lineId: String
+        lineId: List<String>
     ): Flow<RemoveProductFromCartMutation.CartLinesRemove?> = flow {
         val mutation = RemoveProductFromCartMutation(cartId, lineId)
         val response = apolloClient.mutation(mutation).execute()

@@ -64,7 +64,7 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
 
     override suspend fun removeProductFromCart(
         cartId: String,
-        lineId: String
+        lineId: List<String>
     ): Flow<String?> = flow {
         remoteDataSource.removeProductFromCart(cartId, lineId).collect {
             emit(it?.userErrors?.firstOrNull()?.message)

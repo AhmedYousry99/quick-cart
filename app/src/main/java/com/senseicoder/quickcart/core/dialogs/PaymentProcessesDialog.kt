@@ -72,6 +72,7 @@ class PaymentProcessesDialog(listener : OnCartItemClickListener) : DialogFragmen
                 delay(100)
                 progressBar3.visibility = View.GONE
                 button2.apply {
+                    animationView.visibility = View.GONE
                     visibility=View.VISIBLE
                     setOnClickListener{
                         dismiss()
