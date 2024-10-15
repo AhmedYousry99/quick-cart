@@ -8,6 +8,7 @@ import com.senseicoder.quickcart.core.network.coupons.CouponsInterface
 import com.senseicoder.quickcart.core.network.currency.CurrencyInterface
 import com.senseicoder.quickcart.core.network.order.OrderInterface
 import com.senseicoder.quickcart.core.network.customer.CustomerAdminRetrofitInterface
+import com.senseicoder.quickcart.core.network.payment.PaymentInterface
 import com.senseicoder.quickcart.core.network.product.ProductsApiInterface
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -35,6 +36,10 @@ object ApiService {
     val currencyApiService: CurrencyInterface =
         AppRetrofit.retrofitCurrency.create(CurrencyInterface::class.java)
 
+    val paymentApiService: PaymentInterface =
+        AppRetrofit.retrofitPayment.create(PaymentInterface::class.java)
+
+
 
 
     object AppRetrofit {
@@ -42,6 +47,11 @@ object ApiService {
         private val logging = HttpLoggingInterceptor().apply {
             setLevel(HttpLoggingInterceptor.Level.BODY)
         }
+
+        val retrofitPayment: Retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(Constants.API.BASE_URL_STRIPE_SERVER)
+            .build()
 
         private val stripeInterceptor = Interceptor { chain ->
             val original = chain.request()
@@ -97,7 +107,7 @@ object ApiService {
             .build()
 
         val stripeRetrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://api.stripe.com/")
+            .baseUrl(Constants.API.BASE_URL_STRIPE_SERVER)
             .addConverterFactory(FormUrlEncodedConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .client(stripeOkHttpClient)
