@@ -8,15 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -27,7 +26,6 @@ import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
-import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.trimCurrencySymbol
 import com.senseicoder.quickcart.core.global.updateCurrency
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
@@ -46,6 +44,8 @@ import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.network.order.OrderRemoteDataSourceImpl
+import com.senseicoder.quickcart.core.network.payment.PaymentRemoteImpl
+import com.senseicoder.quickcart.core.repos.payment.PaymentRepoImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.repos.coupons.CouponsRepoImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
@@ -54,7 +54,6 @@ import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.BottomSheetPaymentBinding
 import com.senseicoder.quickcart.databinding.FragmentShoppingCartBinding
-import com.senseicoder.quickcart.databinding.PaymentProccessDialogBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
@@ -81,11 +80,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         private const val TAG = "ShoppingCartFragment"
     }
 
-    lateinit var customerId: String
-    lateinit var customerEphemeralKey: String
+
     private lateinit var paymentSheet: PaymentSheet
-    lateinit var customerConfiguration: PaymentSheet.CustomerConfiguration
-    lateinit var paymentIntentClientSecret: String
     private val customScope = CoroutineScope(Dispatchers.Main)
     lateinit var draftOrder: DraftOrder
     private lateinit var fragmentBinding: FragmentShoppingCartBinding
@@ -115,7 +111,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                     SharedPrefsService
                 ),
                 DraftOrderRepoImpl(OrderRemoteDataSourceImpl),
-                CouponsRepoImpl(CouponsRemoteImpl())
+                CouponsRepoImpl(CouponsRemoteImpl()),
+                PaymentRepoImpl(
+                    PaymentRemoteImpl
+                )
             )
         )[ShoppingCartViewModel::class.java]
     }
@@ -124,7 +123,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         SharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
     private var paymentProcess = PaymentProcessesDialog(this)
 
-    fun collectCouponsList() {
+    private fun collectCouponsList() {
         lifecycleScope.launch {
             viewModel.couponDetails.first {
                 when (it) {
@@ -146,8 +145,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         collectCouponsList()
-        paymentSheet =
-            PaymentSheet(this@ShoppingCartFragment, this@ShoppingCartFragment::onPaymentSheetResult)
+        paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
     }
 
     override fun onCreateView(
@@ -289,7 +287,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                                 TAG,
                                 "completeDraftOrderForCash: success id : ${it.data.draft_order.id}"
                             )
-                            paymentProcess.stepThree()
+                            paymentProcess.stepTwo()
                         }
 
                         is ApiState.Loading -> Log.d(TAG, "completeDraftOrderForCash: loading ")
@@ -317,7 +315,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                                 "createDraftOrderForCash Success: ${it.data}"
                             )
                             delay(1000)
-                            paymentProcess.stepTwo()
+                            paymentProcess.stepOne()
                             viewModel.completeDraftOrder(it.data.draft_order.id)
                         }
 
@@ -333,7 +331,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
-    private fun createDraftOrder(type : String) {
+    private fun createDraftOrder(type: String) {
+        paymentProcess.show(childFragmentManager, null)
         customScope.launch {
             val lines = fetchedList.map {
                 it.toLineItem()
@@ -365,8 +364,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                         Customer(email),
                         defaultAddress!!.toAddress(),
                         defaultAddress!!.toAddress(),
-                        note_attributes = listOf(noteAttributesData(Constants.PAYMENT_TYPE, type)
-                    ))
+                        note_attributes = listOf(
+                            noteAttributesData(Constants.PAYMENT_TYPE, type)
+                        )
+                    )
 
                 val request = DraftOrderReqRes(draftOrder)
                 viewModel.createDraftOrder(request)
@@ -527,12 +528,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         binding.apply {
             btnCompletePurches.setOnClickListener {
                 if (radBtnCash.isChecked) {
-                    lifecycleScope.launch { paymentProcess.show(childFragmentManager, null) }
-                        .invokeOnCompletion {
                             createDraftOrder(Constants.CASH)
-                        }
                 } else if (radBtnCard.isChecked) {
-                        checkOut()
+//                        checkOut()
+                    finalTestStripePayment()
                 } else
                     Toast.makeText(
                         requireContext(),
@@ -633,119 +632,122 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }.show(childFragmentManager, "ConfirmationDialogFragment")
     }
 
-    override fun paymentProcessDialog(binding: PaymentProccessDialogBinding) {
-        TODO("Not yet implemented")
-    }
-    /*
 
-        fun startPaymentSheet() {
-            paymentSheet.presentWithPaymentIntent(
-                paymentIntentClientSecret,
-                PaymentSheet.Configuration(
-                    "Quick Cart", customerConfiguration
-                )
-            )
+    private fun finalTestStripePayment() {
+        val url: String
+//        if (flag)
+            url = "http://100.42.177.115:8888/create-payment-intent"
+//        else url =
+//            "https://nodejs-serverless-function-express-self-eta.vercel.app/api/paymentintent"
+
+
+        val paymentData: JSONObject = preparePaymentData()
+
+        val request = object : StringRequest(
+            Method.POST, url,
+            Response.Listener { response ->
+                val jsonResponse = JSONObject(response)
+                val clientSecret = jsonResponse.getString("clientSecret")
+                val ephemeralKey = jsonResponse.getString("ephemeralKey")
+                val customerId = jsonResponse.getString("customer")
+
+
+                presentPaymentSheet(clientSecret, ephemeralKey, customerId)
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(this.requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json"
+                return headers
+            }
+
+            override fun getBody(): ByteArray {
+                return paymentData.toString().toByteArray()
+            }
         }
 
 
-        fun hitApiAndFetchData() {
-            val queue = Volley.newRequestQueue(requireContext())
-            val url =
-                "http://100.42.177.115:8888/create-payment-intent"
+        Volley.newRequestQueue(requireContext()).add(request)
+    }
 
-            val stringRequest: StringRequest = object : StringRequest(
-                Request.Method.POST, url,
-                Response.Listener { response ->
-                    // response
-                    val jsonObj = JSONObject(response)
-                    customerConfiguration = PaymentSheet.CustomerConfiguration(
-                        jsonObj.getString("customer"),
-                        jsonObj.getString("ephemeralKey"),
+    private fun preparePaymentData(): JSONObject {
+        val json: JSONObject
+        SharedPrefsService.apply {
+            Constants.apply {
+                json = JSONObject().apply {
+                    Log.d(
+                        TAG,
+                        "finalTestStripePayment: ${
+                            getSharedPrefString(
+                                USER_EMAIL,
+                                USER_EMAIL_DEFAULT
+                            )
+                        } - ${
+                            getSharedPrefString(
+                                USER_DISPLAY_NAME,
+                                USER_DISPLAY_NAME_DEFAULT
+                            )
+                        } - ${
+                            bottomSheetBinding.txtValueOFAfterDiscount.text.toString()
+                                .trimCurrencySymbol()
+                                .toDoubleOrNull()
+                                ?.toInt()
+                                ?.times(100) ?: 100
+                        } - ${
+                            getSharedPrefString(
+                                CURRENCY,
+                                CURRENCY_DEFAULT
+                            ).lowercase(Locale.ROOT)
+                        }"
                     )
-                    paymentIntentClientSecret = jsonObj.getString("paymentIntent")
-                    PaymentConfiguration.init(
-                        this.requireActivity().applicationContext,
-                        jsonObj.getString("publishableKey")
+                    put("email", getSharedPrefString(USER_EMAIL, USER_EMAIL_DEFAULT))
+                    put("name", getSharedPrefString(USER_DISPLAY_NAME, USER_DISPLAY_NAME_DEFAULT))
+                    put(
+                        "amount",
+                        bottomSheetBinding.txtValueOFAfterDiscount.text.toString()
+                            .trimCurrencySymbol().toDoubleOrNull()
+                            ?.toInt()
+                            ?.times(100) ?: 100
+                    ) // Amount in cents (e.g., $10.99 is 1099 cents)
+                    put(
+                        "currency",
+                        getSharedPrefString(CURRENCY, CURRENCY_DEFAULT).lowercase(Locale.ROOT)
                     )
-                    Log.d(TAG, "hitApiAndFetchData:respone  ${response}")
-                }, Response.ErrorListener { it ->
-                    Log.d(TAG, "hitApiAndFetchData: error ${it}")
-                }) {
-                override fun getParams(): Map<String, String> {
-                    val params: MutableMap<String, String> = HashMap()
-                    params["authKey"] = "abc"
-                    return params
                 }
             }
-            queue.add(stringRequest)
         }
-    */
-
-    private fun checkOut() {
-        val reqBody = JSONObject().apply {
-            put(
-                "amount",
-                bottomSheetBinding.txtValueOFAfterDiscount.text.toString().trimCurrencySymbol()
-                    .toDoubleOrNull()?.times(100) ?: 100
-            )
-            put(
-                "currency",
-                SharedPrefsService.getSharedPrefString(
-                    Constants.CURRENCY,
-                    Constants.CURRENCY_DEFAULT
-                )
-                    .lowercase(Locale.getDefault())
-            )
-            put(
-                "email",
-                SharedPrefsService.getSharedPrefString(
-                    Constants.USER_EMAIL,
-                    Constants.USER_EMAIL_DEFAULT
-                )
-            )
-            put(
-                "name",
-                SharedPrefsService.getSharedPrefString(
-                    Constants.USER_DISPLAY_NAME,
-                    Constants.USER_DISPLAY_NAME_DEFAULT
-                )
-            )
-        }
-        Log.d(TAG, "checkOut: $reqBody")
-        val url = "http://100.42.177.115:8888/create-payment-intent"
-        val jsonRequest = JsonObjectRequest(
-            Request.Method.POST, url, reqBody,
-            { response ->
-                paymentIntentClientSecret = response.getString("clientSecret")
-                customerEphemeralKey = response.getString("ephemeralKey")
-                customerId = response.getString("customer")
-                presentPaymentSheet()
-                Log.d(TAG, "checkOut:(success) $response")
-            },
-            { error ->
-                Log.d(TAG, "checkOut(error): ${error}")
-            }
-        )
-        Volley.newRequestQueue(requireContext()).add(jsonRequest)
+        return json
     }
 
-    private fun presentPaymentSheet() {
-        val paymentSheetConfiguration = PaymentSheet.Configuration(
-            getString(R.string.app_name),
-            PaymentSheet.CustomerConfiguration(
-                customerId, customerEphemeralKey
+    private fun presentPaymentSheet(
+        clientSecret: String,
+        ephemeralKey: String,
+        customerId: String
+    ) {
+        // Initialize the PaymentSheet and present it
+        val configuration = PaymentSheet.Configuration(
+            merchantDisplayName = "Quick-cart",
+            customer = PaymentSheet.CustomerConfiguration(
+                id = customerId,
+                ephemeralKeySecret = ephemeralKey
             )
         )
-        paymentSheet.presentWithPaymentIntent(
-            paymentIntentClientSecret,
-            paymentSheetConfiguration
-        )
+
+        paymentSheet.presentWithPaymentIntent(clientSecret, configuration)
     }
 
     private fun onPaymentSheetResult(res: PaymentSheetResult) {
         when (res) {
             is PaymentSheetResult.Canceled -> Log.d(TAG, "onPaymentSheetResult: canceled")
-            is PaymentSheetResult.Failed -> Log.d(TAG, "onPaymentSheetResult: failed")
+            is PaymentSheetResult.Failed -> {
+                Log.d(TAG, "onPaymentSheetResult: failed ${res}")
+
+            }
+
             is PaymentSheetResult.Completed -> {
                 createDraftOrder(Constants.CARD)
                 Log.d(TAG, "onPaymentSheetResult: completed")
@@ -753,5 +755,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
 
     }
+
+
 }
+
 
