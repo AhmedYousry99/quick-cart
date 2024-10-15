@@ -53,25 +53,25 @@ class SplashFragment : Fragment() {
             txtRight.translationX = 500f
             txtLeft.translationX = -500f
             networkLottie4.translationX = -500f
-            val lastAnime = ObjectAnimator.ofFloat(networkLottie4, "translationX", 0f, 700f).apply {
-                duration = 1500
+            val lastAnime = ObjectAnimator.ofFloat(networkLottie4, "translationX", 0f, 900f).apply {
+                duration = 1000
             }
-            val lastAnimeL = ObjectAnimator.ofFloat(txtLeft, "translationX", 0f, 500f).apply {
-                duration = 1500
+            val lastAnimeL = ObjectAnimator.ofFloat(txtLeft, "translationX", 0f, 900f).apply {
+                duration = 1000
             }
-            val lastAnimeR = ObjectAnimator.ofFloat(txtRight, "translationX", 0f, 500f).apply {
-                duration = 1500
+            val lastAnimeR = ObjectAnimator.ofFloat(txtRight, "translationX", 0f, 900f).apply {
+                duration = 1000
             }
 //
             val animAnim = ObjectAnimator.ofFloat(networkLottie4, "translationX", 0f).apply {
-                duration = 2000
+                duration = 1000
             }
             val animRight = ObjectAnimator.ofFloat(txtRight, "translationX", 0f).apply {
-                duration = 2000
+                duration = 1000
                 interpolator = BounceInterpolator()
             }
             val animLeft = ObjectAnimator.ofFloat(txtLeft, "translationX", 0f).apply {
-                duration = 2000
+                duration = 1000
                 interpolator = BounceInterpolator()
             }
             val animatorSet: AnimatorSet = AnimatorSet().apply {
