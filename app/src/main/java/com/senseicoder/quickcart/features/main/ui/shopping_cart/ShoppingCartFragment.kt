@@ -26,6 +26,7 @@ import com.senseicoder.quickcart.core.dialogs.PaymentProcessesDialog
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.global.trimCurrencySymbol
 import com.senseicoder.quickcart.core.global.updateCurrency
@@ -569,7 +570,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             Navigation.findNavController(this.requireView())
                 .navigate(R.id.action_shoppingCartFragment_to_productDetailsFragment)
         } else {
-            showSnackbar(getString(R.string.no_internet_connection))
+            showErrorSnackbar(getString(R.string.no_internet_connection))
         }
     }
 

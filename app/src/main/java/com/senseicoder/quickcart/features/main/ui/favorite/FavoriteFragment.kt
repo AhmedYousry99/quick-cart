@@ -17,6 +17,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.setupRefreshLayout
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepoImpl
@@ -54,29 +55,39 @@ class FavoriteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgBtnBack.setOnClickListener {
+        binding.mainBackBtnFavorite.setOnClickListener {
             findNavController().popBackStack()
         }
         adapter = FavoritesAdapter ({
             ConfirmationDialogFragment(DialogType.DEL_FAV) {
-                viewModel.removeFromFavorite(it)
+                if(NetworkUtils.isConnected(requireContext())){
+                    viewModel.removeFromFavorite(it)
+                }else{
+                    showErrorSnackbar(getString(R.string.no_internet_connection))
+                }
             }.show(childFragmentManager, null)
         }) {
-            ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].setCurrentProductId(it.apply {
-                Log.d(
-                    TAG,
-                    "onViewCreated: $it"
-                ) })
-            findNavController().navigate(R.id.action_favoriteFragment_to_productDetailsFragment)
+            if(NetworkUtils.isConnected(requireContext())){
+                ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].setCurrentProductId(it.apply {
+                    Log.d(
+                        TAG,
+                        "onViewCreated: $it"
+                    ) })
+                findNavController().navigate(R.id.action_favoriteFragment_to_productDetailsFragment)
+            }else{
+                showErrorSnackbar(getString(R.string.no_internet_connection))
+            }
         }
         binding.favoriteRecycler.apply {
             adapter = this@FavoriteFragment.adapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
+        setupRefreshLayout(binding.swipeRefreshLayoutFavorite, binding.favoriteRecycler)
         Log.d(TAG, "onViewCreated: created")
         setupListeners()
         subscribeToObservables()
+        getFavoritesIfNetworkAvailable()
     }
 
     override fun onStart() {
@@ -121,6 +132,7 @@ class FavoriteFragment : Fragment() {
     private fun setupListeners() {
         binding.apply {
             swipeRefreshLayoutFavorite.setOnRefreshListener {
+                Log.d(TAG, "onCreate: refreshing")
                 getFavoritesIfNetworkAvailable()
             }
         }
@@ -128,7 +140,7 @@ class FavoriteFragment : Fragment() {
 
     private fun subscribeToObservables() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED){
+            repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.favorites.collectLatest {
                     when (it) {
                         ApiState.Init -> {
@@ -153,7 +165,7 @@ class FavoriteFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED){
+            repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.isFavorite.collect {
                     when (it) {
                         ApiState.Init -> {}
@@ -165,7 +177,7 @@ class FavoriteFragment : Fragment() {
                             showErrorSnackbar(getString(R.string.favorite_removed_unsuccessfully), 2000)
                         }
                         is ApiState.Success -> {
-                            showSnackbar(getString(R.string.favorite_removed_successfully), 2000)
+                            showSnackbar(getString(R.string.favorite_removed_successfully), color = R.color.secondary)
                         }
                     }
                 }
@@ -197,7 +209,7 @@ class FavoriteFragment : Fragment() {
             favoriteRecycler.visibility = View.GONE
             loadingFavoriteGroup.visibility = View.GONE
             noInternetFavoriteGroup.visibility = View.GONE
-            showSnackbar(getString(R.string.unknown))
+            showErrorSnackbar(getString(R.string.unknown))
         }
     }
 

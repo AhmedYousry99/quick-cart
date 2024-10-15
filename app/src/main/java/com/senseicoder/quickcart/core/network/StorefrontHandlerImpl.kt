@@ -41,6 +41,8 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.IOException
+import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 object StorefrontHandlerImpl : StorefrontHandler {
 
@@ -63,6 +65,8 @@ object StorefrontHandlerImpl : StorefrontHandler {
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(headerInterceptor)
         .addInterceptor(logging)
+        .callTimeout(Duration.ofSeconds(20))
+        .readTimeout(Duration.ofSeconds(20))
         .build()
 
     private val apolloClient = ApolloClient.Builder().serverUrl(Constants.API.STORE_FRONT)

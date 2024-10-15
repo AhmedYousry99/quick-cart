@@ -169,40 +169,35 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        (requireActivity() as MainActivity).apply {
-            showBottomNavBar()
-            toolbarVisibility(true)
-        }
-    }
-
     override fun onStop() {
         super.onStop()
         (requireActivity() as MainActivity).apply {
-
             if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
             ) {
+
                 showBottomNavBar()
             } else {
                 hideBottomNavBar()
             }
+            toolbarVisibility(false)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        (requireActivity() as MainActivity).toolbarVisibility(true)
+        (requireActivity() as MainActivity).apply {
+            showBottomNavBar()
+            toolbarVisibility(true)
+        }
         if(homeViewModel.coupons.value !is ApiState.Success)
             handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
     }
 
     override fun onPause() {
         super.onPause()
-        (requireActivity() as MainActivity).toolbarVisibility(false)
         handler.removeCallbacks(HomePager2AnimationRunnable)
     }
 

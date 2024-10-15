@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Duration
 
 object ApiService {
 
@@ -63,16 +64,23 @@ object ApiService {
         private val stripeOkHttpClient = OkHttpClient.Builder()
             .addInterceptor(stripeInterceptor)
             .addInterceptor(logging)
+            .callTimeout(Duration.ofSeconds(20))
+            .readTimeout(Duration.ofSeconds(20))
+            .build()
+
+        private val currencyApiOkHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .callTimeout(Duration.ofSeconds(20))
+            .readTimeout(Duration.ofSeconds(20))
             .build()
 
         @Volatile
         private var client = OkHttpClient
             .Builder()
             .addInterceptor(logging)
-            .addInterceptor(
-                HttpLoggingInterceptor()
-                    .setLevel(HttpLoggingInterceptor.Level.BODY)
-            ).addInterceptor(headerInterceptor)
+            .addInterceptor(headerInterceptor)
+            .callTimeout(Duration.ofSeconds(20))
+            .readTimeout(Duration.ofSeconds(20))
             .build()
 
         val retrofit: Retrofit = Retrofit.Builder()
@@ -85,6 +93,7 @@ object ApiService {
         val retrofitCurrency: Retrofit = Retrofit.Builder()
             .baseUrl(CURRENCY_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(currencyApiOkHttpClient)
             .build()
 
         val stripeRetrofit: Retrofit = Retrofit.Builder()

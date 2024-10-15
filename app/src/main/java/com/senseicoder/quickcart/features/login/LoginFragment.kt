@@ -1,6 +1,8 @@
 package com.senseicoder.quickcart.features.login
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
@@ -40,6 +43,7 @@ import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
+    private lateinit var snackBar: Snackbar
     private lateinit var binding:FragmentLoginBinding
     private lateinit var loginViewModel: LoginViewModel
 
@@ -95,16 +99,15 @@ class LoginFragment : Fragment() {
                         }
                         ApiState.Loading -> {
                             disableButtons()
+                            snackBar = showSnackbar(getString(R.string.logging_in), color = R.color.black)
                         }
                         is ApiState.Success -> {
-                            enableButtons()
                             ViewModelProvider(requireActivity())[MainActivityViewModel::class.java].updateCurrentUser(it.data)
-                            try{
-                                findNavController().graph.setStartDestination(R.id.homeFragment)
+                            snackBar.dismiss()
+                            Handler(Looper.getMainLooper()).postDelayed({
                                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-                            }catch(e:Exception){
-                                Log.d(TAG, "subscribeToObservables: navigation error happened")
-                            }
+                                findNavController().graph.setStartDestination(R.id.homeFragment)
+                            }, 170)
                         }
                         is ApiState.Failure -> {
                             enableButtons()
@@ -147,7 +150,8 @@ class LoginFragment : Fragment() {
             }
             continueAsAGuestButton.setOnClickListener {
                 ConfirmationDialogFragment(DialogType.GUEST_MODE){
-                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                    findNavController().navigate(R.id.homeFragment)
+                    findNavController().graph.setStartDestination(R.id.homeFragment)
                 }.show(parentFragmentManager, null)
             }
             loginText.setOnClickListener{
@@ -176,7 +180,7 @@ class LoginFragment : Fragment() {
                 if(NetworkUtils.isConnected(requireContext())){
                     loginViewModel.loginUsingNormalEmail(email, password)
                 }else{
-                    binding.root.showSnackbar(getString(R.string.no_internet_connection))
+                    showErrorSnackbar(getString(R.string.no_internet_connection))
                 }
             }else{
                 if(handleEmailError(email) != null) {

@@ -10,13 +10,12 @@ import com.senseicoder.quickcart.core.model.customer.CustomerDTO
 import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.repos.cart.CartRepo
-import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -25,11 +24,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProductDetailsViewModel(
     private val cartRepo: CartRepo,
-    private val productsRepo: ProductsRepo
+    private val productsRepo: ProductsRepo,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _cartId: MutableStateFlow<ApiState<String?>> = MutableStateFlow(ApiState.Init)
@@ -63,9 +62,7 @@ class ProductDetailsViewModel(
         MutableSharedFlow(1)
     val selectedProduct = _selectedProduct.asSharedFlow()
 
-/*    private val _cartItemRemove: MutableStateFlow<ApiState<String?>> =
-        MutableStateFlow(ApiState.Init)
-    val cartItemRemove = _cartItemRemove.asStateFlow()*/
+
 
 
     fun createCart(email: String) {
@@ -80,7 +77,7 @@ class ProductDetailsViewModel(
     }
 
     fun getProductDetails(productId: String = "gid://shopify/Product/8309909618854") {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             productsRepo.getProductDetailsGraph(productId).catch {
                 _product.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
             }.map { productDTO ->
@@ -109,23 +106,13 @@ class ProductDetailsViewModel(
     }
 
 
-    /*fun removeProductFromCart(cartId: String, lineId: String) {
-        viewModelScope.launch {
-            cartRepo.removeProductFromCart(cartId, lineId).catch {
-                _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
-            }
-                .collect {
-                    _cartItemRemove.value = ApiState.Success(it)
-                }
-        }
-    }*/
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun addProductToCart(selectedAmount: Int, variants: List<Variant>, currentCustomer: CustomerDTO) {
         viewModelScope.launch(Dispatchers.Default) {
             _addingToCart.value = ApiState.Loading
             val id = cartRepo.getCartId()
-            //TODO: handle if cart_id is invalid
             if(id != Constants.CART_ID_DEFAULT){
                 Log.d(TAG, "addProductToCart: cartId exists: $id")
                 cartRepo.addToCartByIds(id, selectedAmount, variants.first().id).catch {
@@ -182,16 +169,11 @@ class ProductDetailsViewModel(
     ) {
         viewModelScope.launch(Dispatchers.Default) {
             if (isChecked) {
-                withContext(Dispatchers.Main) {
-                    _selectedProduct.emit(ProductState.SingleSelected(Pair(variants, selectedBy)))
-                }
+                _selectedProduct.emit(ProductState.SingleSelected(Pair(variants, selectedBy)))
             } else {
                 val matchingVariants =
                     (_product.value as ApiState.Success).data.variants.filter { it.selectedOptions.any { selectedOption -> selectedOption.value == value } }
-                withContext(Dispatchers.Main) {
-                    _selectedProduct.emit(ProductState.Unselected(Pair(matchingVariants, selectedBy)))
-
-                }
+                _selectedProduct.emit(ProductState.Unselected(Pair(matchingVariants, selectedBy)))
             }
         }
     }
@@ -219,22 +201,20 @@ class ProductDetailsViewModel(
             Log.d(TAG, "filterAndSendSelectedProduct: ->${variants}")
 
             Log.d(TAG, "filterAndSendSelectedProduct: ${currentValue}, ${otherValue}")
-            withContext(Dispatchers.Main) {
-                _selectedProduct.emit(ProductState.MultiSelected(
-                    Pair(
-                        matchingVariants,
-                        if(_selectedProduct.replayCache.first() is ProductState.SingleSelected<Pair<List<Variant>, SelectedBy>>){
-                            (_selectedProduct.replayCache.first()  as ProductState.SingleSelected<Pair<List<Variant>, SelectedBy>>).data.second
-                        }else if(_selectedProduct.replayCache.first() is ProductState.MultiSelected<Pair<List<Variant>, SelectedBy>>){
-                            (_selectedProduct.replayCache.first()  as ProductState.MultiSelected<Pair<List<Variant>, SelectedBy>>).data.second
-                        }else{
-                            (_selectedProduct.replayCache.first()  as ProductState.Unselected<Pair<List<Variant>, SelectedBy>>).data.second
-                        }
-                    )
-                ).also {
-                    Log.d(TAG, "filterAndSendSelectedProduct: ${it.data.first}")
-                })
-            }
+            _selectedProduct.emit(ProductState.MultiSelected(
+                Pair(
+                    matchingVariants,
+                    if(_selectedProduct.replayCache.first() is ProductState.SingleSelected<Pair<List<Variant>, SelectedBy>>){
+                        (_selectedProduct.replayCache.first()  as ProductState.SingleSelected<Pair<List<Variant>, SelectedBy>>).data.second
+                    }else if(_selectedProduct.replayCache.first() is ProductState.MultiSelected<Pair<List<Variant>, SelectedBy>>){
+                        (_selectedProduct.replayCache.first()  as ProductState.MultiSelected<Pair<List<Variant>, SelectedBy>>).data.second
+                    }else{
+                        (_selectedProduct.replayCache.first()  as ProductState.Unselected<Pair<List<Variant>, SelectedBy>>).data.second
+                    }
+                )
+            ).also {
+                Log.d(TAG, "filterAndSendSelectedProduct: ${it.data.first}")
+            })
         }
     }
 

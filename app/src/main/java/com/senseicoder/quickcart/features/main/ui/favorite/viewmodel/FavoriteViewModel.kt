@@ -27,7 +27,7 @@ class FavoriteViewModel(private val favoriteRepo: FavoriteRepo,
     val isFavorite = _isFavorite.asSharedFlow()
 
     private val _favorites = MutableStateFlow<ApiState<List<FavoriteDTO>>>(ApiState.Init)
-    val favorites = _favorites.onStart { getFavorites() }.stateIn(
+    val favorites = _favorites.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
         ApiState.Init

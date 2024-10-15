@@ -12,70 +12,56 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="networkLottie3,loadingFavoriteGroup" />
+        app:constraint_referenced_ids="mainEmptyFavorite" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/noInternetFavoriteGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="noInternet2,networkLottie2" />
+        app:constraint_referenced_ids="noInternet2,networkLottieFavorite" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <ImageView
+        android:id="@+id/mainBackBtnFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/mainTitleFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="@string/may_fav"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/mainBackBtnFavorite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainBackBtnFavorite" />
+
+    <com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutFavorite"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/mainTitleFavorite">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/imgBtnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_back"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView19"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/alexandria_medium"
-                android:text="@string/may_fav"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imgBtnBack"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imgBtnBack" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/favoriteRecycler"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView19"
-                tools:listitem="@layout/favorite_item"
-                tools:visibility="gone" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favoriteRecycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            tools:listitem="@layout/favorite_item" />
+    </com.senseicoder.quickcart.core.global.view_support.ScrollChildSwipeRefreshLayout>
 
     <TextView
         android:id="@+id/noInternet2"
@@ -90,11 +76,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/networkLottie2"
+        app:layout_constraintTop_toBottomOf="@+id/networkLottieFavorite"
         app:layout_constraintVertical_bias="0.0" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/networkLottie2"
+        android:id="@+id/networkLottieFavorite"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="200dp"
@@ -106,18 +92,20 @@
         app:lottie_rawRes="@raw/nointernet" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/lottieAnimationView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:id="@+id/mainShimmerFavorite"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainTitleFavorite"
         app:shimmer_auto_start="true"
         app:shimmer_duration="1500">
 
         <ScrollView
-            android:id="@+id/lottieAnimationView23"
+            android:id="@+id/mainShimmerScrollviewFavorite"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -125,14 +113,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp"
                 tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="1dp">
 
-                <include layout="@layout/favorites_shimmer" />
 
                 <include layout="@layout/favorites_shimmer" />
 
@@ -150,7 +136,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/networkLottie3"
+        android:id="@+id/mainEmptyFavorite"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -164,7 +150,7 @@
         android:id="@+id/loadingFavoriteGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="lottieAnimationView2"
-        tools:visibility="gone" />
+        app:constraint_referenced_ids="mainShimmerFavorite"
+        tools:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
