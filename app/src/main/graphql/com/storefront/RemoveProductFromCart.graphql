@@ -1,7 +1,7 @@
-mutation RemoveProductFromCart($cartId: ID!, $lineId: ID!) {
+mutation RemoveProductFromCart($cartId: ID!, $lineId: [ID!]!) {
     cartLinesRemove(
         cartId: $cartId,
-        lineIds: [$lineId]
+        lineIds: $lineId
     ) {
         userErrors {
             field

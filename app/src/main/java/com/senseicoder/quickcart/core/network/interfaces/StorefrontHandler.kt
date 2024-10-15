@@ -40,7 +40,7 @@ interface StorefrontHandler {
 
     //SHOPPING CART NEEDED
 
-    suspend fun removeProductFromCart(cartId: String, lineId: String): Flow<RemoveProductFromCartMutation.CartLinesRemove?>
+    suspend fun removeProductFromCart(cartId: String, lineId: List<String>): Flow<RemoveProductFromCartMutation.CartLinesRemove?>
 
     suspend fun getProductsCart(cartId: String): Flow<ApolloResponse<GetCartDetailsQuery.Data>>
 

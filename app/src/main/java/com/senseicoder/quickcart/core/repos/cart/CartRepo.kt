@@ -12,7 +12,7 @@ interface CartRepo {
     suspend fun getCartProducts(cartId: String): Flow<ApolloResponse<GetCartDetailsQuery.Data>>
     suspend fun removeProductFromCart(
         cartId: String,
-        lineId: String
+        lineId: List<String>
     ): Flow<String?>
     fun getSharedPrefString(key: String, defaultValue: String): String
 
