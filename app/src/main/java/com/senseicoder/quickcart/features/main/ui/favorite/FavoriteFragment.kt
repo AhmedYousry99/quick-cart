@@ -60,7 +60,11 @@ class FavoriteFragment : Fragment() {
         }
         adapter = FavoritesAdapter ({
             ConfirmationDialogFragment(DialogType.DEL_FAV) {
-                viewModel.removeFromFavorite(it)
+                if(NetworkUtils.isConnected(requireContext())){
+                    viewModel.removeFromFavorite(it)
+                }else{
+                    showErrorSnackbar(getString(R.string.no_internet_connection))
+                }
             }.show(childFragmentManager, null)
         }) {
             if(NetworkUtils.isConnected(requireContext())){
