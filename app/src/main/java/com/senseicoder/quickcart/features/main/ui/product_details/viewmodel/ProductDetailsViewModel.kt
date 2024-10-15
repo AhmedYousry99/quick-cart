@@ -124,6 +124,7 @@ class ProductDetailsViewModel(
                 Log.d(TAG, "addProductToCart: creating ID")
                 cartRepo.createCart(currentCustomer.email)
                     .flatMapConcat { cartId ->
+                        cartRepo.setCartId(cartId)
                         cartRepo.addToCartByIds(cartId,selectedAmount, variants.first().id)
                     }.catch {
                         _cartId.emit(ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN))
