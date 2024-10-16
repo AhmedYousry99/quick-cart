@@ -1,6 +1,7 @@
 package com.senseicoder.quickcart.features.main.ui.category
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -244,6 +245,7 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
 
     override fun onStart() {
         super.onStart()
+        Log.d(TAG, "onStart: ")
         (requireActivity() as MainActivity).showBottomNavBar()
     }
 
@@ -311,5 +313,9 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
         }
 
         binding.swipeRefresher.isRefreshing = false
+    }
+
+    companion object{
+        private const val TAG = "CategoryFragment"
     }
 }

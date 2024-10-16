@@ -70,7 +70,7 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var favoriteViewModel: FavoriteViewModel
 
     private val reviews: List<ReviewDTO> = listOf(
-        ReviewDTO(name = "Kareem", description = "Quality is not as advertised.", rating = 2.5),
+        ReviewDTO(name = "Nada", description = "Quality is not as advertised.", rating = 2.5),
         ReviewDTO(name = "Dina", description = "Very happy with my purchase.", rating = 4.5),
         ReviewDTO(name = "Ali", description = "Not bad.", rating = 3.0),
         ReviewDTO(name = "Layla", description = "Absolutely love it! Great buy.", rating = 5.0),

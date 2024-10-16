@@ -174,6 +174,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
     }
 
     override fun onStop() {
+        Log.d(TAG, "onStop: ")
         super.onStop()
         (requireActivity() as MainActivity).apply {
             if (binding.root.findNavController().currentDestination!!.id == R.id.homeFragment
@@ -181,7 +182,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 || binding.root.findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || binding.root.findNavController().currentDestination!!.id == R.id.profileFragment
             ) {
-
                 showBottomNavBar()
             } else {
                 hideBottomNavBar()
