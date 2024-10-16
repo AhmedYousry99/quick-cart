@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -38,6 +39,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class AddressFragment : Fragment(), OnAddressClickListener {
+    private var flagBackPress = false
     var flagToPopUp = false
     var flagToPopUFromEdit = false
     lateinit var binding: FragmentAddressBinding
@@ -76,6 +78,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.getCustomerAddresses()
         SharedPrefsService.logAllSharedPref(TAG, "onViewCreated")
         label = arguments?.getString(Constants.LABEL, null)
@@ -110,7 +113,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
     private fun collector() {
         lifecycleScope.launch {
-            viewModel.allAddresses?.collect {
+            viewModel.allAddresses.collect {
                 when (it) {
                     is ApiState.Loading -> {
                         ifLoading()
@@ -119,6 +122,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                     is ApiState.Success -> {
                         val res = it.data.addresses.edges
                         if (res.isNotEmpty()) {
+                            mainViewModel.updateAllAddress(ApiState.Success(it.data))
                             ifSuccessAndData()
                             addressAdapter = AddressAdapter(
                                 sortDefault(res.fromEdges(), it.data.defaultAddress?.id ?: ""),

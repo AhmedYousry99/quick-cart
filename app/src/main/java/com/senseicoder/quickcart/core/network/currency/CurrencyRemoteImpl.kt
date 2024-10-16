@@ -1,29 +1,21 @@
 package com.senseicoder.quickcart.core.network.currency
 
 import com.senseicoder.quickcart.BuildConfig
+import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.AllCurrencies
 import com.senseicoder.quickcart.core.model.CurrencyResponse
 import com.senseicoder.quickcart.core.network.ApiService
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 import kotlin.math.E
 
 object CurrencyRemoteImpl : CurrencyRemote {
-    override fun getCurrencyRate(newCurrency: String): Flow<CurrencyResponse> = flow {
-        try {
-            val res = ApiService.currencyApiService.getLatestRates(
-                BuildConfig.currency_api_key,
-                "EGP",
-                newCurrency
-            )
-            if (res.isSuccessful) {
-                emit(res.body()!!)
-            } else {
-                throw Exception(res.message())
-            }
-        } catch (e: Exception) {
-            throw Exception(e.message)
-        }
+    override suspend fun getCurrencyRate(newCurrency: String): Response<CurrencyResponse>{
+        return ApiService.currencyApiService.getLatestRates(BuildConfig.currency_api_key,
+            SharedPrefsService.getSharedPrefString(Constants.CURRENCY,Constants.CURRENCY_DEFAULT),
+            newCurrency)
     }
 
     override fun getCurrencies(): Flow<AllCurrencies> {

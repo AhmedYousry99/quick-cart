@@ -62,7 +62,6 @@ class SplashFragment : Fragment() {
             val lastAnimeR = ObjectAnimator.ofFloat(txtRight, "translationX", 0f, 900f).apply {
                 duration = 1000
             }
-//
             val animAnim = ObjectAnimator.ofFloat(networkLottie4, "translationX", 0f).apply {
                 duration = 1000
             }
@@ -79,7 +78,6 @@ class SplashFragment : Fragment() {
                 addListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animation: Animator) {
                     }
-
                     override fun onAnimationEnd(animation: Animator) {
                         lifecycleScope.launch {
                             delay(500)
@@ -89,15 +87,13 @@ class SplashFragment : Fragment() {
                                 addListener(object :AnimatorListener{
                                     override fun onAnimationStart(animation: Animator) {
                                     }
-
                                     override fun onAnimationEnd(animation: Animator) {
+                                        binding.finalGroup.visibility = View.VISIBLE
                                         check()
                                     }
-
                                     override fun onAnimationCancel(animation: Animator) { }
 
                                     override fun onAnimationRepeat(animation: Animator) { }
-
                                 })
                             }
                         }

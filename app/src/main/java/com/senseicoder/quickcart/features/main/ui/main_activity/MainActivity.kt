@@ -3,10 +3,10 @@ package com.senseicoder.quickcart.features.main.ui.main_activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.navOptions
 import androidx.navigation.ui.AppBarConfiguration
@@ -16,14 +16,15 @@ import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
-import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.databinding.ActivityMainBinding
-import com.senseicoder.quickcart.features.main.ui.home.HomeFragment
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.stripe.android.PaymentConfiguration
@@ -35,7 +36,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val mainViewModel : MainActivityViewModel by lazy{
         ViewModelProvider(this,
-            MainActivityViewModelFactory(CurrencyRepoImpl(CurrencyRemoteImpl))
+            MainActivityViewModelFactory(CurrencyRepoImpl(CurrencyRemoteImpl),
+                AddressRepoImpl(
+                    StorefrontHandlerImpl,
+                    SharedPrefsService
+                )
+            )
             )[MainActivityViewModel::class.java]
     }
 
@@ -78,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.profileFragment,
             )
         ).build()
+
         navController = findNavController(this, R.id.nav_host)
 
 //        progressBar.startProgressBar()
@@ -94,6 +101,9 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.searchFragment)
         }
         navController.addOnDestinationChangedListener(onDestinationChangedListener)
+
+        // run observable
+        NetworkUtils.observeNetworkConnectivity(applicationContext)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -127,5 +137,11 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+        val navOptions = NavOptions.Builder()
+            .setEnterAnim(R.anim.slide_in_right)
+            .setExitAnim(R.anim.slide_out_left)
+            .setPopEnterAnim(R.anim.slide_in_left)
+            .setPopExitAnim(R.anim.slide_out_right)
+            .build()
     }
 }

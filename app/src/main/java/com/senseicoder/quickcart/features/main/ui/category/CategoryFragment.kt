@@ -14,8 +14,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.address.AddressRepo
+import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
+import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentCategoryBinding
@@ -268,6 +272,10 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
             MainActivityViewModelFactory(
                 CurrencyRepoImpl(
                     CurrencyRemoteImpl
+                ),
+                AddressRepoImpl(
+                    StorefrontHandlerImpl,
+                    SharedPrefsService
                 )
             ))[MainActivityViewModel::class.java].setCurrentProductId(id.toString())
         findNavController().navigate(R.id.action_categoryFragment_to_productDetailsFragment)

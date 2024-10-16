@@ -7,27 +7,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class CouponsRepoImpl(private val couponsRemote: CouponsRemote) : CouponsRepo {
-    override suspend fun checkCouponDetails(couponId: String): Flow<DiscountCodesResponse> {
-        return flow {
-            couponsRemote.checkCouponDetails(couponId).collect {
-                val res = it
-                if (it.isSuccessful && it.body() != null)
-                    emit(it.body()!!)
-                else
-                    throw Exception(it.message())
-            }
-        }
+    override suspend fun checkCouponDetails(couponId: String):DiscountCodesResponse{
+        val res =  couponsRemote.checkCouponDetails(couponId)
+        if (res.isSuccessful && res.body() != null)
+            return res.body()!!
+        else
+            throw Exception(res.message())
     }
 
-    override suspend fun fetchCoupons(): Flow<PriceRulesResponse> {
-        return flow {
-            couponsRemote.fetchCoupons().collect {
-                val res = it
-                if (it.isSuccessful && it.body() != null)
-                    emit(it.body()!!)
-                else
-                    throw Exception(it.message())
-            }
-        }
+    override suspend fun fetchCoupons(): PriceRulesResponse {
+        val res = couponsRemote.fetchCoupons()
+        if (res.isSuccessful && res.body() != null)
+            return res.body()!!
+        else
+            throw Exception(res.message())
     }
 }
