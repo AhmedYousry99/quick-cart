@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
+import com.senseicoder.quickcart.core.dialogs.ConfirmationUpdateDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.databinding.FragmentMapsBinding
@@ -73,7 +74,7 @@ class MapsFragment : Fragment() {
             }
         }
         binding.button.setOnClickListener {
-            ConfirmationDialogFragment(
+            ConfirmationUpdateDialogFragment(
                 DialogType.SAVE_ADDRESS
             ) {
                 if (label.equals(Constants.CART_FRAGMENT_TO_CHECKOUT))

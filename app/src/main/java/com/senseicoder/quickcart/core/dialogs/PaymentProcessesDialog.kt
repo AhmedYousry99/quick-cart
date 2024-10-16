@@ -41,7 +41,6 @@ class PaymentProcessesDialog(listener : OnCartItemClickListener) : DialogFragmen
     fun stepOne(){
         job1= lifecycleScope.launch{
             binding.apply{
-                delay(500)
                 progressBar1.visibility = View.VISIBLE
                 textView.setTextColor("black".toColor())
             }
@@ -62,6 +61,7 @@ class PaymentProcessesDialog(listener : OnCartItemClickListener) : DialogFragmen
     fun stepThree(){
         lifecycleScope.launch{
             binding.apply{
+                delay(1500)
                 imgStepTwo.setImageResource(R.drawable.green_check)
                 delay(100)
                 progressBar2.visibility =View.GONE
