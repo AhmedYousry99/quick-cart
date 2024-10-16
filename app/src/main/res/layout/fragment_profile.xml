@@ -8,6 +8,70 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <View
+            android:id="@+id/divider9"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnWishList" />
+
+        <View
+            android:id="@+id/divider8"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider2" />
+
+        <View
+            android:id="@+id/divider7"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
+
+        <ImageView
+            android:id="@+id/imgHowToUse2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_info_outlined2"
+            app:layout_constraintBottom_toBottomOf="@+id/btnAboutUs"
+            app:layout_constraintStart_toStartOf="@+id/btnOrderHistory"
+            app:layout_constraintTop_toTopOf="@+id/btnAboutUs" />
+
+        <ImageView
+            android:id="@+id/imgNextArrowHowToUse2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnAboutUs"
+            app:layout_constraintEnd_toEndOf="@+id/btnOrderHistory"
+            app:layout_constraintTop_toTopOf="@+id/btnAboutUs" />
+
+        <Button
+            android:id="@+id/btnAboutUs"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="About Us"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/divider7" />
+
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
@@ -229,12 +293,12 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
             android:gravity="center|start"
             android:paddingStart="50dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:text="Wish List"
-            android:fontFamily="@font/alexandria_medium"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -267,23 +331,24 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
             android:gravity="center|start"
             android:paddingStart="50dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:text="Order History"
-            android:fontFamily="@font/alexandria_medium"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnWishList" />
+            app:layout_constraintTop_toBottomOf="@+id/divider9" />
 
         <View
             android:id="@+id/divider3"
             android:layout_width="350dp"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnOrderHistory" />
@@ -293,6 +358,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_lightbulb"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
             app:layout_constraintStart_toStartOf="@+id/btnHowToUse"
             app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
@@ -302,6 +368,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_next"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
             app:layout_constraintEnd_toEndOf="@+id/btnHowToUse"
             app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
@@ -314,14 +381,15 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
             android:gravity="center|start"
             android:paddingStart="50dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:text="How to use"
-            android:fontFamily="@font/alexandria_medium"
             android:textColor="@color/black"
             android:textSize="16sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnOrderHistory" />
@@ -333,7 +401,7 @@
             android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
+            app:layout_constraintTop_toBottomOf="@+id/btnAboutUs" />
 
         <ImageView
             android:id="@+id/imgLogOut"
@@ -361,17 +429,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/ripple_red"
+            android:fontFamily="@font/alexandria_medium"
             android:gravity="center|start"
             android:paddingStart="50dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:text="Log out"
-            android:fontFamily="@font/alexandria_medium"
             android:textColor="@color/red"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
+            app:layout_constraintTop_toTopOf="@+id/divider4" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

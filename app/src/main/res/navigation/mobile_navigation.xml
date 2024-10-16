@@ -80,13 +80,13 @@
             app:destination="@id/orderFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/profileFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_profileFragment_to_addressFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -110,7 +110,9 @@
             app:destination="@id/favoriteFragment" />
         <action
             android:id="@+id/action_profileFragment_to_splashFragment"
-            app:destination="@id/splashFragment" />
+            app:destination="@id/splashFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/brandFragment"

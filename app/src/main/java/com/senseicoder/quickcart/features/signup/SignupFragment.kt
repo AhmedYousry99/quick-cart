@@ -123,6 +123,7 @@ class SignupFragment : Fragment() {
                         is ApiState.Success -> {
                             enableButtons()
                             showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}", 8000,color = R.color.black)
+                            findNavController().navigateUp()
                         }
                         is ApiState.Failure -> {
                             enableButtons()

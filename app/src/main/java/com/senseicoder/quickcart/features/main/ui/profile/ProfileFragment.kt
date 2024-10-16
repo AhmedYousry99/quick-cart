@@ -12,10 +12,8 @@ import android.widget.RadioButton
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
@@ -30,12 +28,9 @@ import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
 import com.senseicoder.quickcart.core.repos.customer.CustomerRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import com.senseicoder.quickcart.databinding.BottomSheetAboutUsBinding
 import com.senseicoder.quickcart.databinding.BottomSheetCurrencyBinding
-import com.senseicoder.quickcart.databinding.BottomSheetRatingBinding
-import com.senseicoder.quickcart.databinding.FragmentCurrencyBinding
 import com.senseicoder.quickcart.databinding.FragmentProfileBinding
-import com.senseicoder.quickcart.features.main.ui.currency.CurrencyFragment
-import com.senseicoder.quickcart.features.main.ui.currency.CurrencyFragment.Companion
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
@@ -53,6 +48,7 @@ class ProfileFragment : Fragment() {
     private val customCurrencyCoroutine = CoroutineScope(Dispatchers.Main)
     private val buttons: MutableList<RadioButton> = mutableListOf()
     private lateinit var bottomSheetCurrencyBinding: BottomSheetCurrencyBinding
+    private lateinit var bottomSheetAboutUsBinding: BottomSheetAboutUsBinding
     private lateinit var bottomSheetDialog:BottomSheetDialog
     var code: String = SharedPrefsService.getSharedPrefString(
         Constants.CURRENCY,
@@ -125,6 +121,9 @@ class ProfileFragment : Fragment() {
                 Navigation.findNavController(it)
                     .navigate(R.id.action_profileFragment_to_favoriteFragment)
             }
+            btnAboutUs.setOnClickListener{
+                showAboutUsBottomSheet()
+            }
         }
     }
 
@@ -178,6 +177,21 @@ class ProfileFragment : Fragment() {
         prepareCurrencyDataAndSetListener()
         bottomSheetDialog.show()
     }
+
+    private fun showAboutUsBottomSheet(){
+        bottomSheetAboutUsBinding = BottomSheetAboutUsBinding.inflate(layoutInflater)
+        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        bottomSheetDialog.window?.apply {
+            val layoutParams = ViewGroup.LayoutParams(
+                (resources.displayMetrics.widthPixels * 0.9).toInt(),
+                (resources.displayMetrics.heightPixels * 0.9).toInt()
+            )
+            setLayout(layoutParams.width, layoutParams.height)
+        }
+        bottomSheetDialog.setContentView(bottomSheetAboutUsBinding.root)
+        bottomSheetDialog.show()
+    }
+
     private fun prepareCurrencyDataAndSetListener(){
         code = SharedPrefsService.getSharedPrefString(
             Constants.CURRENCY,
