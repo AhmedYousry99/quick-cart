@@ -42,7 +42,7 @@
     <string name="confirm_password_signup">Confirm Password</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="account_created_successfully">Your account has been created\nCheck your inbox and verify your account!</string>
+    <string name="account_created_successfully">Your account has been created. Check your inbox and verify your account!</string>
     <string name="email_invalid">Invalid Email</string>
     <string name="password_invalid_length_small">Password must be more than 6 characters</string>
     <string name="password_invalid_at_least_1_letter_1_number">Password must have at least 1 letter and 1 number</string>
