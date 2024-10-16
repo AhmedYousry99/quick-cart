@@ -67,6 +67,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -164,8 +165,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.fetchCoupons()
         collectDefaultAddress()
+        viewModel.apply {
+            fetchCoupons()
+            getAddress()
+        }
         createOrderCollector()
         completeDraftOrderForCashCollector()
         currencyData = SharedPrefsService.getCurrencyData()
@@ -506,6 +510,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        customScope.cancel()
+    }
+
     private fun setPrices(binding: BottomSheetPaymentBinding) {
         binding.apply {
             txtValueOfBeforeDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
@@ -559,6 +568,21 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 when (it) {
                     is ApiState.Success -> {
                         defaultAddress = it.data.defaultAddress?.toAddressOfCustomer()
+                        Log.d(TAG, "collectDefaultAddress: DEFAULT_ADDRESS ${it.data}")
+                    }
+
+                    else -> {
+                        defaultAddress = null
+                        Log.d(TAG, "collectDefaultAddress: ${it}")
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.defaultAddress.collect{
+                when (it) {
+                    is ApiState.Success -> {
+                        defaultAddress = it.data
                         Log.d(TAG, "collectDefaultAddress: DEFAULT_ADDRESS ${it.data}")
                     }
 
