@@ -12,7 +12,7 @@ import kotlinx.coroutines.delay
 class FakeCustomerRepo : CustomerRepo {
     var shouldReturnError = false
 
-    override suspend fun signupUsingEmailAndPassword(firstName: String, lastName: String, email: String, password: String): Flow<CustomerDTO> {
+    override  fun signupUsingEmailAndPassword(firstName: String, lastName: String, email: String, password: String): Flow<CustomerDTO> {
         // Implement as needed for testing
         return flow { /* Not needed for this test */ }
     }
@@ -63,17 +63,17 @@ class FakeCustomerRepo : CustomerRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+    override  fun addFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         // Implement as needed for testing
         return flow { /* Not needed for this test */ }
     }
 
-    override suspend fun removeFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
+    override  fun removeFavorite(email: String, favorite: FavoriteDTO): Flow<FavoriteDTO> {
         // Implement as needed for testing
         return flow { /* Not needed for this test */ }
     }
 
-    override suspend fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
+    override  fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
         return flow {
             if (shouldReturnError) {
                 throw Exception("Login failed")
