@@ -122,7 +122,7 @@ class SignupFragment : Fragment() {
                         }
                         is ApiState.Success -> {
                             enableButtons()
-                            showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}", color = R.color.secondary)
+                            showSnackbar("${it.data.displayName}, ${getString(R.string.account_created_successfully)}", 8000,color = R.color.black)
                         }
                         is ApiState.Failure -> {
                             enableButtons()

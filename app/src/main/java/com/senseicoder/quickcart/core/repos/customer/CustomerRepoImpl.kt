@@ -155,7 +155,7 @@ class CustomerRepoImpl private constructor(
             }.flatMapLatest {
                 dbRemoteDataSource.addUser(it)
             }.flatMapLatest{
-                firebaseHandler.handleEmailVerification(it)
+                firebaseHandler.sendEmailVerification(it)
             }
             .timeout(20.seconds)
     }

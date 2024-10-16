@@ -10,8 +10,10 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
+import android.text.TextUtils
 import android.util.Patterns
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
@@ -75,6 +77,8 @@ fun Fragment.showSnackbar(
 ) : Snackbar{
     return Snackbar.make(requireView(), snackbarText, timeLength).apply {
         view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(color ?: R.color.secondary))
+        val textView: TextView = view.findViewById(com.google.android.material.R.id.snackbar_text)
+        textView.ellipsize = TextUtils.TruncateAt.END
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Ok") {
@@ -157,6 +161,8 @@ fun Fragment.showErrorSnackbar(
 ) : Snackbar{
     return Snackbar.make(requireView(), snackbarText, timeLength).apply {
         view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.red))
+        val textView: TextView = view.findViewById(com.google.android.material.R.id.snackbar_text)
+        textView.ellipsize = TextUtils.TruncateAt.END
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Retry") {

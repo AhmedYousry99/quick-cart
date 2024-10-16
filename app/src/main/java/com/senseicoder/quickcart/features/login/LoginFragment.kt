@@ -106,8 +106,9 @@ class LoginFragment : Fragment() {
                             snackBar.dismiss()
                             Handler(Looper.getMainLooper()).postDelayed({
                                 try{
-                                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                                     findNavController().graph.setStartDestination(R.id.homeFragment)
+                                    Log.d(TAG, "subscribeToObservables: hnqwe")
+                                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                                 }catch (e: Exception){
                                     Log.e(TAG, "subscribeToObservables: ", e)
                                 }

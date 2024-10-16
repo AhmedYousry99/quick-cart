@@ -18,6 +18,10 @@ object Constants {
         object Login {
             const val INVALID_CREDENTIALS = "Invalid credentials"
         }
+        object DraftOrderComplete{
+            const val API_LIMIT_EXCEEDED = "Exceeded draft order API rate limit, please try again in a minute. Upgrade to a paid account to remove this limit."
+            const val MEMBER_CHECKING_WAIT = "Another staff member is processing this draft order. Check back in a minute."
+        }
     }
 
     sealed class SharedPrefs {
