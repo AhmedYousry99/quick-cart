@@ -10,14 +10,10 @@ import retrofit2.Response
 class CouponsRemoteImpl: CouponsRemote {
 
 
-    override suspend fun fetchCoupons(): Flow<Response<PriceRulesResponse>> {
-        return flow {
-            emit(ApiService.couponsService.getCoupons())
-        }
+    override suspend fun fetchCoupons(): Response<PriceRulesResponse> {
+        return ApiService.couponsService.getCoupons()
     }
-    override suspend fun checkCouponDetails(couponId: String): Flow<Response<DiscountCodesResponse>>{
-        return flow {
-            emit(ApiService.couponsService.getCouponDetails(couponId))
-        }
+    override suspend fun checkCouponDetails(couponId: String): Response<DiscountCodesResponse>{
+        return ApiService.couponsService.getCouponDetails(couponId)
     }
 }

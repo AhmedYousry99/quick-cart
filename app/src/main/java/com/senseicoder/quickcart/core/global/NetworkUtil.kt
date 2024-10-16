@@ -9,13 +9,19 @@ import android.net.NetworkRequest
 import com.senseicoder.quickcart.core.wrappers.ConnectionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object NetworkUtils{
 
-    private var _connectionState: MutableStateFlow<ConnectionStatus> = MutableStateFlow(ConnectionStatus.Unavailable)
-    private var connectionState: StateFlow<ConnectionStatus> = _connectionState
+    private var _connectionState: MutableStateFlow<ConnectionStatus> = MutableStateFlow(ConnectionStatus.Initializing)
+    private var connectionState = _connectionState.asStateFlow()
 
     fun observeNetworkConnectivity(context: Context) : StateFlow<ConnectionStatus>{
+        if(isConnected(context))
+            _connectionState.value = ConnectionStatus.Available
+        else
+            _connectionState.value = ConnectionStatus.Unavailable
+
         if(_connectionState == null){
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

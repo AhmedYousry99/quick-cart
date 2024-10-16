@@ -30,22 +30,27 @@ import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.senseicoder.quickcart.databinding.FragmentHomeBinding
 import com.senseicoder.quickcart.features.main.ui.home.viewmodel.HomeViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 class HomeFragment : Fragment(), OnItemBrandClicked {
 
     companion object {
         private const val TAG = "HomeFragment"
     }
-
     private lateinit var binding: FragmentHomeBinding
-
     private lateinit var brandAdapter: HomeBrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var couponPagerAdapter: CouponPagerAdapter
-
+    private val customCoroutine = CoroutineScope(Dispatchers.Main)
     private val swipeInterval: Long = 3000 // 3 seconds
     private var currentPage = 0
     private lateinit var handler: Handler
@@ -131,15 +136,14 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                 homeViewModel.brands.collectLatest {
                     when (it) {
                         is ApiState.Loading -> {
+                            binding.connectivity.visibility = View.GONE
                             if (networkConnectivity.isOnline()) {
                                 // Show shimmer and hide the recycler view during loading
-                                binding.brandRecycle.visibility = View.GONE
                                 binding.shimmerFrameLayout.visibility = View.VISIBLE
                                 binding.shimmerFrameLayout.startShimmer()
                                 binding.noConnectivity.visibility = View.GONE
                             } else {
                                 // Handle no connectivity state
-                                binding.connectivity.visibility = View.GONE
                                 binding.noConnectivity.visibility = View.VISIBLE
                             }
                         }
@@ -152,8 +156,8 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                             }
                             delay(1000)
                             binding.shimmerFrameLayout.stopShimmer()
-                            binding.brandRecycle.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
+                            binding.connectivity.visibility = View.VISIBLE
                         }
 
                         else -> {
@@ -192,8 +196,10 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
             showBottomNavBar()
             toolbarVisibility(true)
         }
-        if(homeViewModel.coupons.value !is ApiState.Success)
+
+        if(::couponPagerAdapter.isInitialized)
             handler.postDelayed(HomePager2AnimationRunnable, swipeInterval)
+
     }
 
     override fun onPause() {
@@ -247,41 +253,47 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
 
     private fun setupCouponViewPager() {
-        lifecycleScope.launch {
-            homeViewModel.coupons.collect {
-                when (it) {
-                    is ApiState.Success -> {
-                        val coupons = it.data.price_rules
-                        val displayCoupons =
-                            coupons.zip(couponImages) { coupon, image ->
-                                CouponsForDisplay(coupon, image)
-                            }
-                        couponPagerAdapter = CouponPagerAdapter(displayCoupons) { item ->
+        customCoroutine.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                homeViewModel.coupons.collect{
+                    when (it) {
+                        is ApiState.Success -> {
+                            val coupons = it.data.price_rules
+                            val displayCoupons =
+                                coupons.zip(couponImages) { coupon, image ->
+                                    CouponsForDisplay(coupon, image)
+                                }
+                            couponPagerAdapter = CouponPagerAdapter(displayCoupons) { item ->
 
-                            lifecycleScope.launch {
-                                val discountCode = item.title
-                                val clipboard =
-                                    requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                val clip =
-                                    ClipData.newPlainText("Discount Code", discountCode)
-                                clipboard.setPrimaryClip(clip)
-                                Snackbar.make(
-                                    requireView(),
-                                    "Coupon code copied to clipboard",
-                                    Snackbar.LENGTH_LONG
-                                ).show()
+                                lifecycleScope.launch {
+                                    val discountCode = item.title
+                                    val clipboard =
+                                        requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    val clip =
+                                        ClipData.newPlainText("Discount Code", discountCode)
+                                    clipboard.setPrimaryClip(clip)
+                                    Snackbar.make(
+                                        requireView(),
+                                        "Coupon code copied to clipboard",
+                                        Snackbar.LENGTH_LONG
+                                    ).show()
+                                    customCoroutine.cancel()
+                                }
                             }
+                            binding.couponPager.adapter = couponPagerAdapter
+                            binding.dotsIndicator.attachTo(binding.couponPager)
+                            startSwipingAnimation()
+                            setupPagerListener()
                         }
-                        binding.couponPager.adapter = couponPagerAdapter
-                        binding.dotsIndicator.attachTo(binding.couponPager)
-                        startSwipingAnimation()
-                        setupPagerListener()
-                    }
 
-                    is ApiState.Failure -> Log.d(TAG, "setupCouponViewPager: ${it.msg}")
-                    else -> {
-                        Log.d(TAG, "setupCouponViewPager: LOADING")
-                        handler.removeCallbacks(HomePager2AnimationRunnable)
+                        is ApiState.Failure -> {
+                            Snackbar.make(requireView(), it.msg, Snackbar.LENGTH_LONG).show()
+                            Log.d(TAG, "setupCouponViewPager: ${it.msg}")
+                        }
+                        else -> {
+                            Log.d(TAG, "setupCouponViewPager: LOADING")
+                            handler.removeCallbacks(HomePager2AnimationRunnable)
+                        }
                     }
                 }
             }

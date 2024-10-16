@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -37,6 +36,7 @@ import com.senseicoder.quickcart.core.model.PriceRule
 import com.senseicoder.quickcart.core.model.ProductOfCart
 import com.senseicoder.quickcart.core.model.noteAttributesData
 import com.senseicoder.quickcart.core.model.toAddress
+import com.senseicoder.quickcart.core.model.toAddressOfCustomer
 import com.senseicoder.quickcart.core.model.toApplied_Discount
 import com.senseicoder.quickcart.core.model.toDiscountCodeDto
 import com.senseicoder.quickcart.core.model.toLineItem
@@ -45,6 +45,7 @@ import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.network.order.OrderRemoteDataSourceImpl
 import com.senseicoder.quickcart.core.network.payment.PaymentRemoteImpl
+import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import com.senseicoder.quickcart.core.repos.payment.PaymentRepoImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.repos.coupons.CouponsRepoImpl
@@ -72,7 +73,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.util.Locale
-import kotlin.math.log
 
 class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
@@ -98,6 +98,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             MainActivityViewModelFactory(
                 CurrencyRepoImpl(
                     CurrencyRemoteImpl
+                ),
+                AddressRepoImpl(
+                    StorefrontHandlerImpl,
+                    SharedPrefsService
                 )
             )
         )[MainActivityViewModel::class.java]
@@ -125,17 +129,16 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
     private fun collectCouponsList() {
         lifecycleScope.launch {
-            viewModel.couponDetails.first {
+            viewModel.couponDetails.collect {
                 when (it) {
                     is ApiState.Success -> {
                         couponsList = it.data.price_rules
                         Log.d(TAG, "collectCouponsList: ${it.data}")
-                        true
+                        cancel()
                     }
 
                     else -> {
                         Log.d(TAG, "collectCouponsList: ${it}")
-                        false
                     }
                 }
             }
@@ -411,27 +414,27 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     }
 
     private suspend fun freeCart() {
-        val dlList =fetchedList.map {
+        val dlList = fetchedList.map {
             it.id
         }
 
-            val removeJob = lifecycleScope.launch {
-                viewModel.deleteFromCart(cardId, dlList)
-            }
-            removeJob.join()
+        val removeJob = lifecycleScope.launch {
+            viewModel.deleteFromCart(cardId, dlList)
+        }
+        removeJob.join()
 
-            viewModel.removeProductFromCart.first { removeResult ->
-                when (removeResult) {
-                    is ApiState.Success -> {
-                        Log.i(TAG, "Successfully removed item: ${dlList}")
-                        true
-                    }
+        viewModel.removeProductFromCart.first { removeResult ->
+            when (removeResult) {
+                is ApiState.Success -> {
+                    Log.i(TAG, "Successfully removed item: ${dlList}")
+                    true
+                }
 
-                    else -> {
-                        false
-                    }
+                else -> {
+                    false
                 }
             }
+        }
         Snackbar.make(requireView(), "Order Completed", Toast.LENGTH_LONG).show()
     }
 
@@ -445,26 +448,30 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         setPrices(bottomSheetBinding)
         if (defaultAddress == null) {
             bottomSheetBinding.apply {
-                btnCompletePurches.isEnabled = false
+                txtTitleOfPaymentBottomSheet.text = getString(R.string.add_address)
+                groupPayment.visibility = View.GONE
                 btnAddAddress.apply {
                     visibility = View.VISIBLE
                     setOnClickListener {
+                        bottomSheetDialog.dismiss()
                         Navigation.findNavController(this@ShoppingCartFragment.requireView())
                             .navigate(
                                 R.id.action_shoppingCartFragment_to_addressFragment,
                                 bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_ADD)
                             )
-                        bottomSheetDialog.dismiss()
                     }
                 }
             }
         } else {
             bottomSheetBinding.apply {
+                txtTitleOfPaymentBottomSheet.text = getString(R.string.choose_payment_method)
+                groupPayment.visibility = View.VISIBLE
                 groupAddressData.visibility = View.VISIBLE
                 btnAddAddress.visibility = View.GONE
                 txtValueOfAddress.text =
                     String.format("${defaultAddress?.firstName} ${defaultAddress?.lastName}\n${defaultAddress?.country} ${defaultAddress?.city}")
                 imgEditDefaultAddress.setOnClickListener {
+
                     Navigation.findNavController(this@ShoppingCartFragment.requireView()).navigate(
                         R.id.action_shoppingCartFragment_to_addressFragment,
                         bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_EDIT)
@@ -528,7 +535,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         binding.apply {
             btnCompletePurches.setOnClickListener {
                 if (radBtnCash.isChecked) {
-                            createDraftOrder(Constants.CASH)
+                    createDraftOrder(Constants.CASH)
                 } else if (radBtnCard.isChecked) {
 //                        checkOut()
                     finalTestStripePayment()
@@ -544,19 +551,16 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
     private fun collectDefaultAddress() {
         lifecycleScope.launch(Dispatchers.Main) {
-            lifecycleScope.launch { viewModel.getAddress() }.join()
-            viewModel.defaultAddress.first() {
+            sharedViewModel.allAddresses.collect {
                 when (it) {
                     is ApiState.Success -> {
-                        defaultAddress = it.data
+                        defaultAddress = it.data.defaultAddress?.toAddressOfCustomer()
                         Log.d(TAG, "collectDefaultAddress: DEFAULT_ADDRESS ${it.data}")
-                        true
                     }
 
                     else -> {
                         defaultAddress = null
                         Log.d(TAG, "collectDefaultAddress: ${it}")
-                        false
                     }
                 }
             }
@@ -636,7 +640,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     private fun finalTestStripePayment() {
         val url: String
 //        if (flag)
-            url = "http://100.42.177.115:8888/create-payment-intent"
+        url = "http://100.42.177.115:8888/create-payment-intent"
 //        else url =
 //            "https://nodejs-serverless-function-express-self-eta.vercel.app/api/paymentintent"
 

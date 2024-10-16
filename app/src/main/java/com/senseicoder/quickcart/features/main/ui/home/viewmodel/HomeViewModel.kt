@@ -3,8 +3,6 @@ package com.senseicoder.quickcart.features.main.ui.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.model.DiscountCode
-import com.senseicoder.quickcart.core.model.DiscountCodesResponse
 import com.senseicoder.quickcart.core.model.DisplayBrand
 import com.senseicoder.quickcart.core.model.PriceRulesResponse
 import com.senseicoder.quickcart.core.network.coupons.CouponsRemoteImpl
@@ -13,19 +11,19 @@ import com.senseicoder.quickcart.core.repos.coupons.CouponsRepoImpl
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepoInterface
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class HomeViewModel(
     private val repoInterface: ProductsRepoInterface = ProductsRepo(),
-    private val couponsRepo: CouponsRepo = CouponsRepoImpl(CouponsRemoteImpl() )
+    private val couponsRepo: CouponsRepo = CouponsRepoImpl(CouponsRemoteImpl())
 ) :
     ViewModel() {
 
     var brands = MutableStateFlow<ApiState<List<DisplayBrand>>>(ApiState.Loading)
-
 
     init {
         getBrand()
@@ -46,19 +44,18 @@ class HomeViewModel(
         }
     }
 
-    private val _coupons: MutableStateFlow<ApiState<PriceRulesResponse>> =
-        MutableStateFlow(ApiState.Loading)
-    val coupons: MutableStateFlow<ApiState<PriceRulesResponse>> = _coupons
+    private val _coupons: MutableSharedFlow<ApiState<PriceRulesResponse>> = MutableSharedFlow(replay = 1)
+    val coupons = _coupons.asSharedFlow()
 
 
     fun fetchCoupons() {
         viewModelScope.launch {
-            couponsRepo.fetchCoupons().catch { e ->
-                _coupons.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
-            }.collect { data ->
-                _coupons.value = ApiState.Success(data)
+            try {
+                val res: PriceRulesResponse = couponsRepo.fetchCoupons()
+                _coupons.emit(ApiState.Success(res))
+            } catch (e: Exception) {
+                _coupons.emit(ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))
             }
-
         }
     }
 }

@@ -40,6 +40,7 @@ import com.senseicoder.quickcart.core.model.graph_product.ProductDTO
 import com.senseicoder.quickcart.core.model.graph_product.Variant
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
+import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
 import com.senseicoder.quickcart.core.repos.cart.CartRepoImpl
 import com.senseicoder.quickcart.core.repos.favorite.FavoriteRepoImpl
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepoImpl
@@ -150,6 +151,10 @@ class ProductDetailsFragment : Fragment() {
                 MainActivityViewModelFactory(
                     CurrencyRepoImpl(
                         CurrencyRemoteImpl
+                    ),
+                    AddressRepoImpl(
+                        StorefrontHandlerImpl,
+                        SharedPrefsService
                     )
                 )
             )[MainActivityViewModel::class.java].currentProductId.value
