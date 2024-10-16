@@ -259,7 +259,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             txtCityEditText.addTextChangedListener {
                 lastNameEditText.error = null
             }
-            txtVountryEditText.addTextChangedListener {
+            txtCountryEditText.addTextChangedListener {
                 lastNameEditText.error = null
             }
 
@@ -278,7 +278,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     private fun addError(bottomBinding: BottomSheetAddressBinding) {
         bottomBinding.apply {
             if (txtCityEditText.text.toString().isBlank() ||
-                txtVountryEditText.text.toString().isBlank()
+                txtCountryEditText.text.toString().isBlank()
             ) {
                 bottomSheetDialog.dismiss()
                 Snackbar.make(requireView(), "Please pick from map again", Snackbar.LENGTH_LONG)
@@ -341,7 +341,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                     Log.d(TAG, "geocodeLocation: ${addressLine}")
                     val strings = addressLine.split(",")
                     bottomSheetBinding.apply {
-                        txtVountryEditText.setText(strings.last())
+                        txtCountryEditText.setText(strings.last())
                         txtCityEditText.setText(strings.first())
                     }
                 } else {
@@ -363,7 +363,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                 "address1",
                 "address2",
                 txtCityEditText.text.toString(),
-                txtVountryEditText.text?.trimStart().toString(),
+                txtCountryEditText.text?.trimStart().toString(),
                 phoneEditText.text.toString(),
                 firstNameEditText.text.toString(),
                 lastNameEditText.text.toString()

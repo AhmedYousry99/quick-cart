@@ -61,14 +61,6 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
 
         binding.swipeRefresher.setColorSchemeResources(R.color.primary_faint)
 
-        if (networkConnectivity.isOnline()) {
-            binding.connectivity.visibility = View.VISIBLE
-            binding.noConnectivity.visibility = View.GONE
-        } else {
-            binding.connectivity.visibility = View.GONE
-            binding.noConnectivity.visibility = View.VISIBLE
-        }
-
         binding.swipeRefresher.setOnRefreshListener {
             refresh()
         }

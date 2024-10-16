@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.core.network.currency
 
+import android.util.Log
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.AllCurrencies
@@ -13,6 +14,8 @@ import kotlin.math.E
 
 object CurrencyRemoteImpl : CurrencyRemote {
     override suspend fun getCurrencyRate(newCurrency: String): Response<CurrencyResponse>{
+        Log.d("", "prepareCurrencyDataAndSetListener: CurrencyRemoteImpl")
+
         return ApiService.currencyApiService.getLatestRates(BuildConfig.currency_api_key,
             SharedPrefsService.getSharedPrefString(Constants.CURRENCY,Constants.CURRENCY_DEFAULT),
             newCurrency)

@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.MyDialog
+import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.model.CouponsForDisplay
 import com.senseicoder.quickcart.core.wrappers.NetworkConnectivity
 import com.senseicoder.quickcart.core.wrappers.ApiState
@@ -118,15 +119,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
         binding.swipeRefresher.setColorSchemeResources(R.color.black)
 
-
-        if (networkConnectivity.isOnline()) {
-            binding.connectivity.visibility = View.VISIBLE
-            binding.noConnectivity.visibility = View.GONE
-        } else {
-            binding.connectivity.visibility = View.GONE
-            binding.noConnectivity.visibility = View.VISIBLE
-        }
-
         binding.swipeRefresher.setOnRefreshListener {
             refresh()
         }
@@ -141,6 +133,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                                 // Show shimmer and hide the recycler view during loading
                                 binding.shimmerFrameLayout.visibility = View.VISIBLE
                                 binding.shimmerFrameLayout.startShimmer()
+                                binding.connectivity.visibility = View.GONE
                                 binding.noConnectivity.visibility = View.GONE
                             } else {
                                 // Handle no connectivity state
@@ -149,15 +142,20 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
 
                         is ApiState.Success -> {
-                            brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
-                            binding.brandRecycle.apply {
-                                brandAdapter.submitList(it.data)
-                                adapter = brandAdapter
+                            if(NetworkUtils.isConnected(requireContext())){
+                                brandAdapter = HomeBrandAdapter(requireContext(), this@HomeFragment)
+                                binding.brandRecycle.apply {
+                                    brandAdapter.submitList(it.data)
+                                    adapter = brandAdapter
+                                }
+                                delay(1000)
+                                binding.shimmerFrameLayout.stopShimmer()
+                                binding.shimmerFrameLayout.visibility = View.GONE
+                                binding.connectivity.visibility = View.VISIBLE
+                            }else{
+                                binding.connectivity.visibility = View.GONE
+                                binding.noConnectivity.visibility = View.VISIBLE
                             }
-                            delay(1000)
-                            binding.shimmerFrameLayout.stopShimmer()
-                            binding.shimmerFrameLayout.visibility = View.GONE
-                            binding.connectivity.visibility = View.VISIBLE
                         }
 
                         else -> {
@@ -287,7 +285,9 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                         }
 
                         is ApiState.Failure -> {
-                            Snackbar.make(requireView(), it.msg, Snackbar.LENGTH_LONG).show()
+//                            Snackbar.make(requireView(), it.msg, Snackbar.LENGTH_LONG).show()
+                            binding.connectivity.visibility = View.GONE
+                            binding.shimmerFrameLayout.visibility = View.GONE
                             Log.d(TAG, "setupCouponViewPager: ${it.msg}")
                         }
                         else -> {
@@ -320,7 +320,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
             binding.connectivity.visibility = View.VISIBLE
             homeViewModel.brands.value = ApiState.Loading
             homeViewModel.getBrand()
-
+            homeViewModel.fetchCoupons()
         } else {
             binding.connectivity.visibility = View.GONE
             binding.noConnectivity.visibility = View.VISIBLE

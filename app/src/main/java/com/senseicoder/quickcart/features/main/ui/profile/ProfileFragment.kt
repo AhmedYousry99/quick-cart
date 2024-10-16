@@ -20,6 +20,7 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.model.CurrencyResponse
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
@@ -117,6 +118,7 @@ class ProfileFragment : Fragment() {
                         navigate(R.id.action_profileFragment_to_splashFragment)
                         graph.setStartDestination(R.id.loginFragment)
                     }
+                    mainViewmodel.updateAllAddress(ApiState.Loading)
                 }.show(childFragmentManager, null)
             }
             btnWishList.setOnClickListener{
@@ -232,7 +234,9 @@ class ProfileFragment : Fragment() {
                 }
                 rdBtnChecked.isChecked = true
                 code = rdBtnChecked.text.toString().substring(0, 3)
+                Log.d(TAG, "prepareCurrencyDataAndSetListener:")
                 mainViewmodel.getCurrencyRate(code)
+                rdGroup.removeAllViews()
                 bottomSheetDialog.dismiss()
             }
         }
@@ -250,7 +254,7 @@ class ProfileFragment : Fragment() {
                 )
                 setSharedPrefFloat(
                     PERCENTAGE_OF_CURRENCY_CHANGE,
-                    response.data[code]!!.value.toFloat()
+                    response.data[code]?.value?.toFloat() ?: 1f
                 )
             }
         }
@@ -267,13 +271,10 @@ class ProfileFragment : Fragment() {
                         showSnackbar("Success Changed Currency", color = R.color.secondary)
                         customCurrencyCoroutine.cancel()
                     }
-
                     is ApiState.Failure -> {
-                        Snackbar.make(requireView(), it.msg, Snackbar.LENGTH_SHORT).show()
+                        showErrorSnackbar(it.msg)
                     }
-
-                    else -> Snackbar.make(requireView(), "Waiting . . . .", Snackbar.LENGTH_SHORT)
-                        .show()
+                    else -> showSnackbar("Waiting . . . .", Int.MAX_VALUE,color = R.color.black)
                 }
             }
         }

@@ -10,6 +10,8 @@ import com.senseicoder.quickcart.core.repos.address.AddressRepo
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import com.senseicoder.quickcart.features.main.ui.profile.ProfileFragment
+import com.senseicoder.quickcart.features.main.ui.profile.ProfileFragment.Companion
 import com.storefront.CustomerAddressesQuery
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,13 +45,15 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo,private val a
         _location.value = Pair(lat,long)
     }
 
-    private val _currency : MutableSharedFlow<ApiState<CurrencyResponse>> = MutableSharedFlow()
-    val currency = _currency.asSharedFlow()
+    private val _currency : MutableStateFlow<ApiState<CurrencyResponse>> = MutableStateFlow(ApiState.Loading)
+    val currency = _currency.asStateFlow()
     fun getCurrencyRate(newCurrency: String) {
         viewModelScope.launch{
             _currency.emit( ApiState.Loading)
             try {
                 val res = currencyRepo.getCurrencyRate(newCurrency)
+                Log.d(TAG, "prepareCurrencyDataAndSetListener: ")
+
                 _currency.emit(ApiState.Success(res))
             }catch (e:Exception) {
                 _currency.emit(ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))

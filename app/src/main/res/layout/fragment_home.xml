@@ -93,6 +93,7 @@
                         <include
                             layout="@layout/home_shimmer_placeholder"
                             android:visibility="visible" />
+
                         <include
                             layout="@layout/home_brand_shimmer_placeholder"
                             android:visibility="visible" />
@@ -165,8 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:constraint_referenced_ids="couponPager,dots_indicator,brandLabel,brandRecycle"
-                    tools:visibility="visible" />
+                    app:constraint_referenced_ids="couponPager,dots_indicator,brandLabel,brandRecycle" />
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/noConnectivity"
