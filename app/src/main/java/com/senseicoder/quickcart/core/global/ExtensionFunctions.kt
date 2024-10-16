@@ -11,6 +11,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.TextView
@@ -201,13 +202,14 @@ fun TextInputLayout.handleErrorOnFocusChange(
 ) {
     this.editText?.setOnFocusChangeListener { _, hasFocus ->
         val inputText = (this.editText?.text ?: "").toString() // Get the text from EditText
-        if (hasFocus) {
-            this.error = null
-        } else {
-            if (!validationFunc(inputText)) {
-                val error = errorFunc(inputText)
-                this.error =  error
-            }
+        Log.d("TAG", "handleErrorOnFocusChange:$inputText ")
+        if (!validationFunc(inputText)) {
+            val error = errorFunc(inputText)
+            this.error =  error
+        }
+        else{
+            validationFunc(inputText)
+                this.error = null
         }
     }
 }

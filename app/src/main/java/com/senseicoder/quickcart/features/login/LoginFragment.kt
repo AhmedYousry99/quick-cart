@@ -3,6 +3,8 @@ package com.senseicoder.quickcart.features.login
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -46,6 +48,7 @@ class LoginFragment : Fragment() {
     private lateinit var snackBar: Snackbar
     private lateinit var binding:FragmentLoginBinding
     private lateinit var loginViewModel: LoginViewModel
+    private var isFirstTime: Boolean = true
 
 
     override fun onCreateView(
@@ -148,8 +151,58 @@ class LoginFragment : Fragment() {
 
     private fun setupListeners(){
         binding.apply {
-            emailPasswordLayout.handleErrorOnFocusChange(this@LoginFragment::handlePasswordError, String::isValidPassword)
-            emailLoginLayout.handleErrorOnFocusChange(this@LoginFragment::handleEmailError , String::isValidEmail)
+//            emailPasswordLayout.handleErrorOnFocusChange(this@LoginFragment::handlePasswordError, String::isValidPassword)
+//            emailLoginLayout.handleErrorOnFocusChange(this@LoginFragment::handleEmailError , String::isValidEmail)
+            emailLoginEditText.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus && !isFirstTime){
+                    emailLoginLayout.error = handleEmailError(emailLoginEditText.text.toString())
+                }
+            }
+            passwordLoginEditText.setOnFocusChangeListener { _, hasFocus ->
+                if(hasFocus && !isFirstTime){
+                    emailPasswordLayout.error = handlePasswordError(passwordLoginEditText.text.toString())
+                }
+            }
+            emailLoginEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if(!isFirstTime){
+                        emailLoginLayout.error = handleEmailError(s.toString())
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+            })
+            passwordLoginEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if(!isFirstTime){
+                        emailPasswordLayout.error = handlePasswordError(s.toString())
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+            })
             loginButton.setOnClickListener{
                 validateFields()
             }
@@ -161,6 +214,7 @@ class LoginFragment : Fragment() {
             }
             loginText.setOnClickListener{
                 hideValidationErrors()
+                isFirstTime = true
                 Navigation.findNavController(it).navigate(R.id.action_loginFragment_to_signupFragment)
             }
             passwordLoginEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
@@ -174,6 +228,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun validateFields(){
+        isFirstTime = false
         hideValidationErrors()
         KeyboardUtils.hideKeyboard(requireActivity())
         clearFocuses()
