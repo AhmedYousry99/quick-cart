@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 
 object NetworkUtils{
 
-    private var _connectionState: MutableStateFlow<ConnectionStatus> = MutableStateFlow(ConnectionStatus.Initializing)
-    private var connectionState = _connectionState.asStateFlow()
+    private val _connectionState: MutableStateFlow<ConnectionStatus> = MutableStateFlow(ConnectionStatus.Initializing)
+    val connectionState = _connectionState.asStateFlow()
 
     fun observeNetworkConnectivity(context: Context) : StateFlow<ConnectionStatus>{
         if(isConnected(context))
@@ -33,14 +33,11 @@ object NetworkUtils{
             connectivityManager.registerNetworkCallback(request, object : NetworkCallback() {
 
                 override fun onAvailable(network: Network) {
-                    _connectionState.let{
-                        it.value = ConnectionStatus.Available
-                    }
+                    _connectionState.value = ConnectionStatus.Available
+
                 }
                 override fun onLost(network: Network) {
-                    _connectionState.let{
-                        it.value = ConnectionStatus.Unavailable
-                    }
+                    _connectionState.value = ConnectionStatus.Unavailable
                 }
             })
         }

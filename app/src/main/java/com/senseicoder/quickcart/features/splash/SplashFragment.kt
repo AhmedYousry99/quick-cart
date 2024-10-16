@@ -80,7 +80,6 @@ class SplashFragment : Fragment() {
                     }
                     override fun onAnimationEnd(animation: Animator) {
                         lifecycleScope.launch {
-                            delay(500)
                             AnimatorSet().apply {
                                 playTogether(lastAnime, lastAnimeL, lastAnimeR)
                                 start()
@@ -104,7 +103,6 @@ class SplashFragment : Fragment() {
 
                     override fun onAnimationRepeat(animation: Animator) {
                     }
-
                 })
                 start()
             }

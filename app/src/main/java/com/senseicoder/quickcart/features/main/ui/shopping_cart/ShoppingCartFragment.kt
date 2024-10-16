@@ -6,13 +6,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -67,7 +71,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -81,7 +84,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         private const val TAG = "ShoppingCartFragment"
     }
 
-
+    private var isConnecting = false
     private lateinit var paymentSheet: PaymentSheet
     private val customScope = CoroutineScope(Dispatchers.Main)
     lateinit var draftOrder: DraftOrder
@@ -127,15 +130,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     private val cardId =
         SharedPrefsService.getSharedPrefString(Constants.CART_ID, Constants.CART_ID_DEFAULT)
     private var paymentProcess = PaymentProcessesDialog(this)
-
     private fun collectCouponsList() {
-        lifecycleScope.launch {
+        customScope.launch {
             viewModel.couponDetails.collect {
                 when (it) {
                     is ApiState.Success -> {
                         couponsList = it.data.price_rules
                         Log.d(TAG, "collectCouponsList: ${it.data}")
-                        cancel()
                     }
 
                     else -> {
@@ -145,11 +146,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        collectCouponsList()
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
+        currencyData = SharedPrefsService.getCurrencyData()
+        Log.d(TAG, "onCreate: ${currencyData}")
     }
 
     override fun onCreateView(
@@ -162,29 +163,55 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         return fragmentBinding.root
     }
 
+
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        collectDefaultAddress()
-        viewModel.apply {
-            fetchCoupons()
-            getAddress()
-        }
-        createOrderCollector()
-        completeDraftOrderForCashCollector()
-        currencyData = SharedPrefsService.getCurrencyData()
-        // TODO: get from view model
-        viewModel.fetchCartProducts(
-            SharedPrefsService.getSharedPrefString(
-                Constants.CART_ID,
-                Constants.CART_ID_DEFAULT
-            )
-        )
         fragmentBinding.apply {
-            btnToPayment.setOnClickListener {
-                showBottomSheet()
+
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                fragmentBinding.rvDraftOrder.layoutManager = LinearLayoutManager(requireContext())
+                MainActivity.isNetworkAvailable.collect {
+                    isConnecting = it
+                    if (isConnecting) {
+                        viewModel.apply {
+                            fetchCartProducts(
+                                SharedPrefsService.getSharedPrefString(
+                                    Constants.CART_ID,
+                                    Constants.CART_ID_DEFAULT
+                                )
+                            )
+                        }
+                        fragmentBinding.apply {
+                            btnToPayment.setOnClickListener {
+                                showBottomSheet()
+                            }
+                            networkLottie.visibility = View.GONE
+                            dataGroup.visibility = View.VISIBLE
+                            rvDraftOrder.visibility = View.VISIBLE
+                        }
+                    } else {
+                        fragmentBinding.apply {
+                            animationView.visibility = View.GONE
+                            dataGroup.visibility = View.GONE
+                            networkLottie.visibility = View.VISIBLE
+                            shimmerFrameLayout.visibility =View.GONE
+                            if(::bottomSheetDialog.isInitialized)
+                                bottomSheetDialog.dismiss()
+                        }
+                    }
+                }
+
             }
-            lifecycleScope.launch {
+
+
+        }
+    }
+    private fun cartCollector(){
+        fragmentBinding.apply {
+            customScope.launch {
                 viewModel.cartProducts.collect {
                     when (it) {
                         is ApiState.Loading -> {
@@ -227,17 +254,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                     }
                 }
             }
-            Log.d(
-                TAG,
-                "onViewCreated: ${
-                    SharedPrefsService.getSharedPrefString(
-                        Constants.USER_TOKEN,
-                        Constants.USER_TOKEN_DEFAULT
-                    )
-                }"
-            )
         }
-        lifecycleScope.launch {
+    }
+    private fun collectUpdate(){
+        customScope.launch {
             viewModel.updating.debounce(500).collect {
                 when (it) {
                     is ApiState.Success -> {
@@ -253,9 +273,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 }
             }
         }
-
     }
-
     override fun onStart() {
         super.onStart()
         (requireActivity() as MainActivity).apply {
@@ -263,7 +281,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             showBottomNavBar()
         }
     }
-
     override fun onStop() {
         super.onStop()
         (requireActivity() as MainActivity).apply {
@@ -278,7 +295,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
     private fun completeDraftOrderForCashCollector() {
         customScope.launch {
             viewModel.apply {
@@ -309,7 +325,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
         }
     }
-
     private fun createOrderCollector() {
         customScope.launch {
             viewModel.apply {
@@ -336,7 +351,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
     private fun createDraftOrder(type: String) {
         paymentProcess.show(childFragmentManager, null)
         customScope.launch {
@@ -351,7 +365,13 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 if (bottomSheetBinding.txtValueOfDiscount.text.toString().trimCurrencySymbol()
                         .replace("-", "").toDouble() > 0.0
                 ) {
-                    Log.d(TAG, "createDraftOrder: ")
+                    val des =bottomSheetBinding.txtValueOfDiscount.text.toString().trimCurrencySymbol()
+                        .replace("-", "").toDouble() ?: 0.0
+                    val total = (fetchedList.sumOf { it.variantPrice!!.toDouble() * it.quantity }.times(100.0) ?: 0.00
+                    ) / 100.0
+                    val apluDes = couponToUse.toApplied_Discount()
+                    apluDes.amount= ((des/100) * total).toString()
+                    Log.d(TAG, "createDraftOrder:des : ${des} \n total${total} \n ${apluDes.amount}")
                     draftOrder = DraftOrder(
                         email,
                         LocalDateTime.now().nano.toLong(),
@@ -359,7 +379,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                         Customer(email),
                         defaultAddress!!.toAddress(),
                         defaultAddress!!.toAddress(),
-                        couponToUse.toApplied_Discount(),
+                        apluDes,
                         listOf(noteAttributesData(Constants.PAYMENT_TYPE, type))
                     )
                 } else
@@ -381,7 +401,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 Log.d(TAG, "createDraftOrderForCash: default add not found $defaultAddress")
         }
     }
-
 
     /* private fun sendInvoiceCollector(id: Long) {
          customScope.launch {
@@ -415,13 +434,12 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             } ${currencyData.second}"
         )
     }
-
     private suspend fun freeCart() {
         val dlList = fetchedList.map {
             it.id
         }
 
-        val removeJob = lifecycleScope.launch {
+        val removeJob = customScope.launch {
             viewModel.deleteFromCart(cardId, dlList)
         }
         removeJob.join()
@@ -440,8 +458,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
         Snackbar.make(requireView(), "Order Completed", Toast.LENGTH_LONG).show()
     }
-
-
     private fun showBottomSheet() {
         bottomSheetBinding = BottomSheetPaymentBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -485,7 +501,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
-
     @SuppressLint("DefaultLocale")
     private fun setDiscount() {
         bottomSheetBinding.apply {
@@ -504,12 +519,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             } ${currencyData.second}".also { txtValueOFAfterDiscount.text = it }
         }
     }
-
     override fun onDestroy() {
         super.onDestroy()
         customScope.cancel()
     }
-
     private fun setPrices(binding: BottomSheetPaymentBinding) {
         binding.apply {
             txtValueOfBeforeDiscount.text = fragmentBinding.txtValueOfGrandTotal.text
@@ -537,8 +550,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
-
     private fun functionalityWhenBtnCompleteParchesClicked(binding: BottomSheetPaymentBinding) {
         binding.apply {
             btnCompletePurches.setOnClickListener {
@@ -556,9 +567,8 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
     private fun collectDefaultAddress() {
-        lifecycleScope.launch(Dispatchers.Main) {
+        customScope.launch(Dispatchers.Main) {
             sharedViewModel.allAddresses.collect {
                 when (it) {
                     is ApiState.Success -> {
@@ -573,7 +583,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 }
             }
         }
-        lifecycleScope.launch {
+        customScope.launch {
             viewModel.defaultAddress.collect{
                 when (it) {
                     is ApiState.Success -> {
@@ -589,8 +599,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }
     }
-
-
     // HANDEL CLICK ON PRODUCT IN CART
     override fun onProductClick(item: ProductOfCart) {
         if (NetworkUtils.isConnected(requireContext())) {
@@ -603,7 +611,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             showErrorSnackbar(getString(R.string.no_internet_connection))
         }
     }
-
 
     @SuppressLint("DefaultLocale")
     override fun onPlusClick(item: ProductOfCart) {
@@ -621,7 +628,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
-
     @SuppressLint("DefaultLocale")
     override fun onMinusClick(item: ProductOfCart) {
         fragmentBinding.apply {
@@ -636,11 +642,10 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             viewModel.updateQuantityOfProduct(cardId, item.linesId!!, item.quantity)
         }
     }
-
     override fun onDeleteClick(item: ProductOfCart) {
         ConfirmationDialogFragment(DialogType.DEL_PRODUCT) {
             viewModel.deleteFromCart(cardId, listOf(item.id))
-            lifecycleScope.launch {
+            customScope.launch {
                 viewModel.removeProductFromCart.collect {
                     when (it) {
                         is ApiState.Success -> {
@@ -658,7 +663,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
             }
         }.show(childFragmentManager, "ConfirmationDialogFragment")
     }
-
 
     private fun finalTestStripePayment() {
         val url: String
@@ -766,7 +770,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
         paymentSheet.presentWithPaymentIntent(clientSecret, configuration)
     }
-
     private fun onPaymentSheetResult(res: PaymentSheetResult) {
         when (res) {
             is PaymentSheetResult.Canceled -> Log.d(TAG, "onPaymentSheetResult: canceled")

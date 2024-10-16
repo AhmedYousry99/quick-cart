@@ -49,13 +49,14 @@ import java.util.concurrent.TimeoutException
 /**
  * Transforms static java function Snackbar.make() to an extension function on View.
  */
-fun View.showSnackbar(
+fun Activity.showSnackbar(
     snackbarText: String,
     timeLength: Int = 4000,
+    color:Int? = null,
     action: (() -> Unit)? = null
 ) {
-    Snackbar.make(this, snackbarText, timeLength).run {
-        view.backgroundTintList = ColorStateList.valueOf(this.context.getColor(R.color.secondary))
+    Snackbar.make(this.findViewById(R.id.coOr), snackbarText, timeLength).run {
+        view.backgroundTintList = ColorStateList.valueOf(color ?: R.color.secondary)
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Ok") {
@@ -77,8 +78,6 @@ fun Fragment.showSnackbar(
 ) : Snackbar{
     return Snackbar.make(requireView(), snackbarText, timeLength).apply {
         view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(color ?: R.color.secondary))
-        val textView: TextView = view.findViewById(com.google.android.material.R.id.snackbar_text)
-        textView.ellipsize = TextUtils.TruncateAt.END
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Ok") {
@@ -161,8 +160,6 @@ fun Fragment.showErrorSnackbar(
 ) : Snackbar{
     return Snackbar.make(requireView(), snackbarText, timeLength).apply {
         view.backgroundTintList = ColorStateList.valueOf(requireContext().getColor(R.color.red))
-        val textView: TextView = view.findViewById(com.google.android.material.R.id.snackbar_text)
-        textView.ellipsize = TextUtils.TruncateAt.END
         view.setOnClickListener {dismiss()}
         if (action != null) {
             setAction("Retry") {

@@ -12,6 +12,7 @@ import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.type.MailingAddressInput
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -34,6 +35,10 @@ class AddressViewModel(private val addressRepo: AddressRepo) : ViewModel() {
     private val _createdAddress: MutableStateFlow<ApiState<String>> =
         MutableStateFlow(ApiState.Loading)
     val createdAddress = _createdAddress
+
+    private val _updateDefaultAddressProcess:MutableSharedFlow<Boolean> = MutableSharedFlow()
+    val updateDefaultAddressProcess = _updateDefaultAddressProcess
+
 
 
 
@@ -65,11 +70,13 @@ class AddressViewModel(private val addressRepo: AddressRepo) : ViewModel() {
 
     fun updateDefaultAddress(id: String) {
         viewModelScope.launch {
-            _allAddresses?.value = ApiState.Loading
+            _allAddresses.value = ApiState.Loading
             addressRepo.updateDefaultAddress(id)?.catch {
-                _allAddresses?.value = ApiState.Failure(it.message.toString())
+                _allAddresses.value = ApiState.Failure(it.message.toString())
+                _updateDefaultAddressProcess.emit(false)
             }?.collect {
                 getCustomerAddresses()
+                _updateDefaultAddressProcess.emit(true)
             }
         }
     }

@@ -45,15 +45,14 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo,private val a
         _location.value = Pair(lat,long)
     }
 
-    private val _currency : MutableStateFlow<ApiState<CurrencyResponse>> = MutableStateFlow(ApiState.Loading)
-    val currency = _currency.asStateFlow()
+    private val _currency : MutableSharedFlow<ApiState<CurrencyResponse>> = MutableStateFlow(ApiState.Loading)
+    val currency = _currency.asSharedFlow()
     fun getCurrencyRate(newCurrency: String) {
         viewModelScope.launch{
             _currency.emit( ApiState.Loading)
             try {
                 val res = currencyRepo.getCurrencyRate(newCurrency)
                 Log.d(TAG, "prepareCurrencyDataAndSetListener: ")
-
                 _currency.emit(ApiState.Success(res))
             }catch (e:Exception) {
                 _currency.emit(ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))

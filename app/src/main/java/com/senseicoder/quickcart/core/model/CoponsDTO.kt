@@ -1,5 +1,7 @@
 package com.senseicoder.quickcart.core.model
 
+import kotlin.math.abs
+
 class CoponsDTO
 
 data class DiscountCodesResponse(
@@ -63,13 +65,15 @@ data class DiscountCodesDTO(
     val id: Long,
     val title : String,
     val value :String,
-    val valueType : String
+    val valueType : String,
+    val amount:String? = null
 )
 fun DiscountCodesDTO.toApplied_Discount(): Applied_Discount {
     return Applied_Discount(
         title = this.title,
-        value = this.value,
-        value_type = this.valueType)
+        value = abs(this.value.toDouble()),
+        value_type = this.valueType,
+        amount = this.amount)
 }
 
 data class PrerequisiteToEntitlementQuantityRatio(

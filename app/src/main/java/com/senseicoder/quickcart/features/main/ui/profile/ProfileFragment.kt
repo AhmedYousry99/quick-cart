@@ -10,7 +10,10 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -20,7 +23,9 @@ import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
 import com.senseicoder.quickcart.core.global.showErrorSnackbar
 import com.senseicoder.quickcart.core.global.showSnackbar
+import com.senseicoder.quickcart.core.model.Currency
 import com.senseicoder.quickcart.core.model.CurrencyResponse
+import com.senseicoder.quickcart.core.model.Meta
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
@@ -42,18 +47,19 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
-
-
+    private var isConnecting = false
+    private var isConnect: Boolean = false
     private lateinit var viewModel: ProfileViewModel
-    private val customCurrencyCoroutine = CoroutineScope(Dispatchers.Main)
+    private val globalCoroutineScope = CoroutineScope(Dispatchers.Main)
     private val buttons: MutableList<RadioButton> = mutableListOf()
     private lateinit var bottomSheetCurrencyBinding: BottomSheetCurrencyBinding
     private lateinit var bottomSheetAboutUsBinding: BottomSheetAboutUsBinding
-    private lateinit var bottomSheetDialog:BottomSheetDialog
+    private lateinit var bottomSheetDialog: BottomSheetDialog
     var code: String = SharedPrefsService.getSharedPrefString(
         Constants.CURRENCY,
         Constants.CURRENCY_DEFAULT
     )
+    private lateinit var binding: FragmentProfileBinding
     private val mainViewmodel: MainActivityViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
@@ -78,7 +84,6 @@ class ProfileFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
     }
 
-    private lateinit var binding: FragmentProfileBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -87,41 +92,29 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-            setUserInfo()
-            btnChangeAddress.setOnClickListener {
-                Navigation.findNavController(it)
-                    .navigate(R.id.action_profileFragment_to_addressFragment)
-            }
-            btnChangeCurrency.setOnClickListener {
-                showCurrencyBottomSheet()
-            }
-            btnOrderHistory.setOnClickListener {
-                Navigation.findNavController(it)
-                    .navigate(R.id.action_profileFragment_to_orderFragment)
-            }
-            btnHowToUse.setOnClickListener {
-                Navigation.findNavController(it)
-                    .navigate(R.id.action_profileFragment_to_howToUseFragment)
-            }
-            btnLogOut.setOnClickListener {
-                ConfirmationDialogFragment(DialogType.LOGOUT) {
-                    viewModel.signOut()
-                    Navigation.findNavController(requireView()).apply {
-                        navigate(R.id.action_profileFragment_to_splashFragment)
-                        graph.setStartDestination(R.id.loginFragment)
+            lifecycleScope.launch {
+                MainActivity.isNetworkAvailable.collect {
+                    isConnect = it
+                    if (isConnect) {
+                        setDataAndListener()
+                        binding.apply {
+                            readyToUse.visibility = View.VISIBLE
+                            networkLottie.visibility = View.GONE
+                        }
+                    } else {
+                        deleteListener()
+                        binding.apply {
+                            readyToUse.visibility = View.GONE
+                            networkLottie.visibility = View.VISIBLE
+                        }
+                        globalCoroutineScope.cancel()
                     }
-                    mainViewmodel.updateAllAddress(ApiState.Loading)
-                }.show(childFragmentManager, null)
+                }
             }
-            btnWishList.setOnClickListener{
-                Navigation.findNavController(it)
-                    .navigate(R.id.action_profileFragment_to_favoriteFragment)
-            }
-            btnAboutUs.setOnClickListener{
+            btnAboutUs.setOnClickListener {
                 showAboutUsBottomSheet()
             }
         }
@@ -134,18 +127,19 @@ class ProfileFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        (requireActivity() as MainActivity).apply{
+        (requireActivity() as MainActivity).apply {
             if (findNavController().currentDestination!!.id == R.id.homeFragment
                 || findNavController().currentDestination!!.id == R.id.favoriteFragment
                 || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
                 || findNavController().currentDestination!!.id == R.id.profileFragment
-            ){
+            ) {
                 showBottomNavBar()
-            }else{
+            } else {
                 hideBottomNavBar()
             }
         }
     }
+
     private fun setUserInfo() {
         binding.apply {
             SharedPrefsService.apply {
@@ -163,7 +157,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showCurrencyBottomSheet(){
+    private fun showCurrencyBottomSheet() {
         bottomSheetCurrencyBinding = BottomSheetCurrencyBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         bottomSheetDialog.window?.apply {
@@ -178,7 +172,7 @@ class ProfileFragment : Fragment() {
         bottomSheetDialog.show()
     }
 
-    private fun showAboutUsBottomSheet(){
+    private fun showAboutUsBottomSheet() {
         bottomSheetAboutUsBinding = BottomSheetAboutUsBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
         bottomSheetDialog.window?.apply {
@@ -192,7 +186,7 @@ class ProfileFragment : Fragment() {
         bottomSheetDialog.show()
     }
 
-    private fun prepareCurrencyDataAndSetListener(){
+    private fun prepareCurrencyDataAndSetListener() {
         code = SharedPrefsService.getSharedPrefString(
             Constants.CURRENCY,
             Constants.CURRENCY_DEFAULT
@@ -249,6 +243,7 @@ class ProfileFragment : Fragment() {
                 rdBtnChecked.isChecked = true
                 code = rdBtnChecked.text.toString().substring(0, 3)
                 Log.d(TAG, "prepareCurrencyDataAndSetListener:")
+                showSnackbar("Wait. . . .", color = R.color.black)
                 mainViewmodel.getCurrencyRate(code)
                 rdGroup.removeAllViews()
                 bottomSheetDialog.dismiss()
@@ -275,21 +270,81 @@ class ProfileFragment : Fragment() {
     }
 
     private fun startCollectCurrencyChange() {
-        customCurrencyCoroutine.launch {
-            mainViewmodel.currency.collect {
-                when (it) {
-                    is ApiState.Success -> {
-                        val res = it.data
-                        Log.d(TAG, "startCollect: $res")
-                        setChangeInCurrency(res)
-                        showSnackbar("Success Changed Currency", color = R.color.secondary)
-                        customCurrencyCoroutine.cancel()
+        if (isConnect) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                    mainViewmodel.currency.collect {
+                        when (it) {
+                            is ApiState.Success -> {
+                                val res = it.data
+                                Log.d(TAG, "startCollect: $res")
+                                if ((res.data["EGP"]?.code).equals("EGP") ?: false)
+                                    setChangeInCurrency(CurrencyResponse.x)
+                                else
+                                    setChangeInCurrency(res)
+
+                                showSnackbar(
+                                    "Success Changed Currency",
+                                    color = R.color.secondary
+                                )
+                            }
+                            is ApiState.Failure -> {
+                                showErrorSnackbar(it.msg)
+                            }
+
+                            else -> {}
+                        }
                     }
-                    is ApiState.Failure -> {
-                        showErrorSnackbar(it.msg)
-                    }
-                    else -> showSnackbar("Waiting . . . .", Int.MAX_VALUE,color = R.color.black)
                 }
+            }
+        } else {
+            showSnackbar("Missing Connection", color = R.color.red)
+        }
+    }
+
+    private fun deleteListener() {
+        binding.apply {
+            btnChangeAddress.setOnClickListener(null)
+            btnChangeCurrency.setOnClickListener(null)
+            btnOrderHistory.setOnClickListener(null)
+            btnHowToUse.setOnClickListener(null)
+            btnLogOut.setOnClickListener(null)
+            btnWishList.setOnClickListener(null)
+        }
+    }
+
+    private fun setDataAndListener() {
+        binding.apply {
+            setUserInfo()
+            btnChangeAddress.setOnClickListener {
+                Navigation.findNavController(it)
+                    .navigate(R.id.action_profileFragment_to_addressFragment)
+            }
+            btnChangeCurrency.setOnClickListener {
+                showCurrencyBottomSheet()
+            }
+            btnOrderHistory.setOnClickListener {
+                Navigation.findNavController(it)
+                    .navigate(R.id.action_profileFragment_to_orderFragment)
+            }
+            btnHowToUse.setOnClickListener {
+                Navigation.findNavController(it)
+                    .navigate(R.id.action_profileFragment_to_howToUseFragment)
+            }
+            btnLogOut.setOnClickListener {
+                ConfirmationDialogFragment(DialogType.LOGOUT) {
+                    viewModel.signOut()
+                    Navigation.findNavController(requireView()).apply {
+                        navigate(R.id.action_profileFragment_to_splashFragment)
+                        graph.setStartDestination(R.id.loginFragment)
+                    }
+                    mainViewmodel.updateAllAddress(ApiState.Loading)
+                }.show(childFragmentManager, null)
+            }
+            btnWishList.setOnClickListener {
+                Navigation.findNavController(it)
+                    .navigate(R.id.action_profileFragment_to_favoriteFragment)
             }
         }
     }

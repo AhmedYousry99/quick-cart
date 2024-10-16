@@ -4,9 +4,77 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/readyToUse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="divider9,divider8,divider7,imgHowToUse2,imgNextArrowHowToUse2,btnAboutUs,imgOfPersson,txtNameOfPerson,txtEmailOfPerson,divider,txtGeneral,imgddress,imgNextArrowAddress,btnChangeAddress,divider5,imgCurrency,imgNextArrowToChangeCurrency,btnChangeCurrency,divider2,imgWishList,imgNextArrowWishList,btnWishList,imgOrderHistory,imgNextArrowOrderHistory,btnOrderHistory,divider4,imgLogOut,imgArrowToLogOut,btnLogOut"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/alexandria_medium"
+            android:text="My Profile"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/networkLottie"
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:layout_marginTop="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/nointernet" />
+
+        <!--<ImageView
+            android:id="@+id/imgNextArrowSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
+            app:layout_constraintEnd_toEndOf="@+id/btnSettings"
+            app:layout_constraintTop_toTopOf="@+id/btnSettings" />
+
+        <Button
+            android:id="@+id/btnSettings"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Settings"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtGeneral" />-->
+
 
         <View
             android:id="@+id/divider9"
@@ -72,23 +140,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/divider7" />
 
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="My Profile"
-            android:layout_margin="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/alexandria_medium"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/imgOfPersson"
             android:layout_width="180dp"
@@ -141,8 +192,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="General"
             android:fontFamily="@font/alexandria_medium"
+            android:text="General"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider" />
 
@@ -230,35 +281,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider5" />
 
-        <!--<ImageView
-            android:id="@+id/imgNextArrowSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_next"
-            app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
-            app:layout_constraintEnd_toEndOf="@+id/btnSettings"
-            app:layout_constraintTop_toTopOf="@+id/btnSettings" />
-
-        <Button
-            android:id="@+id/btnSettings"
-            android:layout_width="0dp"
-            android:layout_height="65dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/ripple_default"
-            android:gravity="center|start"
-            android:paddingStart="50dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:text="Settings"
-            android:fontFamily="@font/alexandria_medium"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtGeneral" />-->
-
         <View
             android:id="@+id/divider2"
             android:layout_width="350dp"
@@ -267,6 +289,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnChangeCurrency" />
+
         <ImageView
             android:id="@+id/imgWishList"
             android:layout_width="wrap_content"
@@ -284,7 +307,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnWishList"
             app:layout_constraintEnd_toEndOf="@+id/btnWishList"
             app:layout_constraintTop_toTopOf="@+id/btnWishList" />
-
 
         <Button
             android:id="@+id/btnWishList"
@@ -322,7 +344,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnOrderHistory"
             app:layout_constraintEnd_toEndOf="@+id/btnOrderHistory"
             app:layout_constraintTop_toTopOf="@+id/btnOrderHistory" />
-
 
         <Button
             android:id="@+id/btnOrderHistory"
@@ -373,7 +394,6 @@
             app:layout_constraintEnd_toEndOf="@+id/btnHowToUse"
             app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
 
-
         <Button
             android:id="@+id/btnHowToUse"
             android:layout_width="0dp"
@@ -420,7 +440,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnLogOut"
             app:layout_constraintEnd_toEndOf="@+id/btnLogOut"
             app:layout_constraintTop_toTopOf="@+id/btnLogOut" />
-
 
         <Button
             android:id="@+id/btnLogOut"

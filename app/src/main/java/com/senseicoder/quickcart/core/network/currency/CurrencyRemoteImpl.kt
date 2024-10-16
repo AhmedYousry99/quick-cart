@@ -14,11 +14,12 @@ import kotlin.math.E
 
 object CurrencyRemoteImpl : CurrencyRemote {
     override suspend fun getCurrencyRate(newCurrency: String): Response<CurrencyResponse>{
-        Log.d("", "prepareCurrencyDataAndSetListener: CurrencyRemoteImpl")
-
-        return ApiService.currencyApiService.getLatestRates(BuildConfig.currency_api_key,
+        val res = ApiService.currencyApiService.getLatestRates(BuildConfig.currency_api_key,
             SharedPrefsService.getSharedPrefString(Constants.CURRENCY,Constants.CURRENCY_DEFAULT),
             newCurrency)
+        Log.d("", "prepareCurrencyDataAndSetListener: CurrencyRemoteImpl${res}")
+
+        return res
     }
 
     override fun getCurrencies(): Flow<AllCurrencies> {
