@@ -1,9 +1,10 @@
 package com.senseicoder.quickcart.core.network
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.Strictness
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.core.global.Constants
-import com.senseicoder.quickcart.core.network.RetrofitHelper.FormUrlEncodedConverterFactory
-import com.senseicoder.quickcart.core.network.RetrofitHelper.gson
 import com.senseicoder.quickcart.core.network.coupons.CouponsInterface
 import com.senseicoder.quickcart.core.network.currency.CurrencyInterface
 import com.senseicoder.quickcart.core.network.order.OrderInterface
@@ -20,7 +21,9 @@ import java.time.Duration
 object ApiService {
 
     private const val CURRENCY_BASE_URL = "https://api.currencyapi.com/"
-
+    var gson: Gson = GsonBuilder()
+        .setStrictness(Strictness. LENIENT)
+        .create()
     val brandsApiService: ProductsApiInterface =
         AppRetrofit.retrofit.create(ProductsApiInterface::class.java)
 
@@ -104,13 +107,6 @@ object ApiService {
             .baseUrl(CURRENCY_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(currencyApiOkHttpClient)
-            .build()
-
-        val stripeRetrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(Constants.API.BASE_URL_STRIPE_SERVER)
-            .addConverterFactory(FormUrlEncodedConverterFactory())
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(stripeOkHttpClient)
             .build()
     }
 }

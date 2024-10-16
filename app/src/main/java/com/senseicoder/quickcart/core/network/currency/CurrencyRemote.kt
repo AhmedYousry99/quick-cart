@@ -4,9 +4,10 @@ import com.senseicoder.quickcart.core.model.AllCurrencies
 import com.senseicoder.quickcart.core.model.CurrencyResponse
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 interface CurrencyRemote {
-    fun getCurrencyRate(newCurrency: String): Flow<CurrencyResponse>
+    suspend fun getCurrencyRate(newCurrency: String): Response<CurrencyResponse>
     fun getCurrencies(): Flow<AllCurrencies>
 
 }

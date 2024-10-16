@@ -46,7 +46,7 @@ class MapsFragment : Fragment() {
             binding.button.visibility = View.VISIBLE
             Handler(Looper.getMainLooper()).postDelayed({
                 binding.button.visibility = View.GONE
-            }, 2000)
+            }, 3000)
         }
     }
 
@@ -80,7 +80,7 @@ class MapsFragment : Fragment() {
                     Navigation.findNavController(it)
                         .navigate(
                             R.id.action_mapsFragment_to_addressFragment,
-                            bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_CHECKOUT)
+                            bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_CHECKOUT),
                         )
                 else if(label.equals(Constants.CART_FRAGMENT_TO_EDIT))
                     Navigation.findNavController(it)

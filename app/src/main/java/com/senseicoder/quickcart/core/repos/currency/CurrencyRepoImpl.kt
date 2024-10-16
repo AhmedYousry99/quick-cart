@@ -7,12 +7,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 
 class CurrencyRepoImpl(private val currencyRemote: CurrencyRemote): CurrencyRepo {
-    override fun getCurrencyRate(newCurrency: String): Flow<CurrencyResponse> {
-        return flow {
-            currencyRemote.getCurrencyRate(newCurrency).collect {
-                val res = it
-                emit(res)
-            }
-        }
+    override suspend fun getCurrencyRate(newCurrency: String): CurrencyResponse{
+        val res = currencyRemote.getCurrencyRate(newCurrency)
+        if(res.isSuccessful)
+            return res.body() as CurrencyResponse
+        else
+            throw Exception(res.message())
     }
 }

@@ -1,270 +1,378 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="My Profile"
-        android:layout_margin="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/black"
-        android:fontFamily="@font/alexandria_medium"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardImage"
-        android:layout_width="176dp"
-        android:layout_height="168dp"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle">
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="My Profile"
+            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/alexandria_medium"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imgOfPersson"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/profile_image" />
-    </androidx.cardview.widget.CardView>
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:src="@drawable/img_profile_baby"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
-    <TextView
-        android:id="@+id/txtNameOfPerson"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/alexandria_medium"
-        android:gravity="center"
-        android:text="Ahmed Eid"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardImage" />
+        <TextView
+            android:id="@+id/txtNameOfPerson"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center"
+            android:text="Ahmed Eid"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgOfPersson" />
 
-    <TextView
-        android:id="@+id/txtEmailOfPerson"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/alexandria_medium"
-        android:gravity="center"
-        android:paddingStart="8dp"
-        android:text="ahmed.eid159753@gmail.com"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/txtNameOfPerson"
-        app:layout_constraintTop_toBottomOf="@+id/txtNameOfPerson" />
+        <TextView
+            android:id="@+id/txtEmailOfPerson"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:text="ahmed.eid159753@gmail.com"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/txtNameOfPerson"
+            app:layout_constraintTop_toBottomOf="@+id/txtNameOfPerson" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="390dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtEmailOfPerson" />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="390dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtEmailOfPerson" />
 
-    <TextView
-        android:id="@+id/txtGeneral"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="General"
-        android:fontFamily="@font/alexandria_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        <TextView
+            android:id="@+id/txtGeneral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="General"
+            android:fontFamily="@font/alexandria_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-    <ImageView
-        android:id="@+id/imgSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_setting"
-        app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
-        app:layout_constraintStart_toStartOf="@+id/btnSettings"
-        app:layout_constraintTop_toTopOf="@+id/btnSettings" />
+        <ImageView
+            android:id="@+id/imgddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_address"
+            app:layout_constraintBottom_toBottomOf="@+id/btnChangeAddress"
+            app:layout_constraintStart_toStartOf="@+id/btnChangeAddress"
+            app:layout_constraintTop_toTopOf="@+id/btnChangeAddress" />
 
-    <ImageView
-        android:id="@+id/imgNextArrowSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_next"
-        app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
-        app:layout_constraintEnd_toEndOf="@+id/btnSettings"
-        app:layout_constraintTop_toTopOf="@+id/btnSettings" />
+        <ImageView
+            android:id="@+id/imgNextArrowAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnChangeAddress"
+            app:layout_constraintEnd_toEndOf="@+id/btnChangeAddress"
+            app:layout_constraintTop_toTopOf="@+id/btnChangeAddress" />
 
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ripple_default"
-        android:gravity="center|start"
-        android:paddingStart="50dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:text="Settings"
-        android:fontFamily="@font/alexandria_medium"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtGeneral" />
+        <Button
+            android:id="@+id/btnChangeAddress"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Address"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtGeneral" />
 
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="350dp"
-        android:layout_height=".5dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSettings" />
+        <View
+            android:id="@+id/divider5"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnChangeAddress" />
 
-    <ImageView
-        android:id="@+id/imgOrderHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_order_history"
-        app:layout_constraintBottom_toBottomOf="@+id/btnOrderHistory"
-        app:layout_constraintStart_toStartOf="@+id/btnOrderHistory"
-        app:layout_constraintTop_toTopOf="@+id/btnOrderHistory" />
+        <ImageView
+            android:id="@+id/imgCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_wallet"
+            app:layout_constraintBottom_toBottomOf="@+id/btnChangeCurrency"
+            app:layout_constraintStart_toStartOf="@+id/btnChangeCurrency"
+            app:layout_constraintTop_toTopOf="@+id/btnChangeCurrency" />
 
-    <ImageView
-        android:id="@+id/imgNextArrowOrderHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_next"
-        app:layout_constraintBottom_toBottomOf="@+id/btnOrderHistory"
-        app:layout_constraintEnd_toEndOf="@+id/btnOrderHistory"
-        app:layout_constraintTop_toTopOf="@+id/btnOrderHistory" />
+        <ImageView
+            android:id="@+id/imgNextArrowToChangeCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnChangeCurrency"
+            app:layout_constraintEnd_toEndOf="@+id/btnChangeCurrency"
+            app:layout_constraintTop_toTopOf="@+id/btnChangeCurrency" />
 
+        <Button
+            android:id="@+id/btnChangeCurrency"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:fontFamily="@font/alexandria_medium"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Currency"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider5" />
 
-    <Button
-        android:id="@+id/btnOrderHistory"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ripple_default"
-        android:gravity="center|start"
-        android:paddingStart="50dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:text="Order History"
-        android:fontFamily="@font/alexandria_medium"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        <!--<ImageView
+            android:id="@+id/imgNextArrowSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
+            app:layout_constraintEnd_toEndOf="@+id/btnSettings"
+            app:layout_constraintTop_toTopOf="@+id/btnSettings" />
 
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="350dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnOrderHistory" />
+        <Button
+            android:id="@+id/btnSettings"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Settings"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtGeneral" />-->
 
-    <ImageView
-        android:id="@+id/imgHowToUse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_lightbulb"
-        app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
-        app:layout_constraintStart_toStartOf="@+id/btnHowToUse"
-        app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="350dp"
+            android:layout_height=".5dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnChangeCurrency" />
+        <ImageView
+            android:id="@+id/imgWishList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_favorite_border"
+            app:layout_constraintBottom_toBottomOf="@+id/btnWishList"
+            app:layout_constraintStart_toStartOf="@+id/btnWishList"
+            app:layout_constraintTop_toTopOf="@+id/btnWishList" />
 
-    <ImageView
-        android:id="@+id/imgNextArrowHowToUse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_next"
-        app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
-        app:layout_constraintEnd_toEndOf="@+id/btnHowToUse"
-        app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
-
-
-    <Button
-        android:id="@+id/btnHowToUse"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ripple_default"
-        android:gravity="center|start"
-        android:paddingStart="50dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:text="How to use"
-        android:fontFamily="@font/alexandria_medium"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider3" />
-
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="350dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
-
-    <ImageView
-        android:id="@+id/imgLogOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_logout"
-        app:layout_constraintBottom_toBottomOf="@+id/btnLogOut"
-        app:layout_constraintStart_toStartOf="@+id/btnLogOut"
-        app:layout_constraintTop_toTopOf="@+id/btnLogOut" />
-
-    <ImageView
-        android:id="@+id/imgArrowToLogOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_next"
-        app:layout_constraintBottom_toBottomOf="@+id/btnLogOut"
-        app:layout_constraintEnd_toEndOf="@+id/btnLogOut"
-        app:layout_constraintTop_toTopOf="@+id/btnLogOut" />
+        <ImageView
+            android:id="@+id/imgNextArrowWishList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnWishList"
+            app:layout_constraintEnd_toEndOf="@+id/btnWishList"
+            app:layout_constraintTop_toTopOf="@+id/btnWishList" />
 
 
-    <Button
-        android:id="@+id/btnLogOut"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ripple_red"
-        android:gravity="center|start"
-        android:paddingStart="50dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:text="Log out"
-        android:fontFamily="@font/alexandria_medium"
-        android:textColor="@color/red"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider4" />
+        <Button
+            android:id="@+id/btnWishList"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Wish List"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider2" />
+
+        <ImageView
+            android:id="@+id/imgOrderHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_order_history"
+            app:layout_constraintBottom_toBottomOf="@+id/btnOrderHistory"
+            app:layout_constraintStart_toStartOf="@+id/btnOrderHistory"
+            app:layout_constraintTop_toTopOf="@+id/btnOrderHistory" />
+
+        <ImageView
+            android:id="@+id/imgNextArrowOrderHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnOrderHistory"
+            app:layout_constraintEnd_toEndOf="@+id/btnOrderHistory"
+            app:layout_constraintTop_toTopOf="@+id/btnOrderHistory" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btnOrderHistory"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Order History"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnWishList" />
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnOrderHistory" />
+
+        <ImageView
+            android:id="@+id/imgHowToUse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lightbulb"
+            app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
+            app:layout_constraintStart_toStartOf="@+id/btnHowToUse"
+            app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
+
+        <ImageView
+            android:id="@+id/imgNextArrowHowToUse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnHowToUse"
+            app:layout_constraintEnd_toEndOf="@+id/btnHowToUse"
+            app:layout_constraintTop_toTopOf="@+id/btnHowToUse" />
+
+
+        <Button
+            android:id="@+id/btnHowToUse"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_default"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="How to use"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnOrderHistory" />
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="350dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
+
+        <ImageView
+            android:id="@+id/imgLogOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_logout"
+            app:layout_constraintBottom_toBottomOf="@+id/btnLogOut"
+            app:layout_constraintStart_toStartOf="@+id/btnLogOut"
+            app:layout_constraintTop_toTopOf="@+id/btnLogOut" />
+
+        <ImageView
+            android:id="@+id/imgArrowToLogOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_next"
+            app:layout_constraintBottom_toBottomOf="@+id/btnLogOut"
+            app:layout_constraintEnd_toEndOf="@+id/btnLogOut"
+            app:layout_constraintTop_toTopOf="@+id/btnLogOut" />
+
+
+        <Button
+            android:id="@+id/btnLogOut"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/ripple_red"
+            android:gravity="center|start"
+            android:paddingStart="50dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="Log out"
+            android:fontFamily="@font/alexandria_medium"
+            android:textColor="@color/red"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnHowToUse" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

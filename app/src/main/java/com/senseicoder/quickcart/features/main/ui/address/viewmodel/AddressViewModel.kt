@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class AddressViewModel(private val addressRepo: AddressRepo) : ViewModel() {
 
-    private val _allAddresses: MutableStateFlow<ApiState< CustomerAddressesQuery. Customer>>?= MutableStateFlow(ApiState.Loading)
+    private val _allAddresses: MutableStateFlow<ApiState< CustomerAddressesQuery. Customer>> = MutableStateFlow(ApiState.Loading)
     val allAddresses = _allAddresses
 
 
@@ -39,15 +39,15 @@ class AddressViewModel(private val addressRepo: AddressRepo) : ViewModel() {
 
 
     fun getCustomerAddresses() {
-        _allAddresses?.value = ApiState.Loading
+        _allAddresses.value = ApiState.Loading
         viewModelScope.launch {
             addressRepo.getCustomerAddresses().catch {
-                _allAddresses?.value = ApiState.Failure(it.message.toString())
+                _allAddresses.value = ApiState.Failure(it.message.toString())
             }.collect {
                     if (it  != null)
-                         _allAddresses?.value = ApiState.Success(it)
+                         _allAddresses.value = ApiState.Success(it)
                 else
-                    _allAddresses?.value = ApiState.Failure("No data found")
+                    _allAddresses.value = ApiState.Failure("No data found")
             }
         }
     }

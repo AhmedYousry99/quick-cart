@@ -6,16 +6,19 @@ import androidx.lifecycle.viewModelScope
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.model.CurrencyResponse
 import com.senseicoder.quickcart.core.model.customer.CustomerDTO
+import com.senseicoder.quickcart.core.repos.address.AddressRepo
 import com.senseicoder.quickcart.core.repos.currency.CurrencyRepo
 import com.senseicoder.quickcart.core.repos.product.ProductsRepo
 import com.senseicoder.quickcart.core.wrappers.ApiState
+import com.storefront.CustomerAddressesQuery
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel(private val currencyRepo: CurrencyRepo) : ViewModel() {
+class MainActivityViewModel(private val currencyRepo: CurrencyRepo,private val addressRepo:AddressRepo) : ViewModel() {
     private val _currentProductId: MutableStateFlow<String> = MutableStateFlow(INIT)
     val currentProductId = _currentProductId
 
@@ -41,23 +44,27 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo) : ViewModel(
     }
 
     private val _currency : MutableSharedFlow<ApiState<CurrencyResponse>> = MutableSharedFlow()
-    val currency = _currency
+    val currency = _currency.asSharedFlow()
     fun getCurrencyRate(newCurrency: String) {
         viewModelScope.launch{
             _currency.emit( ApiState.Loading)
-            currencyRepo.getCurrencyRate(newCurrency).catch {
-                _currency.emit(ApiState.Failure(it.message.toString()))
-            }.collect {
-                Log.d(TAG, "getCurrencyRate: ${it.data}")
-                if (it.data.isEmpty())
-                    _currency.emit(ApiState.Failure("IS EMPTY"))
-                else {
-                    _currency.emit(ApiState.Success(it))
-                }
+            try {
+                val res = currencyRepo.getCurrencyRate(newCurrency)
+                _currency.emit(ApiState.Success(res))
+            }catch (e:Exception) {
+                _currency.emit(ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))
             }
         }
 
     }
+
+    private val _allAddresses: MutableStateFlow<ApiState< CustomerAddressesQuery. Customer>> = MutableStateFlow(ApiState.Loading)
+    val allAddresses = _allAddresses
+    fun updateAllAddress(new :ApiState< CustomerAddressesQuery. Customer>){
+        _allAddresses.value = new
+    }
+
+
 
     companion object{
         private const val TAG = "MainActivityViewModel"
