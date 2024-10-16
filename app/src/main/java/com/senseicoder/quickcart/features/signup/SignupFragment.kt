@@ -16,7 +16,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.db.remote.FirebaseFirestoreDataSource
-import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
+import com.senseicoder.quickcart.core.dialogs.ConfirmationUpdateDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.KeyboardUtils
 import com.senseicoder.quickcart.core.global.NetworkUtils
@@ -245,14 +245,14 @@ class SignupFragment : Fragment() {
     fun handledByDialog(firstName: String, lastName: String, email: String, password: String): Boolean{
         val func = {signupViewModel.signUpUsingEmailAndPassword(email, firstName, lastName, password)}
         if(firstName.isEmpty() && lastName.isEmpty()){
-            ConfirmationDialogFragment(DialogType.SIGN_UP_EMAIL, func).show(childFragmentManager, null)
+            ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_EMAIL, func).show(childFragmentManager, null)
             return true
         }else{
             return if(firstName.isEmpty()){
-                ConfirmationDialogFragment(DialogType.SIGN_UP_FIRST_NAME, func).show(childFragmentManager, null)
+                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_FIRST_NAME, func).show(childFragmentManager, null)
                 true
             } else if(lastName.isEmpty()){
-                ConfirmationDialogFragment(DialogType.SIGN_UP_LAST_NAME, func).show(childFragmentManager, null)
+                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_LAST_NAME, func).show(childFragmentManager, null)
                 true
             } else
                 false
