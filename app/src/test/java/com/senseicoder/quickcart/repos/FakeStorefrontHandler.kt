@@ -4,6 +4,7 @@ import com.senseicoder.quickcart.core.network.interfaces.StorefrontHandler
 import com.senseicoder.quickcart.core.wrappers.ApiState
 import com.storefront.CartLinesUpdateMutation
 import com.storefront.CreateCustomerAccessTokenMutation
+import com.storefront.RemoveProductFromCartMutation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.delay
@@ -50,10 +51,17 @@ class FakeStorefrontHandler : StorefrontHandler {
         }
     }
 
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: List<String>
+    ): Flow<RemoveProductFromCartMutation.CartLinesRemove?> {
+        TODO("Not yet implemented")
+    }
+
     // Other methods can be left unimplemented or as stubs
-    override suspend fun loginUser(email: String, password: String) = TODO()
+    override  fun loginUser(email: String, password: String) = TODO()
     override fun createCustomer(email: String, password: String, firstName: String, lastName: String) = TODO()
-    override suspend fun removeProductFromCart(cartId: String, lineId: String) = TODO()
+
     override suspend fun getProductsCart(cartId: String) = TODO()
     override suspend fun updateQuantityOfProduct(
         cartId: String,
@@ -69,7 +77,7 @@ class FakeStorefrontHandler : StorefrontHandler {
     override suspend fun deleteAddress(id: String, token: String) = TODO()
     override suspend fun createAddress(customerAddress: MailingAddressInput, token: String) = TODO()
     override suspend fun updateDefaultAddress(token: String, id: String) = TODO()
-    override suspend fun createCart(email: String) = TODO()
+    override  fun createCart(email: String) = TODO()
     override suspend fun addToCartById(cartId: String, quantity: Int, variantId: String) = TODO()
     override suspend fun getProductsByQuery(query: String) = TODO()
 }
