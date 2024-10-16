@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.senseicoder.quickcart.R
@@ -125,6 +126,25 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).showBottomNavBar()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (requireActivity() as MainActivity).apply{
+            if (findNavController().currentDestination!!.id == R.id.homeFragment
+                || findNavController().currentDestination!!.id == R.id.favoriteFragment
+                || findNavController().currentDestination!!.id == R.id.shoppingCartFragment
+                || findNavController().currentDestination!!.id == R.id.profileFragment
+            ){
+                showBottomNavBar()
+            }else{
+                hideBottomNavBar()
+            }
+        }
+    }
     private fun setUserInfo() {
         binding.apply {
             SharedPrefsService.apply {
