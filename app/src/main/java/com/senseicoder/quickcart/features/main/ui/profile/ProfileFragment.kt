@@ -85,7 +85,7 @@ class ProfileFragment : Fragment() {
                 ConfirmationDialogFragment(DialogType.LOGOUT) {
                     viewModel.signOut()
                     Navigation.findNavController(requireView()).apply {
-                        navigate(R.id.action_profileFragment_to_loginFragment)
+                        navigate(R.id.action_profileFragment_to_splashFragment)
                         graph.setStartDestination(R.id.loginFragment)
                     }
                 }.show(childFragmentManager, null)

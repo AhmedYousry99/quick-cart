@@ -32,7 +32,7 @@ class CustomerRepoImpl private constructor(
 ) : CustomerRepo {
 
     override fun loginUsingNormalEmail(email: String, password: String): Flow<CustomerDTO> {
-        return dbRemoteDataSource.getUserByIdOrAddUser(CustomerDTO(email = email)).zip(
+        return dbRemoteDataSource.getUserByEmail(CustomerDTO(email = email)).zip(
             firebaseHandler.loginUsingNormalEmail(
                 email, password
             )
@@ -154,6 +154,8 @@ class CustomerRepoImpl private constructor(
                 dto.copy(cartId = data.id)
             }.flatMapLatest {
                 dbRemoteDataSource.addUser(it)
+            }.flatMapLatest{
+                firebaseHandler.handleEmailVerification(it)
             }
             .timeout(20.seconds)
     }

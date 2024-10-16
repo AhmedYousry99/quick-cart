@@ -1,7 +1,9 @@
 package com.senseicoder.quickcart.core.network
 
 import android.util.Log
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.userProfileChangeRequest
 import com.senseicoder.quickcart.core.global.Constants
@@ -10,6 +12,7 @@ import com.senseicoder.quickcart.core.network.interfaces.FirebaseHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.tasks.await
 
 object FirebaseHandlerImpl : FirebaseHandler {
@@ -64,6 +67,15 @@ object FirebaseHandlerImpl : FirebaseHandler {
                 )
             )
         }
+    }.retryWhen{ cause, attempt ->
+        (cause !is FirebaseAuthInvalidCredentialsException)&& attempt < 3
+    }.catch {
+        if (it is FirebaseAuthInvalidCredentialsException) {
+            throw Exception(Constants.Errors.Login.INVALID_CREDENTIALS)
+        }else if(it is FirebaseNetworkException){
+            throw Exception(Constants.Errors.NO_INTERNET)
+        }
+        throw it
     }
 
     override fun updateDisplayName(customerDTO: CustomerDTO) = flow<CustomerDTO> {
@@ -81,7 +93,7 @@ object FirebaseHandlerImpl : FirebaseHandler {
         if (user?.isEmailVerified == true) {
             emit(customer.copy(isVerified = true))
         } else {
-            user!!.sendEmailVerification().await()
+            (user ?: firebaseAuthInstance.currentUser!!).sendEmailVerification().await()
             throw Exception(Constants.Errors.Firebase.EMAIL_NOT_VERIFIED)
         }
     }

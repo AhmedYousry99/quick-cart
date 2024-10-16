@@ -187,7 +187,8 @@ class LoginFragment : Fragment() {
                     showErrorSnackbar(getString(R.string.no_internet_connection))
                 }
             }else{
-                if(handleEmailError(email) != null) {
+                val emailValidation = handleEmailError(email)
+                if(emailValidation != null) {
                     emailLoginEditText.requestFocus()
                     KeyboardUtils.showKeyboard(requireActivity(), emailLoginEditText)
                 }

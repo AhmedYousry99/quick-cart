@@ -5,6 +5,7 @@ object Constants {
 
 
     object Errors {
+        const val NO_INTERNET = "No Internet Connection"
         const val UNKNOWN = "unknown error occurred"
         const val CUSTOMER_CREATE_FAILED = "customer creation failed"
         object CustomerCreate{
@@ -12,6 +13,10 @@ object Constants {
         }
         object Firebase{
             const val EMAIL_NOT_VERIFIED = "Email is not verified, please check your inbox and verify your account!"
+        }
+
+        object Login {
+            const val INVALID_CREDENTIALS = "Invalid credentials"
         }
     }
 
