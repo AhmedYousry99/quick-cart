@@ -50,7 +50,7 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
         lineId: String,
         quantity: Int
     ): Flow<List<ProductOfCart>?> = flow {
-        remoteDataSource.updateQuantityOfProduct(cartId, lineId,quantity).collect{
+        remoteDataSource.updateQuantityOfProduct(cartId, lineId,quantity).timeout(15.seconds).collect{
             emit(ProductOfCart.fromEdges(it?.edges))
         }
     }
@@ -60,7 +60,7 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
             remoteDataSource.getProductsCart(cartId).collect {
                 emit(it)
             }
-        }
+        }.timeout(15.seconds)
 
     override suspend fun removeProductFromCart(
         cartId: String,
@@ -69,7 +69,7 @@ class CartRepoImpl(private val remoteDataSource: StorefrontHandler, private val 
         remoteDataSource.removeProductFromCart(cartId, lineId).collect {
             emit(it?.userErrors?.firstOrNull()?.message)
         }
-    }
+    }.timeout(15.seconds)
 
     override fun getSharedPrefString(key: String, defaultValue: String): String {
         return sharedPref.getSharedPrefString(key, defaultValue)

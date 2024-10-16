@@ -32,7 +32,7 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
     override suspend fun getAllBrand(): Flow<List<DisplayBrand>> {
         return flowOf(remoteProductsDataSource.getAllBrand().smart_collections?.map {
             it.mapRemoteBrandToDisplayBrand()
-        }) as Flow<List<DisplayBrand>>
+        }).timeout(15.seconds) as Flow<List<DisplayBrand>>
 
     }
 
@@ -41,11 +41,11 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
             it.vendor == brand
         }.map {
             it.mapApiRemoteProductToDisplayProduct()
-        })
+        }).timeout(15.seconds)
     }
 
     override suspend fun getProductDetails(id: Long): Flow<ProductDetails> {
-        return flowOf(remoteProductsDataSource.getProductById(id))
+        return flowOf(remoteProductsDataSource.getProductById(id)).timeout(15.seconds)
     }
 
     override suspend fun getProductDetailsGraph(id: String): Flow<ProductDTO> {
@@ -85,7 +85,7 @@ class ProductsRepo(private val remoteProductsDataSource: RemoteProductsDataSourc
 
     override suspend fun getAllProduct(): Flow<List<DisplayProduct>> {
 
-        return flowOf(remoteProductsDataSource.getAllProduct().products.map { it.mapApiRemoteProductToDisplayProduct() })
+        return flowOf(remoteProductsDataSource.getAllProduct().products.map { it.mapApiRemoteProductToDisplayProduct() }).timeout(15.seconds)
 
     }
 

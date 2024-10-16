@@ -249,10 +249,10 @@ class SignupFragment : Fragment() {
             return true
         }else{
             return if(firstName.isEmpty()){
-                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_FIRST_NAME, func).show(childFragmentManager, null)
+                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_LAST_NAME, func).show(childFragmentManager, null)
                 true
             } else if(lastName.isEmpty()){
-                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_LAST_NAME, func).show(childFragmentManager, null)
+                ConfirmationUpdateDialogFragment(DialogType.SIGN_UP_FIRST_NAME, func).show(childFragmentManager, null)
                 true
             } else
                 false

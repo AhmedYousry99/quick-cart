@@ -262,7 +262,6 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
 
     override fun onStop() {
         super.onStop()
-        customScope.cancel()
         (requireActivity() as MainActivity).apply {
             if (findNavController().currentDestination!!.id == R.id.homeFragment
                 || findNavController().currentDestination!!.id == R.id.favoriteFragment
@@ -274,6 +273,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                 hideBottomNavBar()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        customScope.cancel()
     }
 
     private fun completeDraftOrderForCashCollector() {

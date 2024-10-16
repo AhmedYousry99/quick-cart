@@ -9,9 +9,13 @@ import com.senseicoder.quickcart.core.services.SharedPrefs
 import com.storefront.CustomerAddressesQuery
 import com.storefront.CustomerDefaultAddressUpdateMutation
 import com.storefront.type.MailingAddressInput
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.timeout
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(FlowPreview::class)
 class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : AddressRepo {
 
     private var token =
@@ -35,7 +39,7 @@ class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : A
             remote.updateCustomerAddress(address,token,id).collect{
                 emit(it)
             }
-        }
+        }.timeout(15.seconds)
     }
 
     override suspend fun deleteAddress(id: String): Flow<String?> {
@@ -44,7 +48,7 @@ class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : A
             remote.deleteAddress(id,token).collect{
                 emit(it)
             }
-        }
+        }.timeout(15.seconds)
     }
 
     override suspend fun createAddress(
@@ -55,7 +59,7 @@ class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : A
             remote.createAddress(customerAddress,token).collect{
                 emit(it)
             }
-        }
+        }.timeout(15.seconds)
     }
 
     override suspend fun updateDefaultAddress(id: String): Flow<CustomerDefaultAddressUpdateMutation.CustomerDefaultAddressUpdate> {
@@ -64,7 +68,7 @@ class AddressRepoImpl(val remote: StorefrontHandler, val local: SharedPrefs) : A
             remote.updateDefaultAddress(token,id)?.collect{
                 emit(it)
             }
-        }
+        }.timeout(15.seconds)
     }
 
     override fun updateToken() {
