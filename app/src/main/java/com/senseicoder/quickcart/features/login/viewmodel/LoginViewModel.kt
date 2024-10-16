@@ -25,6 +25,7 @@ class LoginViewModel(private val customerRepo: CustomerRepo) : ViewModel() {
             customerRepo.loginUsingNormalEmail(email = email, password = password).catch { e ->
                 _loginState.emit(value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN))
             }.collect {
+                SharedPrefsService.logAllSharedPref(TAG, "loginUsingNormalEmail ${it.expireAt}")
                 customerRepo.setUserId(it.id)
                 customerRepo.setUserToken(it.token)
                 customerRepo.setEmail(it.email)

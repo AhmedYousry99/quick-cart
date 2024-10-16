@@ -23,7 +23,7 @@ class ReviewAdapter(val list: List<ReviewDTO>) : RecyclerView.Adapter<ReviewAdap
             txtDesc.text = current.description
             txtName.text = current.name
             ratingBarProductDetails.rating = current.rating.toFloat()
-            img.setImageResource(imageList[position])
+            imgReviews.setImageResource(imageList[position])
         }
     }
 

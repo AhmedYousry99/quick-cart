@@ -189,6 +189,23 @@ fun TextInputLayout.handleErrorOnFocusChange(
     }
 }
 
+fun TextInputLayout.handleErrorOnFocusChange(
+    errorFunc: ((text: String) -> String?),
+    validationFunc: String.() -> Boolean,
+) {
+    this.editText?.setOnFocusChangeListener { _, hasFocus ->
+        val inputText = (this.editText?.text ?: "").toString() // Get the text from EditText
+        if (hasFocus) {
+            this.error = null
+        } else {
+            if (!validationFunc(inputText)) {
+                val error = errorFunc(inputText)
+                this.error =  error
+            }
+        }
+    }
+}
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)

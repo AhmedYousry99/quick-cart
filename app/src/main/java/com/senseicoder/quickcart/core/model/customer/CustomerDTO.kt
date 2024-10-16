@@ -9,9 +9,9 @@ data class CustomerDTO(
     val displayName: String = "unknown",
     val email: String = "unknown",
     val password: String = INVALID_PASSWORD,
-    val id: String = INVALID_ID,
+    val id: String = Constants.USER_ID_DEFAULT,
     @DocumentId
-    val firebaseId: String = INVALID_ID,
+    val firebaseId: String = Constants.FIREBASE_USER_ID_DEFAULT,
     val isVerified: Boolean = false,
     val isGuest: Boolean = false,
     val token: String = "",
