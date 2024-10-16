@@ -10,7 +10,6 @@
 
 - [Quick Cart Trello Board](https://trello.com/b/fesRCe2Z/e-commerce-app)
 - [Quick Cart Github Repo](https://github.com/Khaatora/quick-cart)
-- [Quick Cart Github]
 
 ## Features
 
