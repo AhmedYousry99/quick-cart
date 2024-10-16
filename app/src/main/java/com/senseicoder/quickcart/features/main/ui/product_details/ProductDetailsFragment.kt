@@ -380,7 +380,7 @@ class ProductDetailsFragment : Fragment() {
     ) {
         binding.apply {
             variant.let {
-                if (variant.quantityAvailable.toInt() != 0) {
+                if (variant.quantityAvailable.toInt() > 0) {
                     enableButtons()
                     addToCartBtnProductDetails.isEnabled = false
                     decreaseQuantityBtnProductDetails.isEnabled = false
@@ -392,6 +392,8 @@ class ProductDetailsFragment : Fragment() {
                         )
                     )
                 } else {
+                    increaseQuantityBtnProductDetails.isEnabled = false
+                    decreaseQuantityBtnProductDetails.isEnabled = false
                     stockProductDetails.setTextColor(
                         ColorStateList.valueOf(
                             requireContext().getColor(

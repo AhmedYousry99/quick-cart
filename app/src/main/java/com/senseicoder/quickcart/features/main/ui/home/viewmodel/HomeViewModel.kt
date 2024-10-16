@@ -33,6 +33,7 @@ class HomeViewModel(
     fun getBrand() {
         viewModelScope.launch {
             try {
+                brands.value = ApiState.Loading
                 repoInterface.getAllBrand().catch { e ->
                     brands.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
                 }.collect { data ->
