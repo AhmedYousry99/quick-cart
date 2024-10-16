@@ -31,9 +31,9 @@ class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRe
         MutableStateFlow(ApiState.Loading)
     val cartProducts = _cartProducts
 
-/*    private val _defaultAddress: MutableStateFlow<ApiState<AddressOfCustomer>> =
+    private val _defaultAddress: MutableStateFlow<ApiState<AddressOfCustomer>> =
         MutableStateFlow(ApiState.Loading)
-    val defaultAddress = _defaultAddress.asStateFlow()*/
+    val defaultAddress = _defaultAddress.asStateFlow()
 
 
     fun fetchCartProducts(cartId: String) {
@@ -119,26 +119,23 @@ class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRe
     }
 
 
-/*     fun getAddress() {
+     fun getAddress() {
         viewModelScope.launch {
             try{
                 draftOrderRepo.getCustomerAddresses().catch {
                     _defaultAddress.value = ApiState.Failure(it.message ?: Constants.Errors.UNKNOWN)
-                }.first() {
-                    if (it != null) {
+                }.collect{
+                    if (it != null)
                         _defaultAddress.value =
                             (ApiState.Success(it.defaultAddress?.toAddressOfCustomer()!!))
-                        true
-                    } else {
+                     else
                         _defaultAddress.value = (ApiState.Failure("No default address"))
-                        false
-                    }
                 }
             }catch (e : Exception) {
                 _defaultAddress.value = ApiState.Failure(e.message ?: Constants.Errors.UNKNOWN)
             }
         }
-    }*/
+    }
 
     private val _couponDetails: MutableSharedFlow<ApiState<PriceRulesResponse>> =
         MutableStateFlow(ApiState.Loading)
