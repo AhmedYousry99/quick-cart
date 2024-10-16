@@ -279,6 +279,9 @@ dependencies {
 
     testImplementation ("app.cash.turbine:turbine:0.12.1")
 
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
+
 
 
 
