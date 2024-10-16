@@ -3,6 +3,7 @@ package com.senseicoder.quickcart.features.main.ui.brand
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -190,8 +191,8 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                 brandViewModel.products.collectLatest {
                     when (it) {
                         is ApiState.Loading -> {
-
                             if (networkConnectivity.isOnline()) {
+                                Log.d(TAG, "onViewCreated: ")
                                 binding.noConnectivity.visibility = View.GONE
                                 binding.recyclerView.visibility = View.GONE
                                 binding.shimmerFrameLayoutBrand.startShimmer()
@@ -200,9 +201,7 @@ class BrandFragment : Fragment(), OnItemProductClicked {
                                 binding.noConnectivity.visibility = View.VISIBLE
                             }
 
-
                         }
-
                         is ApiState.Success -> {
                             binding.recyclerView.visibility = View.VISIBLE
                             binding.shimmerFrameLayoutBrand.visibility = View.GONE
@@ -275,4 +274,8 @@ class BrandFragment : Fragment(), OnItemProductClicked {
         binding.swipeRefresher.isRefreshing = false
     }
 
+
+    companion object{
+        private const val TAG = "BrandFragment"
+    }
 }

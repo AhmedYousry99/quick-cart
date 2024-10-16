@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.address.AddressRepo
@@ -197,29 +198,34 @@ class CategoryFragment : Fragment(), OnItemProductClicked {
                         }
 
                         is ApiState.Success -> {
-                            binding.recyclerView.visibility = View.VISIBLE
                             binding.shimmerFrameLayout.visibility = View.GONE
                             binding.shimmerFrameLayout.stopShimmer()
-                            if (!categoryViewModel.filterMainCategory) {
-                                if (it.data.isNotEmpty()) {
-                                    categoryViewModel.allData = it.data
-                                    categoryViewModel.filterMainCategory = true
-                                    categoryViewModel.filterByMainCategory("SHOES")
-                                    categoryViewModel.filterSubCategory = true
-                                    subCategory = "kid"
-                                    categoryViewModel.filterBySubCategory(subCategory)
-                                } else {
-                                    categoryViewModel.getProducts()
+                            if(NetworkUtils.isConnected(requireContext())){
+                                binding.recyclerView.visibility = View.VISIBLE
+                                if (!categoryViewModel.filterMainCategory) {
+                                    if (it.data.isNotEmpty()) {
+                                        categoryViewModel.allData = it.data
+                                        categoryViewModel.filterMainCategory = true
+                                        categoryViewModel.filterByMainCategory("SHOES")
+                                        categoryViewModel.filterSubCategory = true
+                                        subCategory = "kid"
+                                        categoryViewModel.filterBySubCategory(subCategory)
+                                    } else {
+                                        categoryViewModel.getProducts()
+                                    }
                                 }
-                            }
 
-                            categoryAdapter = CategoryAdapter(this@CategoryFragment)
-                            binding.recyclerView.apply {
-                                adapter = categoryAdapter
-                                categoryAdapter.submitList(it.data)
-                                layoutManager = GridLayoutManager(context, 2).apply {
-                                    orientation = RecyclerView.VERTICAL
+                                categoryAdapter = CategoryAdapter(this@CategoryFragment)
+                                binding.recyclerView.apply {
+                                    adapter = categoryAdapter
+                                    categoryAdapter.submitList(it.data)
+                                    layoutManager = GridLayoutManager(context, 2).apply {
+                                        orientation = RecyclerView.VERTICAL
+                                    }
                                 }
+                            }else{
+                                binding.noConnectivity.visibility = View.VISIBLE
+                                binding.connectivity.visibility = View.GONE
                             }
                         }
 

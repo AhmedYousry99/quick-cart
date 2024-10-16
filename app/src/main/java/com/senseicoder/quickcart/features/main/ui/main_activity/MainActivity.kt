@@ -72,8 +72,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-
-
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration.Builder(
