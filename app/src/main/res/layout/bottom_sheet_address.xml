@@ -21,8 +21,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/primary"
-            android:text="@string/submit_address"
             android:fontFamily="@font/alexandria_medium"
+            android:text="@string/submit_address"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -46,9 +46,9 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
+                android:fontFamily="@font/alexandria_medium"
                 android:gravity="center"
                 android:text="@string/address_details"
-                android:fontFamily="@font/alexandria_medium"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@color/black"
                 android:textStyle="bold" />
@@ -56,18 +56,21 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txtCountryLayout"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="4dp"
             android:enabled="false"
             android:textColorHint="@color/primary_variant"
             app:counterMaxLength="14"
+            app:layout_constraintEnd_toStartOf="@+id/txtCityLayout"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/txtVountryEditText"
+                android:id="@+id/txtCountryEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
@@ -78,14 +81,16 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txtCityLayout"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:enabled="false"
             android:textColorHint="@color/primary_variant"
             app:counterMaxLength="14"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/txtCountryLayout"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
@@ -159,9 +164,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/phoneEditText"
-                android:inputType="phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="phone"
                 android:singleLine="true"
                 android:textColorHint="@color/primary_variant" />
 

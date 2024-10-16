@@ -18,7 +18,7 @@ interface FirebaseHandler {
 
     fun handleEmailVerification(customer: CustomerDTO): Flow<CustomerDTO>
 
-    fun sendEmailVerification(email: String, password: String): Flow<Unit>
+    fun sendEmailVerification(customer: CustomerDTO): Flow<CustomerDTO>
 
 //    fun loginUsingGoogleEmail(idToken: String?)
 

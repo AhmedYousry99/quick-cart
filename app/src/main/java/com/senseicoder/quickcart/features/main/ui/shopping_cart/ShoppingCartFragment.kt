@@ -279,6 +279,11 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        customScope.cancel()
+    }
+
     private fun completeDraftOrderForCashCollector() {
         customScope.launch {
             viewModel.apply {

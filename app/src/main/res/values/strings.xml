@@ -42,7 +42,7 @@
     <string name="confirm_password_signup">Confirm Password</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="account_created_successfully">Your account has been created\nCheck your inbox and verify your account!</string>
+    <string name="account_created_successfully">Your account has been created. Check your inbox and verify your account!</string>
     <string name="email_invalid">Invalid Email</string>
     <string name="password_invalid_length_small">Password must be more than 6 characters</string>
     <string name="password_invalid_at_least_1_letter_1_number">Password must have at least 1 letter and 1 number</string>
@@ -101,7 +101,7 @@
     <string name="signup_email_will_be_used">Email will be used as your display name\n\n\nContinue?</string>
     <string name="notice">Notice</string>
     <string name="signup_first_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
-    <string name="signup_last_name_will_be_used">Only your first name will be used as your display name\n\n\nContinue?</string>
+    <string name="signup_last_name_will_be_used">Only your last name will be used as your display name\n\n\nContinue?</string>
     <string name="adding_to_cart">Adding to cart…</string>
     <string name="adding_to_favorite">Adding To Favorites…</string>
     <string name="added_to_favorite">Product Added To Favorites Successfully</string>

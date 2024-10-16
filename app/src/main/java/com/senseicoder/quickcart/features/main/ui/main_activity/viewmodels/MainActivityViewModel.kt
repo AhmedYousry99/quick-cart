@@ -60,6 +60,21 @@ class MainActivityViewModel(private val currencyRepo: CurrencyRepo,private val a
 
     private val _allAddresses: MutableStateFlow<ApiState< CustomerAddressesQuery. Customer>> = MutableStateFlow(ApiState.Loading)
     val allAddresses = _allAddresses
+
+    fun getCustomerAddresses() {
+        _allAddresses.value = ApiState.Loading
+        viewModelScope.launch {
+            addressRepo.getCustomerAddresses().catch {
+                _allAddresses.value = ApiState.Failure(it.message.toString())
+            }.collect {
+                if (it  != null)
+                    _allAddresses.value = ApiState.Success(it)
+                else
+                    _allAddresses.value = ApiState.Failure("No data found")
+            }
+        }
+    }
+
     fun updateAllAddress(new :ApiState< CustomerAddressesQuery. Customer>){
         _allAddresses.value = new
     }

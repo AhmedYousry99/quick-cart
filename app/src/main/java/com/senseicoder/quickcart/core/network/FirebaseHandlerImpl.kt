@@ -98,8 +98,10 @@ object FirebaseHandlerImpl : FirebaseHandler {
         }
     }
 
-    override fun sendEmailVerification(email: String, password: String) = flow<Unit> {
-
+    override fun sendEmailVerification(customer: CustomerDTO) = flow<CustomerDTO> {
+        val user = firebaseAuthInstance.currentUser
+        user!!.sendEmailVerification()
+        emit(customer)
     }
 
     /*  override suspend fun loginUsingGuest() = flow<CustomerDTO> {

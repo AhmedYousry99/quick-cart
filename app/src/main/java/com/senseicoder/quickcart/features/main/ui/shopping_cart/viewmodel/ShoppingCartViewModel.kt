@@ -49,6 +49,7 @@ class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRe
     private val _removeProductFromCart: MutableStateFlow<ApiState<String?>> =
         MutableStateFlow(ApiState.Loading)
     val removeProductFromCart = _removeProductFromCart
+
     fun deleteFromCart(cartId: String, lineItemId: List<String>) {
         _cartProducts.value = ApiState.Loading
         viewModelScope.launch {
@@ -63,6 +64,7 @@ class ShoppingCartViewModel(val repo: CartRepo, val draftOrderRepo: DraftOrderRe
 
     private val _updating: MutableSharedFlow<ApiState<List<ProductOfCart>?>> = MutableSharedFlow()
     val updating = _updating
+
     fun updateQuantityOfProduct(cartId: String, lineId: String, quantity: Int) {
         viewModelScope.launch {
             repo.updateQuantityOfProduct(cartId, lineId, quantity).catch {
