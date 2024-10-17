@@ -111,10 +111,10 @@ class OrderDetailsFragment : Fragment() {
                             Log.d(TAG, "collectOrderDetails: ${result}")
                             binding.totalPrice.text = formatPrice(result.data[index].totalPriceAmount.toDouble())
                             binding.subTotal.text = formatPrice( result.data[index].subTotalPriceAmount.toDouble())
-                            binding.tax.text = "${( result.data[index].totalPriceAmount.toFloat()/ (result.data[index].products.fold(0.0){
-                                    acc, product ->
+                            binding.tax.text = "${((((result.data[index].products.fold(0.0){
+                                acc, product ->
                                 acc + (product.price.toDoubleOrNull() ?: 0.0)
-                            }) * 100).toTwoDecimalPlaces()} %"
+                            }) - result.data[index].totalPriceAmount.toFloat())/result.data[index].totalPriceAmount.toFloat())*100).toInt()} %"
 
                             binding.orderId.text = result.data[index].name
                             binding.itemsCount.text =
