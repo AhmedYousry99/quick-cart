@@ -19,7 +19,7 @@ query CustomerOrders($accessToken: String!) {
                     }
                     phone
                     financialStatus
-                    lineItems(first: 10){
+                    lineItems(first: 10) {
                         edges {
                             node {
                                 currentQuantity
@@ -27,7 +27,6 @@ query CustomerOrders($accessToken: String!) {
                                 variant {
                                     price {
                                         amount
-                                        currencyCode
                                     }
                                     title
                                     id
@@ -40,7 +39,7 @@ query CustomerOrders($accessToken: String!) {
                                         productType
                                         handle
                                         description
-                                        images(first: 10){
+                                        images(first: 10) {
                                             edges {
                                                 node {
                                                     url
@@ -50,7 +49,6 @@ query CustomerOrders($accessToken: String!) {
                                         }
                                         createdAt
                                         totalInventory
-
                                     }
                                 }
                             }
@@ -73,7 +71,19 @@ query CustomerOrders($accessToken: String!) {
                         currencyCode
                         amount
                     }
-
+                    discountApplications(first: 10) {
+                        nodes {
+                            value {
+                                ... on MoneyV2 {
+                                    amount
+                                    currencyCode
+                                }
+                                ... on PricingPercentageValue {
+                                    percentage
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

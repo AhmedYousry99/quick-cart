@@ -296,6 +296,7 @@ object StorefrontHandlerImpl : StorefrontHandler {
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
                 emit(ApiState.Failure(Throwable(errorMessages).toString()))
             } else {
+
                 val data = response.data?.customer?.orders?.edges ?: emptyList()
                 Log.i(TAG, "getOrders: data" + data)
 
@@ -307,6 +308,13 @@ object StorefrontHandlerImpl : StorefrontHandler {
                     data.forEach {
                         val products = mutableListOf<Product>()
                         it.node.apply {
+                            var x :Float? =null
+                            if(discountApplications.nodes.isNotEmpty())
+                            {
+                                x = discountApplications.nodes[0].value.onPricingPercentageValue?.percentage?.toFloat()
+                                Log.d(TAG, "getCustomerOrders: ${discountApplications.nodes}")
+                                Log.d(TAG, "getCustomerOrders: ${lineItems.edges}")
+                            }
                             lineItems.edges.forEach { item ->
                                 products.add(
                                     Product(
@@ -317,7 +325,8 @@ object StorefrontHandlerImpl : StorefrontHandler {
                                         item.node.variant?.product?.images!!.edges[0].node.url.toString(),
                                         item.node.variant.product.productType,
                                         item.node.variant.price.amount.toString(),
-                                        item.node.variant.price.currencyCode.toString()
+                                        item.node.variant.price.toString(),
+                                        percentage = x
                                     )
                                 )
                             }

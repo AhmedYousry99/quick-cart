@@ -11,7 +11,8 @@ data class Product(
     val productType: String,
     val price: String,
     val currencyCode: String,
-    var convertedPrice: Double? = price.toDouble()
+    var convertedPrice: Double? = price.toDouble(),
+    var percentage:Float? = null
 )
 
 //fun Product.mapApiRemoteProductToDisplayProduct(): DisplayProduct {

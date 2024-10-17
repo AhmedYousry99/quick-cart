@@ -167,13 +167,21 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fragmentBinding.apply {
-
+        cartCollector()
+        collectUpdate()
+        collectCouponsList()
+        completeDraftOrderForCashCollector()
+        createOrderCollector()
+        collectDefaultAddress()
+        viewModel.apply{
+            fetchCoupons()
+            getAddress()
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 fragmentBinding.rvDraftOrder.layoutManager = LinearLayoutManager(requireContext())
-                MainActivity.isNetworkAvailable.collect {
+                (requireActivity() as MainActivity).isNetworkAvailable.collect {
                     isConnecting = it
                     if (isConnecting) {
                         viewModel.apply {
@@ -183,6 +191,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                                     Constants.CART_ID_DEFAULT
                                 )
                             )
+
                         }
                         fragmentBinding.apply {
                             btnToPayment.setOnClickListener {
@@ -202,6 +211,7 @@ class ShoppingCartFragment : Fragment(), OnCartItemClickListener {
                                 bottomSheetDialog.dismiss()
                         }
                     }
+
                 }
 
             }

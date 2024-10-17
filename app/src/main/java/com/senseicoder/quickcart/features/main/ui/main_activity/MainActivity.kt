@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    var isNetworkAvailable : MutableStateFlow<Boolean> = MutableStateFlow(false)
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val mainViewModel : MainActivityViewModel by lazy{
         ViewModelProvider(this,
@@ -70,9 +71,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isNetworkAvailable = MutableStateFlow(false)
+
         lifecycleScope.launch {
             NetworkState(this@MainActivity).observeNetworkState().collect { isConnected ->
-                _isNetworkAvailable.value = isConnected
+                isNetworkAvailable.value = isConnected
 //                Toast.makeText(this@MainActivity, "Connect is: ${isConnected}", Toast.LENGTH_SHORT).show()
             }
         }
@@ -146,8 +149,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val _isNetworkAvailable = MutableStateFlow(false)
-        val isNetworkAvailable = _isNetworkAvailable.asStateFlow()
+
 
         private const val TAG = "MainActivity"
         val navOptions = NavOptions.Builder()

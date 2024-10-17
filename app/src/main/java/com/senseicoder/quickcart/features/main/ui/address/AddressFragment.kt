@@ -85,7 +85,7 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
-            MainActivity.isNetworkAvailable.collect {
+            (requireActivity() as MainActivity).isNetworkAvailable.collect {
                 isConnecting = it
                 if (isConnecting) {
                     binding.apply {
