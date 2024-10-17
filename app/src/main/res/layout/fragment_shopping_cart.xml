@@ -27,7 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="btnToPayment,rvDraftOrder,txtGrandTotal,txtValueOfGrandTotal" />
+        app:constraint_referenced_ids="btnToPayment,rvDraftOrder,txtGrandTotal,txtValueOfGrandTotal"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btnToPayment"
@@ -50,6 +51,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/txtGrandTotal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,9 +90,8 @@
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerFrameLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -115,6 +116,19 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/emptyanimation"
         tools:visibility="gone" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/networkLottie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/nointernet" />
 
 
     <!--    <com.google.android.material.bottomsheet.BottomSheetDialogFragment-->

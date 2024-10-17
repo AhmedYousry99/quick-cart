@@ -21,6 +21,8 @@ import com.senseicoder.quickcart.R
 import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
 import com.senseicoder.quickcart.core.global.enums.DialogType
+import com.senseicoder.quickcart.core.global.showErrorSnackbar
+import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.model.AddressOfCustomer
 import com.senseicoder.quickcart.core.model.fromEdges
 import com.senseicoder.quickcart.core.model.toMailingAddressInput
@@ -32,15 +34,20 @@ import com.senseicoder.quickcart.databinding.BottomSheetAddressBinding
 import com.senseicoder.quickcart.databinding.FragmentAddressBinding
 import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewModel
 import com.senseicoder.quickcart.features.main.ui.address.viewmodel.AddressViewModelFactory
+import com.senseicoder.quickcart.features.main.ui.main_activity.MainActivity
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.storefront.type.MailingAddressInput
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.Locale
 
 class AddressFragment : Fragment(), OnAddressClickListener {
-    private var flagBackPress = false
+    private var isConnecting = false
     var flagToPopUp = false
     var flagToPopUFromEdit = false
+    private val globalCoroutineScope = CoroutineScope(Dispatchers.Main)
     lateinit var binding: FragmentAddressBinding
     lateinit var bottomSheetDialog: BottomSheetDialog
     lateinit var bottomSheetBinding: BottomSheetAddressBinding
@@ -77,8 +84,27 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getCustomerAddresses()
+        lifecycleScope.launch {
+            MainActivity.isNetworkAvailable.collect {
+                isConnecting = it
+                if (isConnecting) {
+                    binding.apply {
+                        readytoShow.visibility = View.VISIBLE
+                        animationViewNetwork.visibility = View.GONE
+                    }
+                    collector()
+                    setListenerForFloatingBtn()
+                    viewModel.getCustomerAddresses()
+                } else {
+                    binding.apply {
+                        readytoShow.visibility = View.GONE
+                        animationViewNetwork.visibility = View.VISIBLE
+                    }
+                    globalCoroutineScope.cancel()
+                    binding.floatBtnAddAddress.setOnClickListener(null)
+                }
+            }
+        }
         SharedPrefsService.logAllSharedPref(TAG, "onViewCreated")
         label = arguments?.getString(Constants.LABEL, null)
         if (!label.isNullOrEmpty()) {
@@ -95,23 +121,12 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             imgBtnBack.setOnClickListener {
                 Navigation.findNavController(it).popBackStack()
             }
-            floatBtnAddAddress.setOnClickListener {
-                if (label.equals(Constants.CART_FRAGMENT_TO_EDIT))
-                    Navigation.findNavController(it)
-                        .navigate(
-                            R.id.action_addressFragment_to_mapsFragment,
-                            bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_EDIT)
-                        )
-                else
-                    Navigation.findNavController(it)
-                        .navigate(R.id.action_addressFragment_to_mapsFragment)
-            }
+
         }
-        collector()
     }
 
     private fun collector() {
-        lifecycleScope.launch {
+        globalCoroutineScope.launch {
             viewModel.allAddresses.collect {
                 when (it) {
                     is ApiState.Loading -> {
@@ -155,25 +170,21 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     }
 
     override fun onDeleteClick(addressOfCustomer: AddressOfCustomer) {
+        showSnackbar("Wait. . .", color = R.color.black)
         ConfirmationDialogFragment(
             DialogType.DEL_ADDRESS
         ) {
             //DELETE ADDRESS
             viewModel.deleteAddress(addressOfCustomer.id)
-            lifecycleScope.launch {
+            globalCoroutineScope.launch {
                 viewModel.deletedAddress.collect {
                     when (it) {
                         is ApiState.Success -> {
-                            Snackbar.make(requireView(), "Address deleted", Snackbar.LENGTH_LONG)
-                                .show()
+                            showSnackbar("Address deleted", color = R.color.secondary)
                         }
 
                         is ApiState.Failure -> {
-                            Snackbar.make(
-                                requireView(),
-                                "Something went wrong",
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            showErrorSnackbar("Something went wrong")
                         }
 
                         else -> {
@@ -189,19 +200,35 @@ class AddressFragment : Fragment(), OnAddressClickListener {
     }
 
     override fun onDefaultClick(addressOfCustomer: AddressOfCustomer) {
+        showSnackbar("Wait. .  .  .", color = R.color.black)
+        globalCoroutineScope.launch {
+            viewModel.updateDefaultAddressProcess.collect {
+                when (it) {
+                    true -> {
+                        showSnackbar("Address Changed", color = R.color.secondary)
+                    }
+
+                    false -> {
+                        showErrorSnackbar("Something went wrong")
+                    }
+                }
+            }
+        }
         addressAdapter.updateList(emptyList())
         viewModel.updateDefaultAddress(addressOfCustomer.id)
-         if (label.equals(Constants.CART_FRAGMENT_TO_ADD) ||
+        if (label.equals(Constants.CART_FRAGMENT_TO_ADD) ||
             label.equals(Constants.CART_FRAGMENT_TO_CHECKOUT) ||
-            label.equals(Constants.FROM_ADD)||
-            label.equals(Constants.CART_FRAGMENT_TO_EDIT))
+            label.equals(Constants.FROM_ADD) ||
+            label.equals(Constants.CART_FRAGMENT_TO_EDIT)
+        )
             flagToPopUp = true
+
     }
 
     private fun shoBottomSheet() {
         bottomSheetBinding = BottomSheetAddressBinding.inflate(layoutInflater)
         bottomSheetBinding.apply {
-            lifecycleScope.launch {
+            globalCoroutineScope.launch {
                 mainViewModel.location.collect {
                     geocodeLocation(it.first, it.second)
                 }
@@ -328,9 +355,8 @@ class AddressFragment : Fragment(), OnAddressClickListener {
             animationView.visibility = View.VISIBLE
         }
     }
-
     fun geocodeLocation(latitude: Double, longitude: Double) {
-        lifecycleScope.launch {
+        globalCoroutineScope.launch {
             try {
                 Log.d(TAG, "geocodeLocation: ${latitude},${longitude}")
                 addresses = geoCoder.getFromLocation(latitude, longitude, 1) ?: emptyList()
@@ -372,7 +398,6 @@ class AddressFragment : Fragment(), OnAddressClickListener {
 
 
     }
-
     fun sortDefault(list: List<AddressOfCustomer>, id: String): List<AddressOfCustomer> {
         val res: MutableList<AddressOfCustomer> = mutableListOf()
         list.forEach {
@@ -382,6 +407,21 @@ class AddressFragment : Fragment(), OnAddressClickListener {
                 res.add(it)
         }
         return res
+    }
+    private fun setListenerForFloatingBtn(){
+        binding.apply {
+            floatBtnAddAddress.setOnClickListener {
+                if (label.equals(Constants.CART_FRAGMENT_TO_EDIT))
+                    Navigation.findNavController(it)
+                        .navigate(
+                            R.id.action_addressFragment_to_mapsFragment,
+                            bundleOf(Constants.LABEL to Constants.CART_FRAGMENT_TO_EDIT)
+                        )
+                else
+                    Navigation.findNavController(it)
+                        .navigate(R.id.action_addressFragment_to_mapsFragment)
+            }
+        }
     }
 
     companion object {

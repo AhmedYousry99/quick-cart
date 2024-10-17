@@ -3,8 +3,10 @@ package com.senseicoder.quickcart.features.main.ui.main_activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation.findNavController
@@ -14,11 +16,11 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.senseicoder.quickcart.BuildConfig
 import com.senseicoder.quickcart.R
-import com.senseicoder.quickcart.core.dialogs.ConfirmationDialogFragment
+import com.senseicoder.quickcart.core.dialogs.ConfirmationUpdateDialogFragment
 import com.senseicoder.quickcart.core.global.Constants
+import com.senseicoder.quickcart.core.global.NetworkState
 import com.senseicoder.quickcart.core.global.NetworkUtils
 import com.senseicoder.quickcart.core.global.enums.DialogType
-import com.senseicoder.quickcart.core.global.showSnackbar
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.network.currency.CurrencyRemoteImpl
 import com.senseicoder.quickcart.core.repos.address.AddressRepoImpl
@@ -28,6 +30,9 @@ import com.senseicoder.quickcart.databinding.ActivityMainBinding
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModel
 import com.senseicoder.quickcart.features.main.ui.main_activity.viewmodels.MainActivityViewModelFactory
 import com.stripe.android.PaymentConfiguration
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,12 +49,11 @@ class MainActivity : AppCompatActivity() {
             )
             )[MainActivityViewModel::class.java]
     }
-
     private val onDestinationChangedListener =
         NavController.OnDestinationChangedListener { controller, destination, _ ->
             if (!canNavigate(destination.id)) {
                 Log.d(TAG, "qwhehq: ${controller.getBackStackEntry(destination.id)}")
-                ConfirmationDialogFragment(DialogType.PERMISSION_DENIED_GUEST_MODE) {
+                ConfirmationUpdateDialogFragment(DialogType.PERMISSION_DENIED_GUEST_MODE) {
                     controller.navigate(R.id.splashFragment, null, navOptions {
                         popUpTo(R.id.loginFragment) {
                             inclusive = true
@@ -62,12 +66,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            NetworkState(this@MainActivity).observeNetworkState().collect { isConnected ->
+                _isNetworkAvailable.value = isConnected
+//                Toast.makeText(this@MainActivity, "Connect is: ${isConnected}", Toast.LENGTH_SHORT).show()
+            }
+        }
         PaymentConfiguration.init(
             applicationContext,
-            BuildConfig.publish_key // Replace with your Stripe publishable key
-        /*"pk_test_51Q5iOxB2VRlrbgQ7sEVPYTMVmfplCmtGo5EibD95SbNMis5QoW8IMzkHCloTbbx6uS89wToh9Z3AOqBRF431i44m00nXQ3rTn9"*/)
+            BuildConfig.publish_key) // Replace with your Stripe publishable key
+        /*"pk_test_51Q5iOxB2VRlrbgQ7sEVPYTMVmfplCmtGo5EibD95SbNMis5QoW8IMzkHCloTbbx6uS89wToh9Z3AOqBRF431i44m00nXQ3rTn9"*/
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -134,6 +146,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private val _isNetworkAvailable = MutableStateFlow(false)
+        val isNetworkAvailable = _isNetworkAvailable.asStateFlow()
+
         private const val TAG = "MainActivity"
         val navOptions = NavOptions.Builder()
             .setEnterAnim(R.anim.slide_in_right)

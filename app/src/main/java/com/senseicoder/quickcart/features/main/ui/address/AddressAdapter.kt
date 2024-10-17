@@ -35,7 +35,7 @@ class AddressAdapter(
         holder.binding.apply {
             if (position == 0) {
                 imgDefault.apply {
-                    setImageResource(R.drawable.ic_favorite_filled)
+                    setImageResource(R.drawable.ic_home_black_24dp)
                     setOnClickListener(null)
                 }
                 imgBtnDelete.apply {
@@ -44,7 +44,7 @@ class AddressAdapter(
                 }
             } else {
                 imgDefault.apply {
-                    setImageResource(R.drawable.ic_favorite_border)
+                    setImageResource(R.drawable.ic_address)
                     setOnClickListener {
                         listener.onDefaultClick(current)
                     }
