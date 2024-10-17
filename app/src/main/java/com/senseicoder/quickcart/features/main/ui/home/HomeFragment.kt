@@ -252,7 +252,7 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
 
     private fun setupCouponViewPager() {
         customCoroutine.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 homeViewModel.coupons.collect{
                     when (it) {
                         is ApiState.Success -> {
@@ -275,7 +275,6 @@ class HomeFragment : Fragment(), OnItemBrandClicked {
                                         "Coupon code copied to clipboard",
                                         Snackbar.LENGTH_LONG
                                     ).show()
-                                    customCoroutine.cancel()
                                 }
                             }
                             binding.couponPager.adapter = couponPagerAdapter
