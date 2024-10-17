@@ -1,5 +1,6 @@
 package com.senseicoder.quickcart.features.main.ui.order
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.senseicoder.quickcart.R
+import com.senseicoder.quickcart.core.global.toTwoDecimalPlaces
 import com.senseicoder.quickcart.core.network.StorefrontHandlerImpl
 import com.senseicoder.quickcart.core.repos.order.OrderRepoImpl
 import com.senseicoder.quickcart.core.services.SharedPrefsService
@@ -85,6 +87,7 @@ class OrderDetailsFragment : Fragment() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun collectOrderDetails() {
         val index = arguments?.getInt("index") ?: 0
         lifecycleScope.launch {
@@ -102,9 +105,16 @@ class OrderDetailsFragment : Fragment() {
 //                            binding.tax.text = result.data[index].totalTaxAmount+"EGP"
 
                             // Use the formatPrice function for conversion
+                            Log.d(TAG, "collectOrderDetails: $index")
+                            val total =
+                                result.data[index].totalPriceAmount.toDoubleOrNull()!! - (result.data[index].totalPriceAmount.toDoubleOrNull()!! * (result.data[index].percentage ?: 0.0f)/100.0)
+                            Log.d(TAG, "collectOrderDetails: ${result}")
                             binding.totalPrice.text = formatPrice(result.data[index].totalPriceAmount.toDouble())
                             binding.subTotal.text = formatPrice( result.data[index].subTotalPriceAmount.toDouble())
-                            binding.tax.text = formatPrice(result.data[index].totalTaxAmount.toDouble())
+                            binding.tax.text = "${((((result.data[index].products.fold(0.0){
+                                acc, product ->
+                                acc + (product.price.toDoubleOrNull() ?: 0.0)
+                            }) - result.data[index].totalPriceAmount.toFloat())/result.data[index].totalPriceAmount.toFloat())*100).toInt()} %"
 
                             binding.orderId.text = result.data[index].name
                             binding.itemsCount.text =

@@ -49,19 +49,19 @@ tools:context=".features.main.ui.order.OrderDetailsFragment">
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 </LinearLayout>
 
-<TextView
-    android:id="@+id/textView2"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="24dp"
-    android:layout_marginTop="-24dp"
-    android:text="@string/order_id"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="20sp"
-    android:textColor="@color/black"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="-24dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="@string/order_id"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 <TextView
     android:id="@+id/order_id"
@@ -112,16 +112,16 @@ tools:context=".features.main.ui.order.OrderDetailsFragment">
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/order_products_rv" />
 
-<View
-    android:id="@+id/view"
-    android:layout_width="327dp"
-    android:layout_height="1dp"
-    android:layout_marginTop="16dp"
-    android:background="?android:attr/listDivider"
-    android:backgroundTint="@color/background"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/cardView" />
+    <View
+        android:id="@+id/view"
+        android:layout_width="327dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"
+        android:backgroundTint="@color/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
 <androidx.cardview.widget.CardView
     android:id="@+id/cardView"
@@ -181,80 +181,86 @@ tools:context=".features.main.ui.order.OrderDetailsFragment">
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
 
-<TextView
-    android:id="@+id/textView12"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="24dp"
-    android:layout_marginTop="16dp"
-    android:text="@string/subtotal"
-    android:textColor="@color/black"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/view" />
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="17dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="@string/subtotal"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
-<TextView
-    android:id="@+id/tax"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="00.00 EGP"
-    android:textColor="@color/secondary_variant"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="18sp"
-    android:textStyle="bold"
-    app:layout_constraintEnd_toEndOf="@+id/sub_total"
-    app:layout_constraintTop_toTopOf="@+id/textView14" />
+    <TextView
+        android:id="@+id/tax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="00.00 EGP"
+        android:textColor="@color/secondary_variant"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView14"
+        app:layout_constraintEnd_toEndOf="@+id/sub_total"
+        app:layout_constraintStart_toStartOf="@+id/sub_total"
+        app:layout_constraintTop_toTopOf="@+id/textView14" />
 
-<TextView
-    android:id="@+id/sub_total"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="24dp"
-    android:text="300.00 EGP"
-    android:fontFamily="@font/alexandria_medium"
-    android:textColor="@color/black"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="@+id/textView12" />
+    <TextView
+        android:id="@+id/sub_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="300.00 EGP"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView12" />
 
-<TextView
-    android:id="@+id/textView14"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:text="@string/total_tax"
-    android:textColor="@color/secondary_variant"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="@+id/textView12"
-    app:layout_constraintTop_toBottomOf="@+id/textView12" />
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="Discount"
+        android:textColor="@color/secondary_variant"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/textView12"
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
-<TextView
-    android:id="@+id/textView15"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:text="@string/total_cost"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    android:textColor="@color/black"
-    app:layout_constraintStart_toStartOf="@+id/textView12"
-    app:layout_constraintTop_toBottomOf="@+id/textView14" />
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="@string/total_cost"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
-<TextView
-    android:id="@+id/total_price"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="300.00 EGP"
-    android:fontFamily="@font/alexandria_medium"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    android:textColor="@color/black"
-    app:layout_constraintEnd_toEndOf="@+id/sub_total"
-    app:layout_constraintTop_toTopOf="@+id/textView15" />
+    <TextView
+        android:id="@+id/total_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alexandria_medium"
+        android:text="300.00 EGP"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textView15"
+        app:layout_constraintEnd_toEndOf="@+id/sub_total"
+        app:layout_constraintStart_toStartOf="@+id/sub_total"
+        app:layout_constraintTop_toTopOf="@+id/textView15" />
 </androidx.constraintlayout.widget.ConstraintLayout>

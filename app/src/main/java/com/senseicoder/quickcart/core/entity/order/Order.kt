@@ -18,7 +18,8 @@ data class Order(
     val totalTaxCurrencyCode: String,
     val processedAt: String,
     val phone :String?,
-    val products: List<Product>
+    val products: List<Product>,
+    val percentage:Float? = null
 )
 
 data class Address(

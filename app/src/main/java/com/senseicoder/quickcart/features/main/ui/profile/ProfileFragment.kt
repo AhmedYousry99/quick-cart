@@ -96,7 +96,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             lifecycleScope.launch {
-                MainActivity.isNetworkAvailable.collect {
+                (requireActivity() as MainActivity).isNetworkAvailable.collect {
                     isConnect = it
                     if (isConnect) {
                         setDataAndListener()

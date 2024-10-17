@@ -29,12 +29,14 @@ class OrderAdapter(
         val current = getItem(position)
 
         // Log current order details for debugging
-        Log.d("OrderAdapter", "Binding order ID: ${current.id}, Total Price: ${current.totalPriceAmount}, Currency: EGP")
+        Log.d("OrderAdapter", "Binding order ID: ${current.id},${current.percentage}, ${current.subTotalPriceAmount},Total Price: ${current.totalPriceAmount}, Currency: EGP")
 
         // Bind data to the layout
      //   holder.binding.totalPrice.text = String.format("%.2f EGP - %d item", current.totalPriceAmount.toDouble(), current.products.size)
+        val total =
+            current.totalPriceAmount.toDoubleOrNull()!! - (current.totalPriceAmount.toDoubleOrNull()!! * ((current.percentage ?: 0.0f) /100.0))
 
-        holder.binding.totalPrice.text = formatTotalPrice(current.totalPriceAmount.toDouble())
+        holder.binding.totalPrice.text = formatTotalPrice(total.toDouble())
 
 
         holder.binding.dateCreated.text = formatToYearMonthDayHourMinuteAmPm(current.processedAt)
